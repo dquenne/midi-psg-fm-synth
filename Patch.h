@@ -11,6 +11,7 @@ struct Patch {
 
   const Lfo *amplitude_lfo;
   const Lfo *frequency_lfo;
+  float velocity_scaling;
 };
 
 class PatchState {

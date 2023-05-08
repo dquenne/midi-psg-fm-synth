@@ -59,7 +59,7 @@ void handleNoteOn(byte channel, byte pitch, byte velocity) {
   echo_ticks_remaining = 170;
   Voice *voice = voice_manager.getVoice(channel, pitch);
   voice->setPatch(PRESET_PATCHES[0]);
-  voice->noteOn(channel, pitch, 100);
+  voice->noteOn(channel, pitch, velocity);
 
   digitalWrite(LED_PIN, LOW);
 }
@@ -117,7 +117,7 @@ void loop() {
 
     Voice *echoVoice = voice_manager.getVoice(17, echo_pitch);
     echoVoice->setPatch(PRESET_PATCHES[0]);
-    echoVoice->noteOn(17, echo_pitch, 50);
+    echoVoice->noteOn(17, echo_pitch, 40);
     last_echo_pitch = echo_pitch;
   }
   if (echo_note_off_ticks_remaining == 1) {

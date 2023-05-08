@@ -1,6 +1,10 @@
 #include "Patch.h"
 #include "NoteMappings.h"
 
+#define MIN(a, b) (a < b ? a : b)
+#define MAX(a, b) (a > b ? a : b)
+#define LIMIT(val, min, max) MIN(MAX(val, min), max)
+
 PatchState::PatchState() { _patch_set = false; }
 
 void PatchState::initialize() {
@@ -52,16 +56,23 @@ unsigned PatchState::getFrequencyCents() {
   return (_pitch * 100) + frequency_lfo_state.getValue();
 }
 
+float velocity_center_point = 64.0f;
+
 unsigned PatchState::getLevel() {
   if (!isActive()) {
     return 0;
   }
-  return amplitude_envelope_state.getValue();
+  signed envelope_amplitude = amplitude_envelope_state.getValue();
+  float velocity_scale = (float(_velocity - velocity_center_point) *
+                          _patch->velocity_scaling / velocity_center_point) +
+                         1.0f;
+
+  return LIMIT(int(float(envelope_amplitude) * velocity_scale), 0, 15);
 }
 
 bool PatchState::isActive() { return !!_patch; }
 
 static const Patch PRESET_PATCH_0 = {ENVELOPE_SHAPES[1], ENVELOPE_SHAPES[0],
-                                     LFO_PRESETS[1], LFO_PRESETS[1]};
+                                     LFO_PRESETS[1], LFO_PRESETS[1], 0.5f};
 
 const Patch *PRESET_PATCHES[] = {&PRESET_PATCH_0};
