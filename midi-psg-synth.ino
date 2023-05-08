@@ -1,5 +1,5 @@
 #include "NoteMappings.h"
-#include "Voice.h"
+#include "VoiceManager.h"
 #include "notes.h"
 #include "sn76489.h"
 #include <Arduino.h>
@@ -12,33 +12,9 @@
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-Voice myVoice;
-Voice echoVoice;
-
 byte echo_pitch = 0;
 unsigned echo_ticks_remaining = 0;
 unsigned echo_note_off_ticks_remaining = 0;
-
-void handleNoteOn(byte channel, byte pitch, byte velocity) {
-  if (NOTES_4MHZ[pitch] > 1023) {
-    return;
-  }
-
-  // this approach to a delay/echo is super naive and broken, but accomplishes
-  // the effect if you play notes slowly. real implementation of a delay to
-  // come after voice mapping is better fleshed out.
-  echo_pitch = pitch;
-  echo_ticks_remaining = 220;
-  myVoice.setPatch(PRESET_PATCHES[0]);
-  myVoice.noteOn(pitch, 100);
-}
-
-void handleNoteOff(byte channel, byte pitch, byte velocity) {
-  if (myVoice.pitch == pitch) {
-    myVoice.noteOff();
-    echo_note_off_ticks_remaining = 220;
-  }
-}
 
 /**
  * @param[in] division is the factor that 8MHz is divided by. Should be 2 or
@@ -67,6 +43,32 @@ void setClockOut(unsigned division) {
 }
 
 Sn76489Instance sn76489_1(2);
+
+VoiceManager voice_manager(3);
+
+void handleNoteOn(byte channel, byte pitch, byte velocity) {
+  if (NOTES_4MHZ[pitch] > 1023) {
+    return;
+  }
+  digitalWrite(LED_PIN, HIGH);
+
+  // this approach to a delay/echo is super naive and broken, but accomplishes
+  // the effect if you play notes slowly. real implementation of a delay to
+  // come after voice mapping is better fleshed out.
+  echo_pitch = pitch;
+  echo_ticks_remaining = 170;
+  Voice *voice = voice_manager.getVoice(channel, pitch);
+  voice->setPatch(PRESET_PATCHES[0]);
+  voice->noteOn(channel, pitch, 100);
+
+  digitalWrite(LED_PIN, LOW);
+}
+
+void handleNoteOff(byte channel, byte pitch, byte velocity) {
+  Voice *voice = voice_manager.getExactVoice(channel, pitch);
+  voice->noteOff();
+  echo_note_off_ticks_remaining = 170;
+}
 
 void setup() {
   setClockOut(2);
@@ -99,6 +101,7 @@ void setup() {
 }
 
 unsigned long last_millis = millis();
+byte last_echo_pitch = 0;
 
 void loop() {
   MIDI.read();
@@ -108,11 +111,18 @@ void loop() {
     ;
 
   if (echo_ticks_remaining == 1) {
-    echoVoice.setPatch(PRESET_PATCHES[0]);
-    echoVoice.noteOn(echo_pitch, 100);
+
+    Voice *lastEchoVoice = voice_manager.getVoice(17, last_echo_pitch);
+    lastEchoVoice->noteOff();
+
+    Voice *echoVoice = voice_manager.getVoice(17, echo_pitch);
+    echoVoice->setPatch(PRESET_PATCHES[0]);
+    echoVoice->noteOn(17, echo_pitch, 50);
+    last_echo_pitch = echo_pitch;
   }
   if (echo_note_off_ticks_remaining == 1) {
-    echoVoice.noteOff();
+    Voice *echoVoice = voice_manager.getVoice(17, echo_pitch);
+    echoVoice->noteOff();
   }
   if (echo_ticks_remaining > 0) {
     echo_ticks_remaining--;
@@ -124,13 +134,17 @@ void loop() {
 
   last_millis = millis();
 
-  myVoice.tick();
-  sn76489_1.tone_channels[0].writeLevel(myVoice.level);
-  sn76489_1.tone_channels[0].writePitch(myVoice.frequency_cents);
+  voice_manager.tick();
 
-  echoVoice.tick();
-  // sn76489_1.tone_channels[1].writeLevel(echoVoice.level / 2);
-  sn76489_1.tone_channels[1].writeLevel(
-      echoVoice.level > 5 ? echoVoice.level - 5 : 0);
-  sn76489_1.tone_channels[1].writePitch(echoVoice.frequency_cents);
+  // TODO: clean up syncing from VoiceManager to actual chip tone channels
+  sn76489_1.tone_channels[0].writeLevel(voice_manager.voices[0].level);
+  sn76489_1.tone_channels[0].writePitch(
+      voice_manager.voices[0].frequency_cents);
+  sn76489_1.tone_channels[1].writeLevel(voice_manager.voices[1].level);
+  sn76489_1.tone_channels[1].writePitch(
+      voice_manager.voices[1].frequency_cents);
+  sn76489_1.tone_channels[2].writeLevel(voice_manager.voices[2].level);
+  sn76489_1.tone_channels[2].writePitch(
+      voice_manager.voices[2].frequency_cents);
+  return;
 }
