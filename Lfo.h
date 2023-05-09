@@ -40,6 +40,4 @@ private:
   unsigned _wavelength_ticks_pased;
 };
 
-extern const Lfo *LFO_PRESETS[];
-
 #endif

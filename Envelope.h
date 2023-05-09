@@ -34,7 +34,7 @@ enum EnvelopeStatus { not_started, active, done };
 class EnvelopeState {
 public:
   EnvelopeState();
-  void setEnvelopeShape(const EnvelopeShape *envelope_shape);
+  void setEnvelopeShape(EnvelopeShape *envelope_shape);
   void initialize();
   void start();
   void noteOff();
@@ -50,7 +50,5 @@ private:
   unsigned _step;
   unsigned _step_ticks_passed;
 };
-
-extern const EnvelopeShape *ENVELOPE_SHAPES[];
 
 #endif

@@ -10,7 +10,7 @@ Voice::Voice() {
   _patch_state.initialize();
 }
 
-void Voice::setPatch(const Patch *patch) { _patch_state.setPatch(patch); }
+void Voice::setPatch(const Patch *patch) { _patch_state.setPreset(patch); }
 
 void Voice::noteOn(byte _channel, byte _pitch, byte velocity) {
   pitch = _pitch;

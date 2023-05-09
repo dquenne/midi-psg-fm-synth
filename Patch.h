@@ -6,18 +6,18 @@
 #include <Arduino.h>
 
 struct Patch {
-  const EnvelopeShape *amplitude_envelope;
-  const EnvelopeShape *frequency_envelope;
+  EnvelopeShape amplitude_envelope;
+  EnvelopeShape frequency_envelope;
 
-  const Lfo *amplitude_lfo;
-  const Lfo *frequency_lfo;
+  Lfo amplitude_lfo;
+  Lfo frequency_lfo;
   float velocity_scaling;
 };
 
 class PatchState {
 public:
   PatchState();
-  void setPatch(const Patch *patch);
+  void setPreset(const Patch *preset);
   void initialize();
   void noteOn(byte pitch, byte velocity);
   void noteOff();
@@ -33,7 +33,7 @@ public:
 
 private:
   bool _patch_set;
-  const Patch *_patch;
+  Patch _patch;
   byte _pitch;
   byte _velocity;
   bool _held;

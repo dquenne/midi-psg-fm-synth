@@ -1,7 +1,7 @@
 #include "Envelope.h"
 
 EnvelopeState::EnvelopeState() { initialize(); }
-void EnvelopeState::setEnvelopeShape(const EnvelopeShape *envelope_shape) {
+void EnvelopeState::setEnvelopeShape(EnvelopeShape *envelope_shape) {
   _envelope_shape = envelope_shape;
   initialize();
 }
@@ -67,59 +67,3 @@ EnvelopeStatus EnvelopeState::getStatus() {
   }
   return active;
 }
-
-static const EnvelopeShape ENVELEOPE_0 = {
-    {
-        {14, 50},
-        {11, 25},
-        {11, 40},
-        {11, 40},
-        {11, 40},
-        {11, 40},
-        {11, 40},
-        {11, 40},
-    },
-    true,
-    4,
-    4,
-    7,
-    7,
-};
-
-static const EnvelopeShape ENVELEOPE_1 = {
-    {
-        {14, 40},
-        {13, 40},
-        {12, 40},
-        {11, 40},
-        {9, 40},
-        {6, 100},
-        {3, 100},
-        {0, 40},
-    },
-    true,
-    4,
-    4,
-    0,
-    7,
-};
-static const EnvelopeShape ENVELEOPE_2 = {
-    {
-        {12, 40},
-        {12, 40},
-        {14, 30},
-        {14, 40},
-        {6, 400},
-        {6, 400},
-        {3, 500},
-        {3, 500},
-    },
-    true,
-    3,
-    3,
-    0,
-    7,
-};
-
-const EnvelopeShape *ENVELOPE_SHAPES[] = {&ENVELEOPE_0, &ENVELEOPE_1,
-                                          &ENVELEOPE_2};

@@ -128,25 +128,3 @@ signed LfoState::getValue() {
   }
   return value;
 }
-
-/*
-struct Lfo {
-  bool lfo_enable;
-  unsigned start_delay_ticks;
-  unsigned off_ticks;
-  unsigned depth;
-  unsigned wavelength;
-  LfoWaveform waveform;
-};
-*/
-
-/** default, no LFO behavior */
-static const Lfo LFO_PRESET_0 = {
-    false, 0, 0, 0, 0, triangle,
-};
-
-static const Lfo LFO_PRESET_1 = {
-    true, 600, 100, 16, 170, triangle,
-};
-
-const Lfo *LFO_PRESETS[] = {&LFO_PRESET_0, &LFO_PRESET_1};
