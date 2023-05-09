@@ -14,6 +14,8 @@ struct Patch {
   float velocity_scaling;
 };
 
+void applyPreset(Patch *target, const Patch *preset);
+
 class PatchState {
 public:
   PatchState();

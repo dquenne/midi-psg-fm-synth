@@ -1,3 +1,4 @@
+#include "Multi.h"
 #include "NoteMappings.h"
 #include "Presets.h"
 #include "VoiceManager.h"
@@ -47,6 +48,8 @@ Sn76489Instance sn76489_1(2);
 
 VoiceManager voice_manager(3);
 
+Multi main_multi;
+
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
   if (NOTES_4MHZ[pitch] > 1023) {
     return;
@@ -59,7 +62,7 @@ void handleNoteOn(byte channel, byte pitch, byte velocity) {
   echo_pitch = pitch;
   echo_ticks_remaining = 170;
   Voice *voice = voice_manager.getVoice(channel, pitch);
-  voice->setPatch(PRESETS[0]);
+  voice->setPatch(&main_multi.channels[channel - 1]);
   voice->noteOn(channel, pitch, velocity);
 
   digitalWrite(LED_PIN, LOW);
@@ -99,6 +102,10 @@ void setup() {
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
+
+  for (byte channel = 0; channel < 16; channel++) {
+    applyPreset(&main_multi.channels[channel], PRESETS[channel]);
+  }
 }
 
 unsigned long last_millis = millis();
@@ -111,27 +118,27 @@ void loop() {
   while (last_millis >= millis())
     ;
 
-  if (echo_ticks_remaining == 1) {
+  // if (echo_ticks_remaining == 1) {
 
-    Voice *lastEchoVoice = voice_manager.getVoice(17, last_echo_pitch);
-    lastEchoVoice->noteOff();
+  //   Voice *lastEchoVoice = voice_manager.getVoice(17, last_echo_pitch);
+  //   lastEchoVoice->noteOff();
 
-    Voice *echoVoice = voice_manager.getVoice(17, echo_pitch);
-    echoVoice->setPatch(PRESETS[0]);
-    echoVoice->noteOn(17, echo_pitch, 40);
-    last_echo_pitch = echo_pitch;
-  }
-  if (echo_note_off_ticks_remaining == 1) {
-    Voice *echoVoice = voice_manager.getVoice(17, echo_pitch);
-    echoVoice->noteOff();
-  }
-  if (echo_ticks_remaining > 0) {
-    echo_ticks_remaining--;
-  }
+  //   Voice *echoVoice = voice_manager.getVoice(17, echo_pitch);
+  //   echoVoice->setPatch(PRESETS[3]);
+  //   echoVoice->noteOn(17, echo_pitch, 40);
+  //   last_echo_pitch = echo_pitch;
+  // }
+  // if (echo_note_off_ticks_remaining == 1) {
+  //   Voice *echoVoice = voice_manager.getVoice(17, echo_pitch);
+  //   echoVoice->noteOff();
+  // }
+  // if (echo_ticks_remaining > 0) {
+  //   echo_ticks_remaining--;
+  // }
 
-  if (echo_note_off_ticks_remaining > 0) {
-    echo_note_off_ticks_remaining--;
-  }
+  // if (echo_note_off_ticks_remaining > 0) {
+  //   echo_note_off_ticks_remaining--;
+  // }
 
   last_millis = millis();
 
