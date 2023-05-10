@@ -15,6 +15,7 @@ public:
   void tick();
   VoiceStatus getStatus();
 
+  signed detune_cents;
   // state management
   uint16_t frequency_cents;
   byte level;

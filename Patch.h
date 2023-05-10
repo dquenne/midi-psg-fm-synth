@@ -5,13 +5,22 @@
 #include "Lfo.h"
 #include <Arduino.h>
 
+struct PatchDelayConfig {
+  bool enable;
+  unsigned long delay_ticks;
+  signed detune_cents;
+  unsigned velocity_denominator;
+};
+
 struct Patch {
   EnvelopeShape amplitude_envelope;
   EnvelopeShape frequency_envelope;
 
   Lfo amplitude_lfo;
   Lfo frequency_lfo;
+  PatchDelayConfig delay_config;
   float velocity_scaling;
+  signed detune_cents;
 };
 
 void applyPreset(Patch *target, const Patch *preset);

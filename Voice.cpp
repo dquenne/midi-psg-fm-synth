@@ -5,6 +5,7 @@ Voice::Voice() {
   level = 0;
   pitch = 0;
   channel = 0;
+  detune_cents = 0;
   _on = false;
   _held = false;
   _patch_state.initialize();
@@ -31,7 +32,7 @@ void Voice::tick() {
   }
   _patch_state.tick();
   level = _patch_state.getLevel();
-  frequency_cents = _patch_state.getFrequencyCents();
+  frequency_cents = _patch_state.getFrequencyCents() + detune_cents;
 
   if (_patch_state.amplitude_envelope_state.getStatus() == done) {
     _on = false;

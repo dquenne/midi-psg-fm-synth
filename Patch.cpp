@@ -1,9 +1,9 @@
 #include "Patch.h"
 #include "NoteMappings.h"
 
+#define LIMIT(val, min, max) MIN(MAX(val, min), max)
 #define MIN(a, b) (a < b ? a : b)
 #define MAX(a, b) (a > b ? a : b)
-#define LIMIT(val, min, max) MIN(MAX(val, min), max)
 
 PatchState::PatchState() { _patch_set = false; }
 
@@ -44,6 +44,9 @@ void applyPreset(Patch *target, const Patch *preset) {
   applyPresetLfo(&target->amplitude_lfo, &preset->amplitude_lfo);
   applyPresetLfo(&target->frequency_lfo, &preset->frequency_lfo);
   target->velocity_scaling = preset->velocity_scaling;
+  target->delay_config.enable = preset->delay_config.enable;
+  target->delay_config.delay_ticks = preset->delay_config.delay_ticks;
+  target->delay_config.detune_cents = preset->delay_config.detune_cents;
 }
 
 void PatchState::setPreset(const Patch *preset) {
@@ -85,7 +88,7 @@ void PatchState::tick() {
 }
 
 unsigned PatchState::getFrequencyCents() {
-  return (_pitch * 100) + frequency_lfo_state.getValue();
+  return (_pitch * 100) + frequency_lfo_state.getValue() + _patch.detune_cents;
 }
 
 float velocity_center_point = 64.0f;

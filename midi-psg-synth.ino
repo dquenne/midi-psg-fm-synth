@@ -1,3 +1,5 @@
+#include "Delay.h"
+#include "MidiManager.h"
 #include "Multi.h"
 #include "NoteMappings.h"
 #include "Presets.h"
@@ -13,10 +15,6 @@
 #define LED_PIN 13
 
 MIDI_CREATE_DEFAULT_INSTANCE();
-
-byte echo_pitch = 0;
-unsigned echo_ticks_remaining = 0;
-unsigned echo_note_off_ticks_remaining = 0;
 
 /**
  * @param[in] division is the factor that 8MHz is divided by. Should be 2 or
@@ -50,31 +48,21 @@ VoiceManager voice_manager(3);
 
 Multi main_multi;
 
+MidiDelay midi_delay;
+
+MidiManager midi_manager(&voice_manager, &main_multi, &midi_delay);
+
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
-  if (NOTES_4MHZ[pitch] > 1023) {
-    return;
-  }
-  digitalWrite(LED_PIN, HIGH);
-
-  // this approach to a delay/echo is super naive and broken, but accomplishes
-  // the effect if you play notes slowly. real implementation of a delay to
-  // come after voice mapping is better fleshed out.
-  echo_pitch = pitch;
-  echo_ticks_remaining = 170;
-  Voice *voice = voice_manager.getVoice(channel, pitch);
-  voice->setPatch(&main_multi.channels[channel - 1]);
-  voice->noteOn(channel, pitch, velocity);
-
-  digitalWrite(LED_PIN, LOW);
+  midi_manager.handleNoteOn(channel, pitch, velocity);
 }
 
 void handleNoteOff(byte channel, byte pitch, byte velocity) {
-  Voice *voice = voice_manager.getExactVoice(channel, pitch);
-  voice->noteOff();
-  echo_note_off_ticks_remaining = 170;
+  midi_manager.handleNoteOff(channel, pitch, velocity);
 }
 
 void setup() {
+  midi_delay.handleNoteOn = handleNoteOn;
+  midi_delay.handleNoteOff = handleNoteOff;
   setClockOut(2);
 
   pinMode(LED_PIN, OUTPUT); // LED output
@@ -109,7 +97,6 @@ void setup() {
 }
 
 unsigned long last_millis = millis();
-byte last_echo_pitch = 0;
 
 void loop() {
   MIDI.read();
@@ -118,31 +105,10 @@ void loop() {
   while (last_millis >= millis())
     ;
 
-  // if (echo_ticks_remaining == 1) {
-
-  //   Voice *lastEchoVoice = voice_manager.getVoice(17, last_echo_pitch);
-  //   lastEchoVoice->noteOff();
-
-  //   Voice *echoVoice = voice_manager.getVoice(17, echo_pitch);
-  //   echoVoice->setPatch(PRESETS[3]);
-  //   echoVoice->noteOn(17, echo_pitch, 40);
-  //   last_echo_pitch = echo_pitch;
-  // }
-  // if (echo_note_off_ticks_remaining == 1) {
-  //   Voice *echoVoice = voice_manager.getVoice(17, echo_pitch);
-  //   echoVoice->noteOff();
-  // }
-  // if (echo_ticks_remaining > 0) {
-  //   echo_ticks_remaining--;
-  // }
-
-  // if (echo_note_off_ticks_remaining > 0) {
-  //   echo_note_off_ticks_remaining--;
-  // }
-
   last_millis = millis();
 
   voice_manager.tick();
+  midi_delay.tick();
 
   // TODO: clean up syncing from VoiceManager to actual chip tone channels
   sn76489_1.tone_channels[0].writeLevel(voice_manager.voices[0].level);
