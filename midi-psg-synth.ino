@@ -4,7 +4,6 @@
 #include "NoteMappings.h"
 #include "Presets.h"
 #include "VoiceManager.h"
-#include "notes.h"
 #include "sn76489.h"
 #include <Arduino.h>
 #include <MIDI.h>
@@ -53,11 +52,27 @@ MidiDelay midi_delay;
 MidiManager midi_manager(&voice_manager, &main_multi, &midi_delay);
 
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
-  midi_manager.handleNoteOn(channel, pitch, velocity);
+  // Arduino MIDI Library adds 1 to the channel so that it's 1-indexed, which
+  // is not ideal, and hard to keep track of.
+  byte zero_indexed_channel = channel - 1;
+
+  midi_manager.handleNoteOn(zero_indexed_channel, pitch, velocity);
 }
 
 void handleNoteOff(byte channel, byte pitch, byte velocity) {
-  midi_manager.handleNoteOff(channel, pitch, velocity);
+  // Arduino MIDI Library adds 1 to the channel so that it's 1-indexed, which
+  // is not ideal, and hard to keep track of.
+  byte zero_indexed_channel = channel - 1;
+
+  midi_manager.handleNoteOff(zero_indexed_channel, pitch, velocity);
+}
+
+void handleControlChange(byte channel, byte pitch, byte velocity) {
+  // Arduino MIDI Library adds 1 to the channel so that it's 1-indexed, which
+  // is not ideal, and hard to keep track of.
+  byte zero_indexed_channel = channel - 1;
+
+  midi_manager.handleControlChange(zero_indexed_channel, pitch, velocity);
 }
 
 void setup() {
@@ -90,6 +105,7 @@ void setup() {
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
+  MIDI.setHandleControlChange(handleControlChange);
 
   for (byte channel = 0; channel < 16; channel++) {
     applyPreset(&main_multi.channels[channel], PRESETS[channel]);

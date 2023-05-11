@@ -12,40 +12,64 @@ MidiManager::MidiManager(VoiceManager *voice_manager, Multi *active_multi,
   _delay = delay;
 }
 
+/**
+ * @param channel this must be zero indexed! in other words "MIDI channel 1" is
+ * 0, "MIDI channel 16" is 15. The channel from Arduino MIDI Library should be
+ * normalized outside this function.
+ */
 void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
+  if (velocity == 0) {
+    // per MIDI spec, noteOn with velocity=0 is equivalent to noteOff
+    handleNoteOff(channel, pitch, velocity);
+    return;
+  }
+
+  state.channels[channel].notes[pitch].velocity = velocity;
+
   if (NOTES_4MHZ[pitch] > 1023) {
     return;
   }
-  // digitalWrite(LED_PIN, HIGH);
 
   Voice *voice = _voice_manager->getVoice(channel, pitch);
-  Patch *active_patch = &_active_multi->channels[(channel - 1) % 16];
-  voice->setPatch(&_active_multi->channels[(channel - 1) % 16]);
+  Patch *active_patch = &_active_multi->channels[(channel) % 16];
+  voice->setPatch(&_active_multi->channels[(channel) % 16]);
   voice->noteOn(channel, pitch, velocity);
-  if (channel > 16) {
+  if (channel >= 16) {
 
     voice->detune_cents = active_patch->delay_config.detune_cents;
   } else {
     voice->detune_cents = 0;
   }
 
-  if (channel <= 16 && active_patch->delay_config.enable) {
+  if (_delay && channel < 16 && active_patch->delay_config.enable) {
     _delay->enqueue(midi::MidiType::NoteOn, channel + 16, pitch,
                     velocity * 0.5f, active_patch->delay_config.delay_ticks);
   }
-
-  // digitalWrite(LED_PIN, LOW);
 }
 
+/**
+ * @param channel this must be zero indexed! in other words "MIDI channel 1" is
+ * 0, "MIDI channel 16" is 15. The channel from Arduino MIDI Library should be
+ * normalized outside this function.
+ */
 void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
-  Patch *active_patch = &_active_multi->channels[(channel - 1) % 16];
+  state.channels[channel].notes[pitch].velocity = 0;
+
+  Patch *active_patch = &_active_multi->channels[(channel) % 16];
   Voice *voice = _voice_manager->getExactVoice(channel, pitch);
   voice->noteOff();
 
-  if (channel <= 16 && active_patch->delay_config.enable) {
+  if (_delay && channel < 16 && active_patch->delay_config.enable) {
     _delay->enqueue(midi::MidiType::NoteOff, channel + 16, pitch,
                     velocity * 0.5f, active_patch->delay_config.delay_ticks);
   }
 }
 
-void MidiManager::tick() { _delay->tick(); }
+/**
+ * @param channel this must be zero indexed! in other words "MIDI channel 1" is
+ * 0, "MIDI channel 16" is 15. The channel from Arduino MIDI Library should be
+ * normalized outside this function.
+ */
+void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
+  state.channels[channel].cc[cc_number] = data;
+}
