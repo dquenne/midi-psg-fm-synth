@@ -23,19 +23,20 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
     handleNoteOff(channel, pitch, velocity);
     return;
   }
-
-  state.channels[channel].notes[pitch].velocity = velocity;
+  if (channel < 16) {
+    state.channels[channel].notes[pitch].velocity = velocity;
+  }
 
   if (NOTES_4MHZ[pitch] > 1023) {
     return;
   }
 
   Voice *voice = _voice_manager->getVoice(channel, pitch);
-  Patch *active_patch = &_active_multi->channels[(channel) % 16];
-  voice->setPatch(&_active_multi->channels[(channel) % 16]);
+  Patch *active_patch = &_active_multi->channels[channel % 16];
+  voice->setPatch(&_active_multi->channels[channel % 16]);
   voice->noteOn(channel, pitch, velocity);
-  if (channel >= 16) {
 
+  if (channel >= 16) {
     voice->detune_cents = active_patch->delay_config.detune_cents;
   } else {
     voice->detune_cents = 0;
@@ -53,9 +54,11 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
  * normalized outside this function.
  */
 void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
-  state.channels[channel].notes[pitch].velocity = 0;
+  if (channel < 16) {
+    state.channels[channel].notes[pitch].velocity = 0;
+  }
 
-  Patch *active_patch = &_active_multi->channels[(channel) % 16];
+  Patch *active_patch = &_active_multi->channels[channel % 16];
   Voice *voice = _voice_manager->getExactVoice(channel, pitch);
   voice->noteOff();
 
