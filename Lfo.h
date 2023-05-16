@@ -8,14 +8,15 @@ enum LfoWaveform { triangle, square, positive_square };
 typedef struct Lfo Lfo;
 
 struct Lfo {
-  bool lfo_enable;
-  unsigned start_delay_ticks;
-  unsigned off_ticks;
+  /** If depth is negative, the wave will be flipped. If depth is zero, LFO is
+   * disabled. */
+  signed depth = 0;
+  /** LFO wavelength in number of ticks. */
+  unsigned wavelength = 100;
+  LfoWaveform waveform = triangle;
 
-  /** If depth is negative, the wave will be flipped.*/
-  signed depth;
-  unsigned wavelength;
-  LfoWaveform waveform;
+  unsigned start_delay_ticks = 0;
+  unsigned off_ticks = 0;
 };
 
 class LfoState {

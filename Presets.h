@@ -3,8 +3,8 @@
 static const Patch PRESET_PATCH_0 = {
     {{{7, 60}, {9, 25}, {3, 200}}, true, 1, 1, 2, 2},
     {},
-    {false, 0, 0, 0, 0, triangle},
-    {true, 1600, 100, 16, 170, triangle},
+    {0, 0, triangle, 0, 0},
+    {16, 170, triangle, 1600, 100},
     {true, 170, 6, 3},
     0.4f,
 };
@@ -12,8 +12,8 @@ static const Patch PRESET_PATCH_0 = {
 static const Patch PRESET_PATCH_1 = {
     {{{10, 80}, {12, 60}, {3, 400}}, true, 1, 1, 0, 2},
     {},
-    {false, 0, 0, 0, 0, triangle},
-    {true, 500, 100, 24, 160, triangle},
+    {0, 0, triangle, 0, 0},
+    {24, 160, triangle, 500, 100},
     {false, 0, 0, 0},
     0.5f,
 };
@@ -21,8 +21,8 @@ static const Patch PRESET_PATCH_1 = {
 static const Patch PRESET_PATCH_2 = {
     {{{13, 80}, {9, 50}, {6, 25}, {3, 600}, {1, 600}}, true, 2, 2, 3, 4},
     {},
-    {false, 0, 0, 0, 0, triangle},
-    {true, 500, 100, 20, 170, triangle},
+    {0, 0, triangle, 0, 0},
+    {20, 170, triangle, 500, 100},
     {false, 0, 0, 0},
     0.5f,
     0,
@@ -31,13 +31,13 @@ static const Patch PRESET_PATCH_2 = {
 static const Patch PRESET_PATCH_3 = {
     {{{11, 60}, {8, 50}, {6, 25}, {3, 200}}, true, 2, 2, 3, 3},
     {},
-    {false, 0, 0, 0, 0, triangle},
-    {true, 600, 100, 10, 170, triangle},
+    {0, 0, triangle, 0, 0},
+    {10, 170, triangle, 600, 100},
     {true, 10, 20, 1},
     0.5f,
 };
 
-extern const Patch *PRESETS[] = {
+const Patch *PRESETS[] = {
     &PRESET_PATCH_0, &PRESET_PATCH_1, &PRESET_PATCH_2, &PRESET_PATCH_3,
     &PRESET_PATCH_0, &PRESET_PATCH_1, &PRESET_PATCH_2, &PRESET_PATCH_3,
     &PRESET_PATCH_0, &PRESET_PATCH_1, &PRESET_PATCH_2, &PRESET_PATCH_3,

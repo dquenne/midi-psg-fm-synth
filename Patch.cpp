@@ -29,13 +29,13 @@ void applyPresetEnvelope(EnvelopeShape *target, const EnvelopeShape *preset) {
   target->on_off_jump_to_step = preset->on_off_jump_to_step;
   target->end_after_step = preset->end_after_step;
 }
+
 void applyPresetLfo(Lfo *target, const Lfo *preset) {
-  target->lfo_enable = preset->lfo_enable;
+  target->depth = preset->depth;
+  target->waveform = preset->waveform;
+  target->wavelength = preset->wavelength;
   target->start_delay_ticks = preset->start_delay_ticks;
   target->off_ticks = preset->off_ticks;
-  target->depth = preset->depth;
-  target->wavelength = preset->wavelength;
-  target->waveform = preset->waveform;
 }
 
 void applyPreset(Patch *target, const Patch *preset) {

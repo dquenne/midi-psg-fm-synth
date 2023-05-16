@@ -106,9 +106,10 @@ signed getLfoMagnitude(LfoWaveform waveform, unsigned wavelength,
  * @returns Returns the amount of cents to be added to frequency
  */
 signed LfoState::getValue() {
-  if (!_active) {
+  if (!_active || _lfo->depth == 0) {
     return 0;
   }
+
   // number from 0-1024, where 1024 is 100%
   signed start_delay_coefficient = 1024;
   if (_ticks_passed < _lfo->start_delay_ticks) {
