@@ -5,7 +5,7 @@
 
 // Keeping this relatively small because too many changes in attenuation seems
 // to sound bad on the SN76489AN - there's clicks every time it changes.
-#define MAX_ENVELOPE_STEP_COUNT 8
+#define MAX_ENVELOPE_STEP_COUNT 5
 
 typedef struct EnvelopeStep EnvelopeStep;
 
@@ -19,14 +19,16 @@ typedef struct EnvelopeShape EnvelopeShape;
 struct EnvelopeShape {
   EnvelopeStep steps[MAX_ENVELOPE_STEP_COUNT];
 
-  bool loop_enable;
-  unsigned loop_after_step;
-  unsigned loop_to_step;
+  bool loop_enable = true;
+
+  // default values have 2 attack stages, 1 hold stage, and 2 release stages
+  unsigned loop_after_step = 2;
+  unsigned loop_to_step = 2;
 
   /* if 0, continue from current step without jump */
-  unsigned on_off_jump_to_step;
+  unsigned on_off_jump_to_step = 3;
 
-  unsigned end_after_step;
+  unsigned end_after_step = 4;
 };
 
 enum EnvelopeStatus { not_started, active, done };

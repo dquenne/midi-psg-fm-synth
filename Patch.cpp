@@ -20,9 +20,6 @@ void applyPresetEnvelope(EnvelopeShape *target, const EnvelopeShape *preset) {
   target->steps[2] = preset->steps[2];
   target->steps[3] = preset->steps[3];
   target->steps[4] = preset->steps[4];
-  target->steps[5] = preset->steps[5];
-  target->steps[6] = preset->steps[6];
-  target->steps[7] = preset->steps[7];
   target->loop_enable = preset->loop_enable;
   target->loop_after_step = preset->loop_after_step;
   target->loop_to_step = preset->loop_to_step;
