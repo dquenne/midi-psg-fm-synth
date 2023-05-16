@@ -11,7 +11,10 @@ Voice::Voice() {
   _patch_state.initialize();
 }
 
-void Voice::setPatch(const Patch *patch) { _patch_state.setPreset(patch); }
+void Voice::setPatch(const Patch *patch, bool is_delay) {
+  _patch_state.setPreset(patch, is_delay);
+  _is_delay = is_delay;
+}
 
 void Voice::noteOn(byte _channel, byte _pitch, byte velocity) {
   pitch = _pitch;

@@ -8,7 +8,7 @@
 struct PatchDelayConfig {
   bool enable;
   unsigned long delay_ticks;
-  signed detune_cents;
+  byte detune_cents;
   unsigned velocity_denominator;
 };
 
@@ -28,7 +28,7 @@ void applyPreset(Patch *target, const Patch *preset);
 class PatchState {
 public:
   PatchState();
-  void setPreset(const Patch *preset);
+  void setPreset(const Patch *preset, bool is_delay);
   void initialize();
   void noteOn(byte pitch, byte velocity);
   void noteOff();
@@ -48,6 +48,7 @@ private:
   byte _pitch;
   byte _velocity;
   bool _held;
+  bool _is_delay;
 };
 
 extern const Patch *PRESET_PATCHES[];

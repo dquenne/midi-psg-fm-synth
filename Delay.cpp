@@ -42,12 +42,10 @@ void MidiDelay::_send(MessageQueueNode *node) {
 
   switch (messageType) {
   case (midi::MidiType::NoteOn):
-    // digitalWrite(13, HIGH);
-    handleNoteOn(channel, data1, data2);
+    handleNoteOn(channel + 1, data1, data2);
     return;
   case (midi::MidiType::NoteOff):
-    handleNoteOff(channel, data1, data2);
-    // digitalWrite(13, LOW);
+    handleNoteOff(channel + 1, data1, data2);
     return;
   }
 }

@@ -33,14 +33,10 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
 
   Voice *voice = _voice_manager->getVoice(channel, pitch);
   Patch *active_patch = &_active_multi->channels[channel % 16];
-  voice->setPatch(&_active_multi->channels[channel % 16]);
+  voice->setPatch(&_active_multi->channels[channel % 16], channel >= 16);
   voice->noteOn(channel, pitch, velocity);
 
-  if (channel >= 16) {
-    voice->detune_cents = active_patch->delay_config.detune_cents;
-  } else {
-    voice->detune_cents = 0;
-  }
+  voice->detune_cents = 0;
 
   if (_delay && channel < 16 && active_patch->delay_config.enable) {
     _delay->enqueue(midi::MidiType::NoteOn, channel + 16, pitch,

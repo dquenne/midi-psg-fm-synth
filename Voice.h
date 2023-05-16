@@ -9,13 +9,13 @@ enum VoiceStatus { voice_off, voice_held, voice_decay };
 class Voice {
 public:
   Voice();
-  void setPatch(const Patch *patch);
+  void setPatch(const Patch *patch, bool is_delay);
   void noteOn(byte _channel, byte _pitch, byte velocity);
   void noteOff();
   void tick();
   VoiceStatus getStatus();
 
-  signed detune_cents;
+  byte detune_cents;
   // state management
   uint16_t frequency_cents;
   byte level;
@@ -26,6 +26,7 @@ private:
   PatchState _patch_state;
   bool _on;
   bool _held;
+  bool _is_delay;
 };
 
 #endif
