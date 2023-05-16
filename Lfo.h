@@ -10,13 +10,13 @@ typedef struct Lfo Lfo;
 struct Lfo {
   /** If depth is negative, the wave will be flipped. If depth is zero, LFO is
    * disabled. */
-  signed depth = 0;
+  signed depth;
   /** LFO wavelength in number of ticks. */
-  unsigned wavelength = 100;
-  LfoWaveform waveform = triangle;
+  unsigned wavelength;
+  LfoWaveform waveform;
 
-  unsigned start_delay_ticks = 0;
-  unsigned off_ticks = 0;
+  unsigned start_delay_ticks;
+  unsigned off_ticks;
 };
 
 class LfoState {
