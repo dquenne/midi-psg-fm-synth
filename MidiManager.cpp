@@ -71,4 +71,10 @@ void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
  */
 void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
   state.channels[channel].cc[cc_number] = data;
+
+  switch (cc_number) {
+  case 94:
+    _active_multi->channels[channel].detune_cents = signed(data) - 63;
+    return;
+  }
 }
