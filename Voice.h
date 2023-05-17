@@ -9,7 +9,7 @@ enum VoiceStatus { voice_off, voice_held, voice_decay };
 class Voice {
 public:
   Voice();
-  void setPatch(const Patch *patch, bool is_delay);
+  void setPatch(Patch *patch, bool is_delay);
   void noteOn(byte _channel, byte _pitch, byte velocity);
   void noteOff();
   void tick();

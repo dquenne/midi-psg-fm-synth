@@ -36,7 +36,7 @@ enum EnvelopeStatus { not_started, active, done };
 class EnvelopeState {
 public:
   EnvelopeState();
-  void setEnvelopeShape(EnvelopeShape *envelope_shape);
+  void setEnvelopeShape(const EnvelopeShape *envelope_shape);
   void initialize();
   void start();
   void noteOff();

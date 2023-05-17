@@ -11,8 +11,8 @@ Voice::Voice() {
   _patch_state.initialize();
 }
 
-void Voice::setPatch(const Patch *patch, bool is_delay) {
-  _patch_state.setPreset(patch, is_delay);
+void Voice::setPatch(Patch *patch, bool is_delay) {
+  _patch_state.setPatch(patch, is_delay);
   _is_delay = is_delay;
 }
 

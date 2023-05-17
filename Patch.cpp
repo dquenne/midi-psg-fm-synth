@@ -49,13 +49,13 @@ void applyPreset(Patch *target, const Patch *preset) {
   target->delay_config.detune_cents = preset->delay_config.detune_cents;
 }
 
-void PatchState::setPreset(const Patch *preset, bool is_delay) {
-  applyPreset(&_patch, preset);
+void PatchState::setPatch(const Patch *patch, bool is_delay) {
+  _patch = patch;
   initialize();
-  amplitude_envelope_state.setEnvelopeShape(&_patch.amplitude_envelope);
-  frequency_envelope_state.setEnvelopeShape(&_patch.frequency_envelope);
-  amplitude_lfo_state.setLfo(&_patch.amplitude_lfo);
-  frequency_lfo_state.setLfo(&_patch.frequency_lfo);
+  amplitude_envelope_state.setEnvelopeShape(&_patch->amplitude_envelope);
+  frequency_envelope_state.setEnvelopeShape(&_patch->frequency_envelope);
+  amplitude_lfo_state.setLfo(&_patch->amplitude_lfo);
+  frequency_lfo_state.setLfo(&_patch->frequency_lfo);
   _patch_set = true;
   _is_delay = is_delay;
 }
@@ -90,9 +90,9 @@ void PatchState::tick() {
 
 unsigned PatchState::getFrequencyCents() {
   unsigned frequency_cents =
-      (_pitch * 100) + frequency_lfo_state.getValue() + _patch.detune_cents;
+      (_pitch * 100) + frequency_lfo_state.getValue() + _patch->detune_cents;
   if (_is_delay) {
-    return frequency_cents + _patch.delay_config.detune_cents;
+    return frequency_cents + _patch->delay_config.detune_cents;
   }
   return frequency_cents;
 }
@@ -105,7 +105,7 @@ unsigned PatchState::getLevel() {
   }
   signed envelope_amplitude = amplitude_envelope_state.getValue();
   float velocity_scale = (float(_velocity - velocity_center_point) *
-                          _patch.velocity_scaling / velocity_center_point) +
+                          _patch->velocity_scaling / velocity_center_point) +
                          1.0f;
 
   return LIMIT(int(float(envelope_amplitude) * velocity_scale), 0, 15);

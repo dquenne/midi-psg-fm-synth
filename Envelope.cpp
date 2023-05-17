@@ -1,7 +1,7 @@
 #include "Envelope.h"
 
 EnvelopeState::EnvelopeState() { initialize(); }
-void EnvelopeState::setEnvelopeShape(EnvelopeShape *envelope_shape) {
+void EnvelopeState::setEnvelopeShape(const EnvelopeShape *envelope_shape) {
   _envelope_shape = envelope_shape;
   initialize();
 }

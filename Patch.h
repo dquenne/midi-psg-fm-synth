@@ -28,7 +28,7 @@ void applyPreset(Patch *target, const Patch *preset);
 class PatchState {
 public:
   PatchState();
-  void setPreset(const Patch *preset, bool is_delay);
+  void setPatch(const Patch *patch, bool is_delay);
   void initialize();
   void noteOn(byte pitch, byte velocity);
   void noteOff();
@@ -44,7 +44,7 @@ public:
 
 private:
   bool _patch_set;
-  Patch _patch;
+  const Patch *_patch;
   byte _pitch;
   byte _velocity;
   bool _held;
