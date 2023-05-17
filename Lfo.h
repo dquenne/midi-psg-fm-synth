@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-enum LfoWaveform { triangle, square, positive_square };
+enum LfoWaveform { triangle, square, positive_square, none };
 
 typedef struct Lfo Lfo;
 

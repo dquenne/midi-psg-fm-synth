@@ -5,7 +5,7 @@ static const Patch PRESET_PATCH_0 = {
     {},
     {0, 0, triangle, 0, 0},
     {16, 170, triangle, 1600, 100},
-    {true, 170, 6, 3},
+    {true, 100, 16, 3},
     0.4f,
 };
 
@@ -19,7 +19,7 @@ static const Patch PRESET_PATCH_1 = {
 };
 
 static const Patch PRESET_PATCH_2 = {
-    {{{13, 80}, {9, 50}, {6, 25}, {3, 600}, {1, 600}}, true, 2, 2, 3, 4},
+    {{{13, 80}, {9, 50}, {6, 25}, {3, 400}, {1, 400}}, true, 2, 2, 3, 4},
     {},
     {0, 0, triangle, 0, 0},
     {20, 170, triangle, 500, 100},
@@ -33,7 +33,7 @@ static const Patch PRESET_PATCH_3 = {
     {},
     {0, 0, triangle, 0, 0},
     {10, 170, triangle, 600, 100},
-    {true, 10, 20, 1},
+    {true, 140, 6, 2},
     0.5f,
 };
 

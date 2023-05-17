@@ -10,6 +10,9 @@
 typedef struct EnvelopeStep EnvelopeStep;
 
 struct EnvelopeStep {
+  /** Amplitude value between 0 and 15, inclusive, where 0 is silent and 15 is
+   * maximum loudness.
+   */
   unsigned value;
   unsigned hold_ticks;
 };

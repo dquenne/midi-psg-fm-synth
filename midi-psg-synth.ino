@@ -110,6 +110,8 @@ void setup() {
   for (byte channel = 0; channel < 16; channel++) {
     applyPreset(&main_multi.channels[channel], PRESETS[channel]);
   }
+  applyPreset(&main_multi.channels[4], PRESETS[2]);
+  applyPreset(&main_multi.channels[1], PRESETS[3]);
 }
 
 unsigned long last_millis = millis();
