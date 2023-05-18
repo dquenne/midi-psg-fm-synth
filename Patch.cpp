@@ -108,6 +108,12 @@ unsigned PatchState::getLevel() {
     return 0;
   }
   signed envelope_amplitude = amplitude_envelope_state.getValue();
+
+  // positive velocity scaling should never bring it louder than 0
+  if (envelope_amplitude == 0) {
+    return 0;
+  }
+
   signed velocity_attenuation =
       (signed(_patch->velocity_config.velocity_center) - _velocity) /
       _patch->velocity_config.interval;
