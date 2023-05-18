@@ -5,6 +5,18 @@
 #include "Lfo.h"
 #include <Arduino.h>
 
+struct PatchVelocityConfig {
+  /** What velocity has no attenuation applied. This is typically 64 or 72. */
+  unsigned velocity_center;
+  /** At what velocity difference is the attenuation changed. A smaller number
+   * means a smaller change in velocity will have a more dramatic effect.
+   * e.g. if interval=16, then we have:
+   * attentuation = (actual_velocity - velocity_center) / interval
+   * so for every 16 lower than velocity_center, attenuation is increased by 1.
+   */
+  signed interval;
+};
+
 struct PatchDelayConfig {
   bool enable;
   unsigned long delay_ticks;
@@ -20,7 +32,7 @@ struct Patch {
   Lfo amplitude_lfo;
   Lfo frequency_lfo;
   PatchDelayConfig delay_config;
-  float velocity_scaling;
+  PatchVelocityConfig velocity_config;
   signed detune_cents;
 };
 

@@ -46,7 +46,9 @@ void applyPreset(Patch *target, const Patch *preset) {
   applyPresetEnvelope(&target->frequency_envelope, &preset->frequency_envelope);
   applyPresetLfo(&target->amplitude_lfo, &preset->amplitude_lfo);
   applyPresetLfo(&target->frequency_lfo, &preset->frequency_lfo);
-  target->velocity_scaling = preset->velocity_scaling;
+  target->velocity_config.velocity_center =
+      preset->velocity_config.velocity_center;
+  target->velocity_config.interval = preset->velocity_config.interval;
   target->delay_config.enable = preset->delay_config.enable;
   target->delay_config.delay_ticks = preset->delay_config.delay_ticks;
   target->delay_config.detune_cents = preset->delay_config.detune_cents;
@@ -101,19 +103,17 @@ unsigned PatchState::getFrequencyCents() {
   return frequency_cents;
 }
 
-float velocity_center_point = 64.0f;
-
 unsigned PatchState::getLevel() {
   if (!isActive()) {
     return 0;
   }
   signed envelope_amplitude = amplitude_envelope_state.getValue();
-  float velocity_scale = (float(_velocity - velocity_center_point) *
-                          _patch->velocity_scaling / velocity_center_point) +
-                         1.0f;
+  signed velocity_attenuation =
+      (signed(_patch->velocity_config.velocity_center) - _velocity) /
+      _patch->velocity_config.interval;
 
   unsigned scaled_level =
-      LIMIT(int(float(envelope_amplitude) * velocity_scale), 0, 15);
+      LIMIT(envelope_amplitude - velocity_attenuation, 0, 15);
   if (_is_delay) {
     return FLOOR_MINUS(scaled_level, _patch->delay_config.attenuation);
   }
