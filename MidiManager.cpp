@@ -66,51 +66,64 @@ void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
 
 void applyControlChange(Patch *patch, byte cc_number, byte data) {
   switch (cc_number) {
+  // envelopes
   case 70:
     patch->amplitude_envelope.steps[0].value = data >> 3;
-    return;
+    break;
   case 72:
     patch->amplitude_envelope.steps[1].value = data >> 3;
-    return;
+    break;
   case 73:
     patch->amplitude_envelope.steps[2].value = data >> 3;
-    return;
+    break;
   case 75:
     patch->amplitude_envelope.steps[3].value = data >> 3;
-    return;
+    break;
   case 76:
     patch->amplitude_envelope.steps[4].value = data >> 3;
-    return;
+    break;
   case 77:
     patch->amplitude_envelope.steps[0].hold_ticks = data << 2;
-    return;
+    break;
   case 78:
     patch->amplitude_envelope.steps[1].hold_ticks = data << 2;
-    return;
+    break;
   case 79:
     patch->amplitude_envelope.steps[2].hold_ticks = data << 2;
-    return;
+    break;
   case 80:
     patch->amplitude_envelope.steps[3].hold_ticks = data << 2;
-    return;
+    break;
   case 81:
     patch->amplitude_envelope.steps[4].hold_ticks = data << 2;
-    return;
+    break;
+  // frequency LFO
   case 84:
     patch->frequency_lfo.depth = data << 1;
-    return;
+    break;
   case 85:
-    patch->frequency_lfo.wavelength = ((128 / (data + 1)) << 5) + 50;
-    return;
+    patch->frequency_lfo.wavelength = ((128 / (data + 1)) << 4) + 80;
+    break;
   case 86:
     patch->frequency_lfo.waveform = LfoWaveform(data >> 5);
-    return;
+    break;
   case 87:
     patch->frequency_lfo.start_delay_ticks = data << 4;
-    return;
+    break;
+  // delay voice
+  case 91:
+    patch->delay_config.attenuation = 15 - (data >> 3);
+    break;
+  case 93:
+    patch->delay_config.detune_cents = data - 63;
+    break;
+  case 95:
+    patch->delay_config.delay_ticks = data << 2;
+    break;
+  // voice-level parameters
   case 94:
     patch->detune_cents = data - 63;
-    return;
+    break;
   }
 }
 
