@@ -99,16 +99,16 @@ void applyControlChange(Patch *patch, byte cc_number, byte data) {
     break;
   // frequency LFO
   case 84:
-    patch->frequency_lfo.depth = data << 1;
+    patch->frequency_lfo.depth = data;
     break;
   case 85:
-    patch->frequency_lfo.wavelength = ((128 / (data + 1)) << 4) + 80;
+    patch->frequency_lfo.wavelength = (int(128 / (data + 1)) << 4) + 80;
     break;
   case 86:
     patch->frequency_lfo.waveform = LfoWaveform(data >> 5);
     break;
   case 87:
-    patch->frequency_lfo.start_delay_ticks = data << 4;
+    patch->frequency_lfo.start_delay_ticks = (0 + data) << 4;
     break;
   // delay voice
   case 91:
