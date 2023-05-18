@@ -8,8 +8,9 @@
 struct PatchDelayConfig {
   bool enable;
   unsigned long delay_ticks;
-  byte detune_cents;
-  unsigned velocity_denominator;
+  signed detune_cents;
+  /** Number from 0-15 to be subtracked from loudness. */
+  unsigned attenuation;
 };
 
 struct Patch {

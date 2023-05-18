@@ -5,6 +5,9 @@
 #define MIN(a, b) (a < b ? a : b)
 #define MAX(a, b) (a > b ? a : b)
 
+/** a - b, except never go lower than 0 (for unsigned values) */
+#define FLOOR_MINUS(a, b) (a < b ? 0 : a - b)
+
 PatchState::PatchState() {
   _patch_set = false;
   _is_delay = false;
@@ -47,6 +50,7 @@ void applyPreset(Patch *target, const Patch *preset) {
   target->delay_config.enable = preset->delay_config.enable;
   target->delay_config.delay_ticks = preset->delay_config.delay_ticks;
   target->delay_config.detune_cents = preset->delay_config.detune_cents;
+  target->delay_config.attenuation = preset->delay_config.attenuation;
 }
 
 void PatchState::setPatch(const Patch *patch, bool is_delay) {
@@ -108,7 +112,12 @@ unsigned PatchState::getLevel() {
                           _patch->velocity_scaling / velocity_center_point) +
                          1.0f;
 
-  return LIMIT(int(float(envelope_amplitude) * velocity_scale), 0, 15);
+  unsigned scaled_level =
+      LIMIT(int(float(envelope_amplitude) * velocity_scale), 0, 15);
+  if (_is_delay) {
+    return FLOOR_MINUS(scaled_level, _patch->delay_config.attenuation);
+  }
+  return scaled_level;
 }
 
 bool PatchState::isActive() {

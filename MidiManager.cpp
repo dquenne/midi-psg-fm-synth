@@ -39,8 +39,8 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
   voice->detune_cents = 0;
 
   if (_delay && channel < 16 && active_patch->delay_config.enable) {
-    _delay->enqueue(midi::MidiType::NoteOn, channel + 16, pitch,
-                    velocity * 0.5f, active_patch->delay_config.delay_ticks);
+    _delay->enqueue(midi::MidiType::NoteOn, channel + 16, pitch, velocity,
+                    active_patch->delay_config.delay_ticks);
   }
 }
 
@@ -59,8 +59,8 @@ void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
   voice->noteOff();
 
   if (_delay && channel < 16 && active_patch->delay_config.enable) {
-    _delay->enqueue(midi::MidiType::NoteOff, channel + 16, pitch,
-                    velocity * 0.5f, active_patch->delay_config.delay_ticks);
+    _delay->enqueue(midi::MidiType::NoteOff, channel + 16, pitch, velocity,
+                    active_patch->delay_config.delay_ticks);
   }
 }
 
