@@ -34,7 +34,11 @@ Voice *VoiceManager::getVoice(byte channel, byte pitch) {
   if (channel > 15) {
     // channel 16+ is reserved for echos & chorus effects. if all voices are
     // currently being held, echo/chorus should never steal from held voices.
-    // TODO: it's okay if an echo voice steals from another live echo voice!
+    for (byte voice_index = 0; voice_index < _voice_count; voice_index++) {
+      if (voices[voice_index].channel >= 16) {
+        return &voices[voice_index];
+      }
+    }
     return &nullVoice;
   }
 
