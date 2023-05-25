@@ -3,6 +3,7 @@
 #include "Multi.h"
 #include "NoteMappings.h"
 #include "Presets.h"
+#include "Storage.h"
 #include "VoiceManager.h"
 #include "sn76489.h"
 #include <Arduino.h>
@@ -75,6 +76,20 @@ void handleControlChange(byte channel, byte pitch, byte velocity) {
   midi_manager.handleControlChange(zero_indexed_channel, pitch, velocity);
 }
 
+void initializeMainMulti() {
+  retrieveMulti(&main_multi);
+  if (main_multi._is_valid) {
+    // main_multi already recorded in memory, don't initialize
+    return;
+  }
+  for (byte channel = 0; channel < 16; channel++) {
+    applyPreset(&main_multi.channels[channel], PRESETS[channel]);
+  }
+  main_multi._is_valid = true;
+  applyPreset(&main_multi.channels[4], PRESETS[2]);
+  applyPreset(&main_multi.channels[1], PRESETS[3]);
+}
+
 void setup() {
   midi_delay.handleNoteOn = handleNoteOn;
   midi_delay.handleNoteOff = handleNoteOff;
@@ -107,11 +122,7 @@ void setup() {
   MIDI.setHandleNoteOff(handleNoteOff);
   MIDI.setHandleControlChange(handleControlChange);
 
-  for (byte channel = 0; channel < 16; channel++) {
-    applyPreset(&main_multi.channels[channel], PRESETS[channel]);
-  }
-  applyPreset(&main_multi.channels[4], PRESETS[2]);
-  applyPreset(&main_multi.channels[1], PRESETS[3]);
+  initializeMainMulti();
 }
 
 unsigned long last_millis = millis();

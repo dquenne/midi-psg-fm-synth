@@ -1,5 +1,6 @@
 #include "MidiManager.h"
 #include "NoteMappings.h"
+#include "Storage.h"
 #include <MIDI.h>
 #include <midi_Defs.h>
 
@@ -134,6 +135,11 @@ void applyControlChange(Patch *patch, byte cc_number, byte data) {
  */
 void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
   state.channels[channel].cc[cc_number] = data;
+
+  if (cc_number == 38) {
+    storeMulti(_active_multi);
+    return;
+  }
 
   applyControlChange(&_active_multi->channels[channel], cc_number, data);
 }
