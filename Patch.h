@@ -21,7 +21,7 @@ struct PatchDelayConfig {
   bool enable;
   unsigned long delay_ticks;
   signed detune_cents;
-  /** Number from 0-15 to be subtracked from loudness. */
+  /** Number from 0-15 to be subtracted from loudness. */
   unsigned attenuation;
 };
 

@@ -52,3 +52,5 @@ VoiceStatus Voice::getStatus() {
 
   return voice_off;
 }
+
+bool Voice::getIsDelay() { return _is_delay; }

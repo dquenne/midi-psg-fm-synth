@@ -14,6 +14,7 @@ public:
   void noteOff();
   void tick();
   VoiceStatus getStatus();
+  bool getIsDelay();
 
   byte detune_cents;
   // state management
