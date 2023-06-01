@@ -28,7 +28,8 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
     state.channels[channel].notes[pitch].velocity = velocity;
   }
 
-  if (NOTES_4MHZ[pitch] > 1023) {
+  // FIXME: make this dependant on target chip.
+  if (NOTES_125KHZ[pitch] > 1023) {
     return;
   }
 

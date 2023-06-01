@@ -3,7 +3,6 @@
 #include "NoteMappings.h"
 #include <Arduino.h>
 
-
 #define NOP asm volatile("nop\n\t")
 #define NOP4 asm volatile("nop\n\tnop\n\tnop\n\tnop\n\t")
 
@@ -88,27 +87,12 @@ void Sn76489ToneChannel::writeAttenuation(unsigned attenuation, bool force) {
   _last_attenuation_written = attenuation;
 }
 
-/** @returns The number to subtract from the note's N to get note + cents */
-unsigned getFrequencyNForCents(unsigned note, unsigned cents) {
-  if (note == 127) {
-    return NOTES_4MHZ[127];
-  }
-  // the difference in units of N between note and its next highest note
-  unsigned n_diff = NOTES_4MHZ[note] - NOTES_4MHZ[note + 1];
-
-  return (n_diff * cents) / 100;
-}
-
 /**
  * @param frequency_cents is the number of cents from MIDI note 0, in other
  * words it is 100 * midi_note + offset_cents.
  */
 void Sn76489ToneChannel::writePitch(unsigned frequency_cents) {
-  unsigned note = frequency_cents / 100;
-  unsigned cents = frequency_cents % 100;
-
-  unsigned frequency_n = NOTES_4MHZ[note] - getFrequencyNForCents(note, cents);
-  writeFrequencyN(frequency_n);
+  writeFrequencyN(getFrequencyN(frequency_cents, NOTES_125KHZ));
 }
 
 /**

@@ -1,7 +1,11 @@
 #ifndef NoteMappings_h
 #define NoteMappings_h
 
-const static unsigned NOTES_4MHZ[] = {
+// notes used for SN76489 clocked at 4MHz, i.e.
+// F = 4,000,000 / (32 * N)
+//   =  125,000  /    N
+// note: N is a 10-bit integer for SN76489, so max allowed value is 1023
+const static unsigned NOTES_125KHZ[] = {
     15281, 14434, 13617, 12860, 12136, 11457, 10813, 10204, 9630, 9091, 8579,
     8101,  7645,  7217,  6812,  6427,  6068,  5726,  5407,  5102, 4815, 4545,
     4290,  4049,  3823,  3608,  3405,  3214,  3034,  2864,  2703, 2551, 2408,
@@ -15,5 +19,12 @@ const static unsigned NOTES_4MHZ[] = {
     27,    25,    24,    22,    21,    20,    19,    18,    17,   16,   15,
     14,    13,    13,    12,    11,    11,    10,
 };
+
+/** @returns The number to subtract from the note's N to get note + cents */
+unsigned getFrequencyNForCents(unsigned note, unsigned cents,
+                               const unsigned note_mappings[128]);
+
+unsigned getFrequencyN(unsigned frequency_cents,
+                       const unsigned note_mappings[128]);
 
 #endif
