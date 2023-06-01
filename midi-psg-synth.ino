@@ -1,3 +1,4 @@
+#include "Chip.h"
 #include "Delay.h"
 #include "MidiManager.h"
 #include "Multi.h"
@@ -42,7 +43,7 @@ void setClockOut(unsigned division) {
     ;
 }
 
-Sn76489Instance sn76489_1(2);
+Chip *sound_chip = new Sn76489Instance(2);
 
 VoiceManager voice_manager(3);
 
@@ -112,7 +113,7 @@ void setup() {
 
   delay(1);
 
-  sn76489_1.setup();
+  sound_chip->setup();
 
   delay(10);
 
@@ -127,6 +128,11 @@ void setup() {
 
 unsigned long last_millis = millis();
 
+void syncPsgChannel(PsgChannel *channel, Voice *voice) {
+  channel->writeLevel(voice->level);
+  channel->writePitch(voice->frequency_cents);
+}
+
 void loop() {
   MIDI.read();
 
@@ -140,14 +146,7 @@ void loop() {
   midi_delay.tick();
 
   // TODO: clean up syncing from VoiceManager to actual chip tone channels
-  sn76489_1.tone_channels[0].writeLevel(voice_manager.voices[0].level);
-  sn76489_1.tone_channels[0].writePitch(
-      voice_manager.voices[0].frequency_cents);
-  sn76489_1.tone_channels[1].writeLevel(voice_manager.voices[1].level);
-  sn76489_1.tone_channels[1].writePitch(
-      voice_manager.voices[1].frequency_cents);
-  sn76489_1.tone_channels[2].writeLevel(voice_manager.voices[2].level);
-  sn76489_1.tone_channels[2].writePitch(
-      voice_manager.voices[2].frequency_cents);
-  return;
+  syncPsgChannel(sound_chip->getPsgChannel(0), &voice_manager.voices[0]);
+  syncPsgChannel(sound_chip->getPsgChannel(1), &voice_manager.voices[1]);
+  syncPsgChannel(sound_chip->getPsgChannel(2), &voice_manager.voices[2]);
 }

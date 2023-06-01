@@ -1,3 +1,4 @@
+#include "Chip.h"
 #include <Arduino.h>
 
 #define PSG_CHANNEL_TONE_1 0b00
@@ -31,7 +32,7 @@
 
 class Sn76489Instance;
 
-class Sn76489ToneChannel {
+class Sn76489ToneChannel : public PsgChannel {
 public:
   Sn76489ToneChannel();
   Sn76489ToneChannel(unsigned channel);
@@ -53,10 +54,13 @@ private:
   unsigned _last_attenuation_written;
 };
 
-class Sn76489Instance {
+class Sn76489Instance : public Chip {
 public:
   Sn76489Instance(unsigned clock_division);
   Sn76489ToneChannel tone_channels[3];
+  PsgChannel *getPsgChannel(unsigned channel_number) {
+    return &tone_channels[channel_number];
+  };
   void setup();
   void write(byte data);
 
