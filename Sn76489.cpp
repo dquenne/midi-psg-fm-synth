@@ -1,6 +1,8 @@
 #include "Sn76489.h"
+#include "IoUtils.h"
 #include "NoteMappings.h"
 #include <Arduino.h>
+
 
 #define NOP asm volatile("nop\n\t")
 #define NOP4 asm volatile("nop\n\tnop\n\tnop\n\tnop\n\t")
@@ -9,7 +11,7 @@
 
 byte buildPsgMessage(unsigned channel, bool is_attenuation, unsigned data) {
   return (
-      (0b1 << 7) | // first bit indicates this is a register write
+      (0b1 << 7) | // first bit indicates this is a latch byte
       ((channel & PSG_CHANNEL_MASK) << PSG_CHANNEL_OFFSET) |
       ((is_attenuation & PSG_REGISTER_TYPE_MASK) << PSG_REGISTER_TYPE_OFFSET) |
       (data & 0b1111));
@@ -20,7 +22,7 @@ Sn76489Instance::Sn76489Instance(unsigned clock_division) {
 }
 
 void Sn76489Instance::setup() {
-  _writeEnable(false);
+  setWriteEnable(false);
 
   tone_channels[0].setChannel(0);
   tone_channels[1].setChannel(1);
@@ -34,44 +36,11 @@ void Sn76489Instance::setup() {
   write(buildPsgMessage(3, PSG_REGISTER_TYPE_ATTENUATION, 15));
 }
 
-void Sn76489Instance::clockDelay(unsigned count) {
-  unsigned elapsed;
-  for (elapsed = 0; elapsed < count; elapsed++) {
-    NOP4;
-    NOP4;
-  }
-}
-
-uint32_t CUSTOM_PORT_OUT_MASK =
-    ((0b11 << 22) | (0b11 << 18) | (0b11 << 15) | (0b11 << 4));
-
-void Sn76489Instance::_writeEnable(bool enabled) {
-  if (enabled) {
-    digitalWrite(9, LOW);
-  } else {
-    digitalWrite(9, HIGH);
-  }
-}
-
-void Sn76489Instance::_setByteOut(byte data) {
-  int bit_pairs[] = {
-      (0b11000000 & data) >> 6,
-      (0b00110000 & data) >> 4,
-      (0b00001100 & data) >> 2,
-      0b00000011 & data,
-  };
-
-  PORT->Group[0].OUT.reg &= ~CUSTOM_PORT_OUT_MASK;
-  PORT->Group[0].OUT.reg |=
-      (CUSTOM_PORT_OUT_MASK & ((bit_pairs[0] << 22) | (bit_pairs[1] << 18) |
-                               (bit_pairs[2] << 15) | (bit_pairs[3] << 4)));
-}
-
 void Sn76489Instance::write(byte data) {
-  _setByteOut(data);
-  _writeEnable(true);
+  setByteOut(data);
+  setWriteEnable(true);
   clockDelay(40);
-  _writeEnable(false);
+  setWriteEnable(false);
 }
 Sn76489ToneChannel::Sn76489ToneChannel() {
   _channel = PSG_CHANNEL_UNSPECIFIED;

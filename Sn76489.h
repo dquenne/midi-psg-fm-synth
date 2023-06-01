@@ -65,8 +65,5 @@ public:
   void write(byte data);
 
 private:
-  void _writeEnable(bool enabled);
-  void _setByteOut(byte data);
-  void clockDelay(unsigned count);
   unsigned _clock_division;
 };
