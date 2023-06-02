@@ -13,6 +13,17 @@ void Ym2203Instance::setup() {
   psg_channels[0].setChannel(0);
   psg_channels[1].setChannel(1);
   psg_channels[2].setChannel(2);
+
+  // set internal clock division to 1/2 (normal for 4MHz clock, I think)
+  // This system is poorly documented for the YM2203, but based on them YM2149
+  // & YM2608 data sheets, by just writing one of the addresses 2D, 2E, and/or
+  // 2F, the clock division is set to:
+  //   2D:    1/4  -> F = (4MHz/4) / (16 * N)  = 125kHz/N
+  //   2D,2E: 1/2  -> F = (4MHz/2) / (16 * N)  = 250kHz/N  <- this is default
+  //   2F:    1/1  -> F =   4MHz   / (16 * N)  = 500kHz/N
+  _writeAddress(0x2d, YM2203_ADDRESS_WRITE_WAIT_SSG);
+  _writeAddress(0x2e, YM2203_ADDRESS_WRITE_WAIT_SSG);
+
   // TODO: figure out how to manage noise enable per-channel in a sane way
   write(YM2203_ADDRESS_PSG_NOISE_TONE_ENABLE, 0b11111000);
   psg_channels[0].initialize();
