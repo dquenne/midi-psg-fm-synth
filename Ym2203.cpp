@@ -86,14 +86,36 @@ void Ym2203PsgChannel::_writeFrequencyN(unsigned frequency_n) {
   unsigned n_top_4_bits = (frequency_n >> 8) & YM2203_PSG_FREQUENCY_COARSE_MASK;
   unsigned n_lower_8_bits = frequency_n & YM2203_PSG_FREQUENCY_FINE_MASK;
 
-  _ym2203_instance->write(
-      // 0x01,
-      YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->frequency_coarse,
-      n_top_4_bits);
-  _ym2203_instance->write(
-      // 0x00,
-      YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->frequency_fine,
-      n_lower_8_bits);
+  // When making a shift in frequency that flips every bit in the fine tune
+  // register, (e.g changing N from 0b0010_11111111 to 0b0011_00000000), the
+  // order that the two registers get written is important. Taking the above
+  // example, if the fine tuning register is written first, for a few clock
+  // cycles, N will dip much lower than it should (in this example it would
+  // briefly drop from 0b0010_11111111 to 0b0010_00000000). When this happens,
+  // the YM2203 often forces the tone generator to end its cycle early (per the
+  // new, much lower N -> shorter wavelength), but then as soon as the coarse
+  // pitch is written, the wavelength is back to where it should be and the tone
+  // generator resets again, causing popping sounds. If written in the reverse
+  // order, the N value will temporarily become higher briefly, not interrupting
+  // the current cycle (the cycle won't be reset if the wavelength briefly
+  // lengthens). If changing from a higher to a lower N value, the opposite is
+  // true (coarse must be written first to avoid pops), hence the two cases.
+  if (frequency_n < _last_frequency_written) {
+    _ym2203_instance->write(
+        YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->frequency_fine,
+        n_lower_8_bits);
+    _ym2203_instance->write(
+        YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->frequency_coarse,
+        n_top_4_bits);
+  } else {
+    _ym2203_instance->write(
+        YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->frequency_coarse,
+        n_top_4_bits);
+    _ym2203_instance->write(
+        YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->frequency_fine,
+        n_lower_8_bits);
+  }
+
   _last_frequency_written = frequency_n;
 }
 
