@@ -7,13 +7,15 @@
 #include "Presets.h"
 #include "Storage.h"
 #include "VoiceManager.h"
+#include "Ym2203.h"
 #include "sn76489.h"
 #include <Arduino.h>
 #include <MIDI.h>
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 
-Chip *sound_chip = new Sn76489Instance(2);
+// Chip *sound_chip = new Sn76489Instance(2);
+Chip *sound_chip = new Ym2203Instance(2);
 
 VoiceManager voice_manager(3);
 

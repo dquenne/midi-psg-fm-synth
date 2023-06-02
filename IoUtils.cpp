@@ -17,6 +17,7 @@ void setupPinModes() {
 
   // control pins
   pinMode(IO_PIN_WRITE_ENABLE, OUTPUT);
+  pinMode(IO_PIN_YM_CHIPS_A0, OUTPUT);
 }
 
 /**
@@ -55,6 +56,8 @@ void clockDelay(unsigned count) {
 
 uint32_t CUSTOM_PORT_OUT_MASK =
     ((0b11 << 22) | (0b11 << 18) | (0b11 << 15) | (0b11 << 4));
+
+void setA0(bool value) { digitalWrite(IO_PIN_YM_CHIPS_A0, value); }
 
 void setWriteEnable(bool enabled) {
   if (enabled) {
