@@ -10,8 +10,8 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
     return;
   }
 
-  Voice *voice = _psg_voice_manager.getVoice(channel, pitch);
-  Patch *active_patch = &_active_multi->channels[channel % 16];
+  PsgVoice *voice = _psg_voice_manager.getVoice(channel, pitch);
+  PsgPatch *active_patch = &_active_multi->channels[channel % 16];
   voice->setPatch(&_active_multi->channels[channel % 16], channel >= 16);
   voice->noteOn(channel, pitch, velocity);
 
@@ -19,12 +19,11 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
 }
 
 void Synth::noteOff(byte channel, byte pitch, byte velocity) {
-  Patch *active_patch = &_active_multi->channels[channel % 16];
   Voice *voice = _psg_voice_manager.getExactVoice(channel, pitch);
   voice->noteOff();
 }
 
-void syncPsgChannel(PsgChannel *channel, Voice *voice) {
+void syncPsgChannel(PsgChannel *channel, PsgVoice *voice) {
   channel->writeLevel(voice->level);
   channel->writePitch(voice->frequency_cents);
 }
@@ -32,7 +31,10 @@ void syncPsgChannel(PsgChannel *channel, Voice *voice) {
 void Synth::tick() {
   _psg_voice_manager.tick();
 
-  syncPsgChannel(_chip->getPsgChannel(0), &_psg_voice_manager.voices[0]);
-  syncPsgChannel(_chip->getPsgChannel(1), &_psg_voice_manager.voices[1]);
-  syncPsgChannel(_chip->getPsgChannel(2), &_psg_voice_manager.voices[2]);
+  syncPsgChannel(_chip->getPsgChannel(0),
+                 _psg_voice_manager.getVoiceByIndex(0));
+  syncPsgChannel(_chip->getPsgChannel(1),
+                 _psg_voice_manager.getVoiceByIndex(1));
+  syncPsgChannel(_chip->getPsgChannel(2),
+                 _psg_voice_manager.getVoiceByIndex(2));
 }

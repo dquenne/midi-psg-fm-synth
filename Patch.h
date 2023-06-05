@@ -5,7 +5,23 @@
 #include "Lfo.h"
 #include <Arduino.h>
 
-struct PatchVelocityConfig {
+class PatchState {
+public:
+  virtual void initialize() = 0;
+  virtual void noteOn(byte pitch, byte velocity) = 0;
+  virtual void noteOff() = 0;
+  virtual void tick() = 0;
+  virtual unsigned getFrequencyCents() = 0;
+  virtual bool isActive() = 0;
+
+private:
+  byte _pitch;
+  byte _velocity;
+  bool _held;
+  bool _is_delay;
+};
+
+struct PsgPatchVelocityConfig {
   /** What velocity has no attenuation applied. This is typically 64 or 72. */
   unsigned velocity_center;
   /** At what velocity difference is the attenuation changed. A smaller number
@@ -17,7 +33,7 @@ struct PatchVelocityConfig {
   signed interval;
 };
 
-struct PatchDelayConfig {
+struct PsgPatchDelayConfig {
   bool enable;
   unsigned long delay_ticks;
   signed detune_cents;
@@ -25,23 +41,23 @@ struct PatchDelayConfig {
   unsigned attenuation;
 };
 
-struct Patch {
+struct PsgPatch {
   EnvelopeShape amplitude_envelope;
   EnvelopeShape frequency_envelope;
 
   Lfo amplitude_lfo;
   Lfo frequency_lfo;
-  PatchDelayConfig delay_config;
-  PatchVelocityConfig velocity_config;
+  PsgPatchDelayConfig delay_config;
+  PsgPatchVelocityConfig velocity_config;
   signed detune_cents;
 };
 
-void applyPreset(Patch *target, const Patch *preset);
+void applyPsgPreset(PsgPatch *target, const PsgPatch *preset);
 
-class PatchState {
+class PsgPatchState : public PatchState {
 public:
-  PatchState();
-  void setPatch(const Patch *patch, bool is_delay);
+  PsgPatchState();
+  void setPatch(const PsgPatch *patch, bool is_delay);
   void initialize();
   void noteOn(byte pitch, byte velocity);
   void noteOff();
@@ -57,13 +73,11 @@ public:
 
 private:
   bool _patch_set;
-  const Patch *_patch;
+  const PsgPatch *_patch;
   byte _pitch;
   byte _velocity;
   bool _held;
   bool _is_delay;
 };
-
-extern const Patch *PRESET_PATCHES[];
 
 #endif

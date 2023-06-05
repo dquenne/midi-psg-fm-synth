@@ -8,12 +8,12 @@
 /** a - b, except never go lower than 0 (for unsigned values) */
 #define FLOOR_MINUS(a, b) (a < b ? 0 : a - b)
 
-PatchState::PatchState() {
+PsgPatchState::PsgPatchState() {
   _patch_set = false;
   _is_delay = false;
 }
 
-void PatchState::initialize() {
+void PsgPatchState::initialize() {
   amplitude_envelope_state.initialize();
   frequency_envelope_state.initialize();
   amplitude_lfo_state.initialize();
@@ -41,7 +41,7 @@ void applyPresetLfo(Lfo *target, const Lfo *preset) {
   target->off_ticks = preset->off_ticks;
 }
 
-void applyPreset(Patch *target, const Patch *preset) {
+void applyPsgPreset(PsgPatch *target, const PsgPatch *preset) {
   applyPresetEnvelope(&target->amplitude_envelope, &preset->amplitude_envelope);
   applyPresetEnvelope(&target->frequency_envelope, &preset->frequency_envelope);
   applyPresetLfo(&target->amplitude_lfo, &preset->amplitude_lfo);
@@ -55,7 +55,7 @@ void applyPreset(Patch *target, const Patch *preset) {
   target->delay_config.attenuation = preset->delay_config.attenuation;
 }
 
-void PatchState::setPatch(const Patch *patch, bool is_delay) {
+void PsgPatchState::setPatch(const PsgPatch *patch, bool is_delay) {
   _patch = patch;
   initialize();
   amplitude_envelope_state.setEnvelopeShape(&_patch->amplitude_envelope);
@@ -66,7 +66,7 @@ void PatchState::setPatch(const Patch *patch, bool is_delay) {
   _is_delay = is_delay;
 }
 
-void PatchState::noteOn(byte pitch, byte velocity) {
+void PsgPatchState::noteOn(byte pitch, byte velocity) {
   _pitch = pitch;
   _velocity = velocity;
   _held = true;
@@ -76,7 +76,7 @@ void PatchState::noteOn(byte pitch, byte velocity) {
   frequency_lfo_state.start();
 }
 
-void PatchState::noteOff() {
+void PsgPatchState::noteOff() {
   _held = false;
   amplitude_envelope_state.noteOff();
   frequency_envelope_state.noteOff();
@@ -84,7 +84,7 @@ void PatchState::noteOff() {
   frequency_lfo_state.noteOff();
 }
 
-void PatchState::tick() {
+void PsgPatchState::tick() {
   if (amplitude_envelope_state.getStatus() == done) {
     return;
   }
@@ -94,7 +94,7 @@ void PatchState::tick() {
   frequency_lfo_state.tick();
 }
 
-unsigned PatchState::getFrequencyCents() {
+unsigned PsgPatchState::getFrequencyCents() {
   unsigned frequency_cents =
       (_pitch * 100) + frequency_lfo_state.getValue() + _patch->detune_cents;
   if (_is_delay) {
@@ -103,7 +103,7 @@ unsigned PatchState::getFrequencyCents() {
   return frequency_cents;
 }
 
-unsigned PatchState::getLevel() {
+unsigned PsgPatchState::getLevel() {
   if (!isActive()) {
     return 0;
   }
@@ -126,6 +126,6 @@ unsigned PatchState::getLevel() {
   return scaled_level;
 }
 
-bool PatchState::isActive() {
+bool PsgPatchState::isActive() {
   return amplitude_envelope_state.getStatus() != done;
 }

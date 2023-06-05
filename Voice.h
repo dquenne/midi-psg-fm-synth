@@ -8,26 +8,35 @@ enum VoiceStatus { voice_off, voice_held, voice_decay };
 
 class Voice {
 public:
-  Voice();
-  void setPatch(Patch *patch, bool is_delay);
+  virtual void noteOn(byte _channel, byte _pitch, byte velocity) = 0;
+  virtual void noteOff() = 0;
+  virtual void tick() = 0;
+  VoiceStatus getStatus();
+  bool getIsDelay();
+  byte pitch;
+  byte channel;
+
+protected:
+  bool _on;
+  bool _held;
+  bool _is_delay;
+};
+
+class PsgVoice : public Voice {
+public:
+  PsgVoice();
+  void setPatch(PsgPatch *patch, bool is_delay);
   void noteOn(byte _channel, byte _pitch, byte velocity);
   void noteOff();
   void tick();
-  VoiceStatus getStatus();
-  bool getIsDelay();
 
   byte detune_cents;
   // state management
   uint16_t frequency_cents;
   byte level;
-  byte pitch;
-  byte channel;
 
-private:
-  PatchState _patch_state;
-  bool _on;
-  bool _held;
-  bool _is_delay;
+protected:
+  PsgPatchState _patch_state;
 };
 
 #endif

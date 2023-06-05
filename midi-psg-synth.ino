@@ -55,11 +55,11 @@ void initializeMainMulti() {
     return;
   }
   for (byte channel = 0; channel < 16; channel++) {
-    applyPreset(&main_multi.channels[channel], PRESETS[channel]);
+    applyPsgPreset(&main_multi.channels[channel], PRESETS[channel]);
   }
   main_multi._is_valid = true;
-  applyPreset(&main_multi.channels[4], PRESETS[2]);
-  applyPreset(&main_multi.channels[1], PRESETS[3]);
+  applyPsgPreset(&main_multi.channels[4], PRESETS[2]);
+  applyPsgPreset(&main_multi.channels[1], PRESETS[3]);
 }
 
 void setup() {

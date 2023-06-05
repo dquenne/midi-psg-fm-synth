@@ -13,7 +13,7 @@ public:
   void tick();
   void noteOn(byte _channel, byte _pitch, byte velocity);
   void noteOff(byte _channel, byte _pitch, byte velocity);
-  Patch *getPatch(unsigned channel) {
+  PsgPatch *getPatch(unsigned channel) {
     return &_active_multi->channels[channel];
   }
 
@@ -22,7 +22,7 @@ public:
   void saveMulti() { storeMulti(_active_multi); }
 
 private:
-  VoiceManager _psg_voice_manager;
+  VoiceManager<PsgVoice> _psg_voice_manager;
   Chip *_chip;
   Multi *_active_multi;
 };

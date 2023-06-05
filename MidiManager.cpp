@@ -52,7 +52,7 @@ void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
   }
 }
 
-void applyControlChange(Patch *patch, byte cc_number, byte data) {
+void applyControlChange(PsgPatch *patch, byte cc_number, byte data) {
   switch (cc_number) {
   // envelopes
   case 70:
