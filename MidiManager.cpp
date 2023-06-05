@@ -1,17 +1,9 @@
 #include "MidiManager.h"
 #include "NoteMappings.h"
-#include "Storage.h"
 #include <MIDI.h>
 #include <midi_Defs.h>
 
 #define LED_PIN 13
-
-MidiManager::MidiManager(VoiceManager *voice_manager, Multi *active_multi,
-                         MidiDelay *delay) {
-  _voice_manager = voice_manager;
-  _active_multi = active_multi;
-  _delay = delay;
-}
 
 /**
  * @param channel this must be zero indexed! in other words "MIDI channel 1" is
@@ -28,21 +20,17 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
     state.channels[channel].notes[pitch].velocity = velocity;
   }
 
-  // FIXME: make this dependant on target chip.
-  if (NOTES_125KHZ[pitch] > 1023) {
-    return;
+  if (channel >= 16) {
+    digitalWrite(13, HIGH);
+  } else {
+    digitalWrite(13, LOW);
   }
+  _synth->noteOn(channel, pitch, velocity);
 
-  Voice *voice = _voice_manager->getVoice(channel, pitch);
-  Patch *active_patch = &_active_multi->channels[channel % 16];
-  voice->setPatch(&_active_multi->channels[channel % 16], channel >= 16);
-  voice->noteOn(channel, pitch, velocity);
-
-  voice->detune_cents = 0;
-
-  if (_delay && channel < 16 && active_patch->delay_config.enable) {
+  if (_delay && channel < 16 &&
+      _synth->getPatch(channel)->delay_config.enable) {
     _delay->enqueue(midi::MidiType::NoteOn, channel + 16, pitch, velocity,
-                    active_patch->delay_config.delay_ticks);
+                    _synth->getPatch(channel % 16)->delay_config.delay_ticks);
   }
 }
 
@@ -55,14 +43,12 @@ void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
   if (channel < 16) {
     state.channels[channel].notes[pitch].velocity = 0;
   }
+  _synth->noteOff(channel, pitch, velocity);
 
-  Patch *active_patch = &_active_multi->channels[channel % 16];
-  Voice *voice = _voice_manager->getExactVoice(channel, pitch);
-  voice->noteOff();
-
-  if (_delay && channel < 16 && active_patch->delay_config.enable) {
+  if (_delay && channel < 16 &&
+      _synth->getPatch(channel % 16)->delay_config.enable) {
     _delay->enqueue(midi::MidiType::NoteOff, channel + 16, pitch, velocity,
-                    active_patch->delay_config.delay_ticks);
+                    _synth->getPatch(channel % 16)->delay_config.delay_ticks);
   }
 }
 
@@ -138,9 +124,9 @@ void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
   state.channels[channel].cc[cc_number] = data;
 
   if (cc_number == 38) {
-    storeMulti(_active_multi);
+    _synth->saveMulti();
     return;
   }
 
-  applyControlChange(&_active_multi->channels[channel], cc_number, data);
+  applyControlChange(_synth->getPatch(channel), cc_number, data);
 }

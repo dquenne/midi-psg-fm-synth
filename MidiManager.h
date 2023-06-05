@@ -3,6 +3,7 @@
 
 #include "Delay.h"
 #include "Multi.h"
+#include "Synth.h"
 #include "VoiceManager.h"
 
 typedef struct MidiNoteState MidiNoteState;
@@ -29,16 +30,14 @@ struct MidiState {
 
 class MidiManager {
 public:
-  MidiManager(VoiceManager *voice_manager, Multi *active_multi,
-              MidiDelay *delay);
+  MidiManager(Synth *synth, MidiDelay *delay) : _synth(synth), _delay(delay) {}
   void handleNoteOn(byte channel, byte pitch, byte velocity);
   void handleNoteOff(byte channel, byte pitch, byte velocity);
   void handleControlChange(byte channel, byte cc_number, byte data);
   MidiState state;
 
 private:
-  VoiceManager *_voice_manager;
-  Multi *_active_multi;
+  Synth *_synth;
   MidiDelay *_delay;
 };
 

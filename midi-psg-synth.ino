@@ -6,6 +6,7 @@
 #include "NoteMappings.h"
 #include "Presets.h"
 #include "Storage.h"
+#include "Synth.h"
 #include "VoiceManager.h"
 #include "Ym2203.h"
 #include "sn76489.h"
@@ -17,13 +18,11 @@ MIDI_CREATE_DEFAULT_INSTANCE();
 // Chip *sound_chip = new Sn76489Instance(2);
 Chip *sound_chip = new Ym2203Instance(2);
 
-VoiceManager voice_manager(3);
-
 Multi main_multi;
+Synth synth(sound_chip, &main_multi);
 
 MidiDelay midi_delay;
-
-MidiManager midi_manager(&voice_manager, &main_multi, &midi_delay);
+MidiManager midi_manager(&synth, &midi_delay);
 
 void handleNoteOn(byte channel, byte pitch, byte velocity) {
   // Arduino MIDI Library adds 1 to the channel so that it's 1-indexed, which
@@ -87,11 +86,6 @@ void setup() {
 
 unsigned long last_millis = millis();
 
-void syncPsgChannel(PsgChannel *channel, Voice *voice) {
-  channel->writeLevel(voice->level);
-  channel->writePitch(voice->frequency_cents);
-}
-
 void loop() {
   MIDI.read();
 
@@ -101,11 +95,6 @@ void loop() {
 
   last_millis = millis();
 
-  voice_manager.tick();
+  synth.tick();
   midi_delay.tick();
-
-  // TODO: clean up syncing from VoiceManager to actual chip tone channels
-  syncPsgChannel(sound_chip->getPsgChannel(0), &voice_manager.voices[0]);
-  syncPsgChannel(sound_chip->getPsgChannel(1), &voice_manager.voices[1]);
-  syncPsgChannel(sound_chip->getPsgChannel(2), &voice_manager.voices[2]);
 }
