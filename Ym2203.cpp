@@ -101,19 +101,15 @@ void Ym2203PsgChannel::_writeFrequencyN(unsigned frequency_n) {
   // lengthens). If changing from a higher to a lower N value, the opposite is
   // true (coarse must be written first to avoid pops), hence the two cases.
   if (frequency_n < _last_frequency_written) {
-    _ym2203_instance->write(
-        YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->frequency_fine,
-        n_lower_8_bits);
-    _ym2203_instance->write(
-        YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->frequency_coarse,
-        n_top_4_bits);
+    _ym2203_instance->write(YM2203_ADDRESS_PSG_FREQUENCY_FINE(_channel),
+                            n_lower_8_bits);
+    _ym2203_instance->write(YM2203_ADDRESS_PSG_FREQUENCY_COARSE(_channel),
+                            n_top_4_bits);
   } else {
-    _ym2203_instance->write(
-        YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->frequency_coarse,
-        n_top_4_bits);
-    _ym2203_instance->write(
-        YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->frequency_fine,
-        n_lower_8_bits);
+    _ym2203_instance->write(YM2203_ADDRESS_PSG_FREQUENCY_COARSE(_channel),
+                            n_top_4_bits);
+    _ym2203_instance->write(YM2203_ADDRESS_PSG_FREQUENCY_FINE(_channel),
+                            n_lower_8_bits);
   }
 
   _last_frequency_written = frequency_n;
@@ -141,7 +137,7 @@ void Ym2203PsgChannel::writeLevel(unsigned level, bool force) {
     return;
   }
 
-  _ym2203_instance->write(YM2203_PSG_ADDRESS_SETS_BY_CHANNEL[_channel]->level,
+  _ym2203_instance->write(YM2203_ADDRESS_PSG_LEVEL(_channel),
                           normalized_level & YM2203_PSG_LEVEL_MASK);
   _last_level_written = normalized_level;
 }
