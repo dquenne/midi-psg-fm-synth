@@ -4,6 +4,7 @@
 #include "Patch.h"
 
 struct Multi {
+  bool _is_valid;
   Patch channels[16];
 };
 
