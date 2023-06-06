@@ -1,20 +1,5 @@
 #include "Voice.h"
 
-// common Voice interface
-
-VoiceStatus Voice::getStatus() {
-  if (_on) {
-    if (_held) {
-      return voice_held;
-    }
-    return voice_decay;
-  }
-
-  return voice_off;
-}
-
-bool Voice::getIsDelay() { return _is_delay; }
-
 // PSG
 
 PsgVoice::PsgVoice() {
@@ -57,4 +42,16 @@ void PsgVoice::tick() {
   if (_patch_state.amplitude_envelope_state.getStatus() == done) {
     _on = false;
   }
+}
+
+// FM
+
+FmVoice::FmVoice() {
+  channel = 0;
+  frequency_cents = 0;
+  pitch = 0;
+  detune_cents = 0;
+  _on = false;
+  _held = false;
+  _patch_state.initialize();
 }

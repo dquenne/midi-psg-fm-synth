@@ -49,17 +49,25 @@ void handleControlChange(byte channel, byte pitch, byte velocity) {
 }
 
 void initializeMainMulti() {
-  retrieveMulti(&main_multi);
-  if (main_multi._is_valid) {
-    // main_multi already recorded in memory, don't initialize
-    return;
+  for (byte program = 0; program < 16; program++) {
+    // need to re-implement reading from flash here
+    applyPsgPreset(synth.getPsgPatchManager()->getPatch({program, 0}),
+                   PRESETS[program]);
+    applyFmPreset(synth.getFmPatchManager()->getPatch({program, 0}),
+                  &FM_PRESET_PATCH_0);
   }
+
   for (byte channel = 0; channel < 16; channel++) {
-    applyPsgPreset(&main_multi.channels[channel], PRESETS[channel]);
+    main_multi.channels[channel].mode = MULTI_CHANNEL_MODE_PSG;
+    main_multi.channels[channel].patch_id = {channel, 0};
   }
   main_multi._is_valid = true;
-  applyPsgPreset(&main_multi.channels[4], PRESETS[2]);
-  applyPsgPreset(&main_multi.channels[1], PRESETS[3]);
+
+  main_multi.channels[1].patch_id = {3, 0};
+  main_multi.channels[4].patch_id = {2, 0};
+
+  main_multi.channels[5].mode = MULTI_CHANNEL_MODE_FM;
+  main_multi.channels[5].patch_id = {0, 0};
 }
 
 void setup() {

@@ -129,3 +129,38 @@ unsigned PsgPatchState::getLevel() {
 bool PsgPatchState::isActive() {
   return amplitude_envelope_state.getStatus() != done;
 }
+
+void applyPresetOperator(FmOperator *target, const FmOperator *preset) {
+  target->attack_rate = preset->attack_rate;
+  target->decay_rate = preset->decay_rate;
+  target->sustain_rate = preset->sustain_rate;
+  target->release_rate = preset->release_rate;
+  target->sustain_level = preset->sustain_level;
+  target->total_level = preset->total_level;
+  target->key_scale = preset->key_scale;
+  target->multiple = preset->multiple;
+  target->detune = preset->detune;
+  target->lfo_amplitude_enable = preset->lfo_amplitude_enable;
+}
+
+void applyPresetFMCoreParameters(FmParameters *target,
+                                 const FmParameters *preset) {
+  applyPresetOperator(&target->operators[0], &preset->operators[0]);
+  applyPresetOperator(&target->operators[1], &preset->operators[1]);
+  applyPresetOperator(&target->operators[2], &preset->operators[2]);
+  applyPresetOperator(&target->operators[3], &preset->operators[3]);
+  target->panning = preset->panning;
+  target->feedback = preset->feedback;
+  target->algorithm = preset->algorithm;
+  target->lfo_amplitude_sensitivity = preset->lfo_amplitude_sensitivity;
+  target->lfo_frequency_sensitivity = preset->lfo_frequency_sensitivity;
+}
+
+void applyFmPreset(FmPatch *target, const FmPatch *preset) {
+  applyPresetFMCoreParameters(&target->core_parameters,
+                              &preset->core_parameters);
+  target->delay_config.enable = preset->delay_config.enable;
+  target->delay_config.delay_ticks = preset->delay_config.delay_ticks;
+  target->delay_config.detune_cents = preset->delay_config.detune_cents;
+  target->delay_config.attenuation = preset->delay_config.attenuation;
+}

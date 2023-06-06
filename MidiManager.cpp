@@ -27,10 +27,9 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
   }
   _synth->noteOn(channel, pitch, velocity);
 
-  if (_delay && channel < 16 &&
-      _synth->getPatch(channel)->delay_config.enable) {
+  if (_delay && channel < 16 && _synth->getDelayConfig(channel)->enable) {
     _delay->enqueue(midi::MidiType::NoteOn, channel + 16, pitch, velocity,
-                    _synth->getPatch(channel % 16)->delay_config.delay_ticks);
+                    _synth->getDelayConfig(channel % 16)->delay_ticks);
   }
 }
 
@@ -45,10 +44,9 @@ void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
   }
   _synth->noteOff(channel, pitch, velocity);
 
-  if (_delay && channel < 16 &&
-      _synth->getPatch(channel % 16)->delay_config.enable) {
+  if (_delay && channel < 16 && _synth->getDelayConfig(channel % 16)->enable) {
     _delay->enqueue(midi::MidiType::NoteOff, channel + 16, pitch, velocity,
-                    _synth->getPatch(channel % 16)->delay_config.delay_ticks);
+                    _synth->getDelayConfig(channel % 16)->delay_ticks);
   }
 }
 
@@ -123,10 +121,11 @@ void applyControlChange(PsgPatch *patch, byte cc_number, byte data) {
 void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
   state.channels[channel].cc[cc_number] = data;
 
-  if (cc_number == 38) {
-    _synth->saveMulti();
-    return;
-  }
+  // if (cc_number == 38) {
+  //   _synth->saveMulti();
+  //   return;
+  // }
 
-  applyControlChange(_synth->getPatch(channel), cc_number, data);
+  // need to move this into Synth.h to handl PSG & FM smoothly
+  // applyControlChange(_synth->getPatch(channel), cc_number, data);
 }

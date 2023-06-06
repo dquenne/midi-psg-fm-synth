@@ -2,10 +2,18 @@
 #define Multi_h
 
 #include "Patch.h"
+#include "VoiceManager.h"
+
+enum MultiChannelMode { MULTI_CHANNEL_MODE_PSG, MULTI_CHANNEL_MODE_FM };
+
+struct MultiChannel {
+  MultiChannelMode mode;
+  PatchId patch_id;
+};
 
 struct Multi {
   bool _is_valid;
-  Patch channels[16];
+  MultiChannel channels[16];
 };
 
 #endif
