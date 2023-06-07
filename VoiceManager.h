@@ -49,7 +49,8 @@ public:
     VoiceType *voice_hypothesis;
     for (byte voice_index = 0; voice_index < _voice_count; voice_index++) {
       voice_hypothesis = getVoiceByIndex(voice_index);
-      if (voice_hypothesis->pitch == note &&
+      if (voice_hypothesis->getStatus() == voice_held &&
+          voice_hypothesis->pitch == note &&
           voice_hypothesis->channel == channel) {
         return voice_hypothesis;
       }
