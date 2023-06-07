@@ -28,6 +28,7 @@ public:
 
   PatchManager<PsgPatch> *getPsgPatchManager() { return &_psg_patch_manager; }
   PatchManager<FmPatch> *getFmPatchManager() { return &_fm_patch_manager; }
+  Multi *getMulti() { return _active_multi; }
 
   // Patch and multi storage needs to be pretty fully re-thought, this is just a
   // stop-gap.

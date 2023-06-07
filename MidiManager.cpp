@@ -20,11 +20,6 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
     state.channels[channel].notes[pitch].velocity = velocity;
   }
 
-  if (channel >= 16) {
-    digitalWrite(13, HIGH);
-  } else {
-    digitalWrite(13, LOW);
-  }
   _synth->noteOn(channel, pitch, velocity);
 
   if (_delay && channel < 16 && _synth->getDelayConfig(channel)->enable) {
@@ -111,6 +106,15 @@ void applyControlChange(PsgPatch *patch, byte cc_number, byte data) {
     patch->detune_cents = data - 63;
     break;
   }
+}
+
+void MidiManager::handleProgramChange(byte channel, byte program) {
+  digitalWrite(13, HIGH);
+
+  MultiChannel *multi_channel = &_synth->getMulti()->channels[channel % 16];
+  multi_channel->patch_id = {program, multi_channel->patch_id.bank_number};
+
+  digitalWrite(13, LOW);
 }
 
 /**

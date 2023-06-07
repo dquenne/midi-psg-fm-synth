@@ -34,6 +34,7 @@ public:
   void handleNoteOn(byte channel, byte pitch, byte velocity);
   void handleNoteOff(byte channel, byte pitch, byte velocity);
   void handleControlChange(byte channel, byte cc_number, byte data);
+  void handleProgramChange(byte channel, byte program);
   MidiState state;
 
 private:

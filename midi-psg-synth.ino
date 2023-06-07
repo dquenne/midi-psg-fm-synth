@@ -48,13 +48,21 @@ void handleControlChange(byte channel, byte pitch, byte velocity) {
   midi_manager.handleControlChange(zero_indexed_channel, pitch, velocity);
 }
 
+void handleProgramChange(byte channel, byte program_number) {
+  // Arduino MIDI Library adds 1 to the channel so that it's 1-indexed, which
+  // is not ideal, and hard to keep track of.
+  byte zero_indexed_channel = channel - 1;
+
+  midi_manager.handleProgramChange(zero_indexed_channel, program_number);
+}
+
 void initializeMainMulti() {
   for (byte program = 0; program < 16; program++) {
     // need to re-implement reading from flash here
     applyPsgPreset(synth.getPsgPatchManager()->getPatch({program, 0}),
-                   PRESETS[program]);
+                   PSG_PRESETS[program]);
     applyFmPreset(synth.getFmPatchManager()->getPatch({program, 0}),
-                  &FM_PRESET_PATCH_0);
+                  FM_PRESETS[program]);
   }
 
   for (byte channel = 0; channel < 16; channel++) {
@@ -66,8 +74,11 @@ void initializeMainMulti() {
   main_multi.channels[1].patch_id = {3, 0};
   main_multi.channels[4].patch_id = {2, 0};
 
-  main_multi.channels[5].mode = MULTI_CHANNEL_MODE_FM;
-  main_multi.channels[5].patch_id = {0, 0};
+  main_multi.channels[1].mode = MULTI_CHANNEL_MODE_FM;
+  main_multi.channels[1].patch_id = {0, 0};
+
+  main_multi.channels[4].mode = MULTI_CHANNEL_MODE_FM;
+  main_multi.channels[4].patch_id = {1, 0};
 }
 
 void setup() {
@@ -88,6 +99,7 @@ void setup() {
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
   MIDI.setHandleControlChange(handleControlChange);
+  MIDI.setHandleProgramChange(handleProgramChange);
 
   initializeMainMulti();
 }
