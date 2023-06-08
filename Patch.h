@@ -93,8 +93,11 @@ private:
 
 // FM
 
+/** YM chips represent panning with a 2-bit number, where the least-significant
+ * bit is the right channel, and the most-significant bit is the left channel. 1
+ * is on, 0 is off.*/
 enum FmPanningMode : byte {
-  FM_OFF = 0b00,
+  FM_PANNING_OFF = 0b00,
   FM_PANNING_RIGHT = 0b01,
   FM_PANNING_LEFT = 0b10,
   FM_PANNING_CENTER = 0b11
@@ -102,38 +105,38 @@ enum FmPanningMode : byte {
 
 struct FmOperator {
 
-  /** Higher attack rate is faster attack.
-   * Range: 0-31 (5 bit)
-   */
+  /** Attack speed. 0-31 (5 bit): 31 is instantaneous, at 0 the sound will never
+   * start. */
   byte attack_rate;
 
-  /** Higher decay rate is faster decay.
-   * Range: 0-31 (5 bit)
-   */
+  /** 0-31 (5 bit): 31 is instantaneous, at 0 the sound will not decay from the
+   * maximum level. */
   byte decay_rate;
 
-  /** Higher sustain rate is faster decay.
-   * Range: 0-15 (4 bit)
-   */
+  /** 0-15 (4 bit): 15 is instantaneous, at 0 the sound will not decay after
+   * first decay stage. */
   byte sustain_rate;
 
-  /** Higher release rate is faster release.
-   * Range: 0-31 (5 bit)
-   */
+  /** 0-31 (5 bit): 31 is instantaneous, at 0 the sound will be held as long as
+   * possible. */
   byte release_rate;
 
-  /** This is actually attenuation. Higher value means the level between "decay"
-   * and "sustain" is lower.
-   * Range: 0-15 (4 bit)
-   */
+  /** Attenuation after decay rate. 0-15 (4 bit): 0 is no volume drop, 15 means
+   * the first decay stage will decay to silent. */
   byte sustain_level;
 
-  /** This is actually attenuation. Higher value is softer (127 = off).
-   * Range: 0-127 (7 bit) */
+  /** Attenuation. 0-127 (7 bit): 127 is off, 0 is maximum level.*/
   byte total_level;
+
   byte key_scale;
+
+  /** Note frequency multiplier. 0-15 (5-bit): At 0, this will be half the
+   * actual frequency of the note played. For 1-15 this is the multiplier times
+   * the original note's frequency.*/
   byte multiple;
+
   byte detune;
+
   bool lfo_amplitude_enable;
 };
 

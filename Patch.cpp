@@ -8,6 +8,8 @@
 /** a - b, except never go lower than 0 (for unsigned values) */
 #define FLOOR_MINUS(a, b) (a < b ? 0 : a - b)
 
+// PSG
+
 PsgPatchState::PsgPatchState() {
   _patch_set = false;
   _is_delay = false;
@@ -129,6 +131,8 @@ unsigned PsgPatchState::getLevel() {
 bool PsgPatchState::isActive() {
   return amplitude_envelope_state.getStatus() != done;
 }
+
+// FM
 
 void applyPresetOperator(FmOperator *target, const FmOperator *preset) {
   target->attack_rate = preset->attack_rate;
