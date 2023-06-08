@@ -161,6 +161,7 @@ void applyPresetFMCoreParameters(FmParameters *target,
 }
 
 void applyFmPreset(FmPatch *target, const FmPatch *preset) {
+  applyPresetLfo(&target->frequency_lfo, &preset->frequency_lfo);
   applyPresetFMCoreParameters(&target->core_parameters,
                               &preset->core_parameters);
   target->delay_config.enable = preset->delay_config.enable;

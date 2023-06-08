@@ -171,20 +171,26 @@ struct FmPatchVelocityConfig {
  * parameters like velocity sensitivity and software LFOs.
  */
 struct FmPatch {
-  PatchDelayConfig delay_config;
   FmParameters core_parameters;
   FmPatchVelocityConfig velocity_level_scaling;
+
+  /** This LFO is distinct from some YM chips' built-in global LFO and
+   * calculated at a per voice level. */
+  Lfo frequency_lfo;
+  PatchDelayConfig delay_config;
 };
 
 class FmPatchState : public PatchState {
 public:
-  void initialize() {
+  FmPatchState() {
     _is_patch_set = false;
     _is_delay = false;
   }
+  void initialize() { frequency_lfo_state.initialize(); }
   void setPatch(const FmPatch *patch, bool is_delay) {
-    initialize();
     _patch = patch;
+    initialize();
+    frequency_lfo_state.setLfo(&_patch->frequency_lfo);
     _is_patch_set = true;
     _is_delay = is_delay;
   }
@@ -193,11 +199,19 @@ public:
     _pitch = pitch;
     _velocity = velocity;
     _held = true;
+    frequency_lfo_state.start();
   }
-  void noteOff() { _held = false; }
-  void tick() {}
-  unsigned getFrequencyCents() { return 100 * _pitch; }
+  void noteOff() {
+    _held = false;
+    frequency_lfo_state.noteOff();
+  }
+  void tick() { frequency_lfo_state.tick(); }
+  unsigned getFrequencyCents() {
+    return (100 * _pitch) + frequency_lfo_state.getValue();
+  }
   bool isActive() { return _held; }
+
+  LfoState frequency_lfo_state;
 
 private:
   const FmPatch *_patch;
