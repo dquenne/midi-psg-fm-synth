@@ -18,8 +18,11 @@ public:
   virtual void setChannel(unsigned channel_number) = 0;
   virtual void initialize() = 0;
 
-  virtual void writeAllPatchParameters(const FmPatch *patch) = 0;
+  /** Write patch parameters that only change when a patch is changed (i.e. they
+   * are not controlled by things like pitch, velocity, etc.). */
+  virtual void writeStaticPatchParameters(const FmPatch *patch) = 0;
   virtual void writePitch(unsigned frequency_cents) = 0;
+  virtual void writeTotalLevel(unsigned op, unsigned total_level) = 0;
   virtual void writeKeyOnOff(bool key_on, bool force = false) = 0;
 };
 

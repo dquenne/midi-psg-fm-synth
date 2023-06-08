@@ -47,7 +47,7 @@
 #define YM2203_MAX_F_NUMBER 2047 // max possible 11-bit unsigned int
 
 #define PER_CHAN(start, channel) (start + channel)
-#define PER_OP(start, channel, operator) (start + (operator* 4) + channel)
+#define PER_OP(start, channel, op) (start + (op * 4) + channel)
 
 #define YM2203_ADDRESS_FM_SLOT_KEY_ON 0x28
 
@@ -123,7 +123,7 @@ public:
   void initialize();
 
   // write methods in terms of pitch & level
-  void writeAllPatchParameters(const FmPatch *patch);
+  void writeStaticPatchParameters(const FmPatch *patch);
   void writePitch(unsigned frequency_cents);
   void writeKeyOnOff(bool key_on, bool force = false);
 

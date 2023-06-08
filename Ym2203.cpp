@@ -228,7 +228,6 @@ void Ym2203FmChannel::writeSustainLevelRelease(unsigned op,
 void Ym2203FmChannel::_writeOperatorParameters(
     unsigned op, const FmOperator *operator_params) {
   writeDetuneMultiple(op, operator_params->detune, operator_params->multiple);
-  writeTotalLevel(op, operator_params->total_level);
   writeKeyScaleAttackRate(op, operator_params->key_scale,
                           operator_params->attack_rate);
   writeDecayRate(op, operator_params->decay_rate);
@@ -237,7 +236,7 @@ void Ym2203FmChannel::_writeOperatorParameters(
                            operator_params->release_rate);
 }
 
-void Ym2203FmChannel::writeAllPatchParameters(const FmPatch *patch) {
+void Ym2203FmChannel::writeStaticPatchParameters(const FmPatch *patch) {
   writeFeedbackAlgorithm(patch->core_parameters.feedback,
                          patch->core_parameters.algorithm);
   for (unsigned op = 0; op < 4; op++) {

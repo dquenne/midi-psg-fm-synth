@@ -134,6 +134,25 @@ bool PsgPatchState::isActive() {
 
 // FM
 
+unsigned FmPatchState::getOperatorLevel(unsigned op) {
+  if (_patch->velocity_level_scaling.operator_scaling[op] == 0) {
+    return _patch->core_parameters.operators[op].total_level;
+  }
+  signed velocity_magnitude =
+      (signed(_patch->velocity_level_scaling.velocity_center) - _velocity);
+  signed velocity_scaling = _patch->velocity_level_scaling.operator_scaling[op];
+
+  signed attenuation = velocity_magnitude * velocity_scaling / 64;
+  unsigned velocity_scaled_level = LIMIT(
+      _patch->core_parameters.operators[op].total_level + attenuation, 0, 127);
+
+  if (_is_delay) {
+    return LIMIT(velocity_scaled_level + _patch->delay_config.attenuation, 0,
+                 127);
+  }
+  return velocity_scaled_level;
+}
+
 void applyPresetOperator(FmOperator *target, const FmOperator *preset) {
   target->attack_rate = preset->attack_rate;
   target->decay_rate = preset->decay_rate;
@@ -161,6 +180,8 @@ void applyPresetFMCoreParameters(FmParameters *target,
 }
 
 void applyFmPreset(FmPatch *target, const FmPatch *preset) {
+  memcpy(&target->velocity_level_scaling, &preset->velocity_level_scaling,
+         sizeof(preset->velocity_level_scaling));
   applyPresetLfo(&target->frequency_lfo, &preset->frequency_lfo);
   applyPresetFMCoreParameters(&target->core_parameters,
                               &preset->core_parameters);

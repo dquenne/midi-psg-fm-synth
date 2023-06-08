@@ -49,9 +49,12 @@ void syncPsgChannel(PsgChannel *channel, PsgVoice *voice) {
 void syncFmChannel(FmChannel *channel, FmVoice *voice) {
   if (!voice->getIsSynced() && voice->getStatus() == voice_held) {
     channel->writeKeyOnOff(false);
-    channel->writeAllPatchParameters(voice->getPatch());
+    channel->writeStaticPatchParameters(voice->getPatch());
     voice->setSynced();
     channel->writeKeyOnOff(voice->getStatus() == voice_held);
+  }
+  for (unsigned op = 0; op < 4; op++) {
+    channel->writeTotalLevel(op, voice->operator_levels[op]);
   }
   channel->writePitch(voice->frequency_cents);
   channel->writeKeyOnOff(voice->getStatus() == voice_held);

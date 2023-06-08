@@ -156,15 +156,10 @@ struct FmPatchVelocityConfig {
    * 64 or 72. */
   unsigned velocity_center;
 
-  /** At what velocity difference is the total level for the operator changed. A
-   * smaller number means a smaller change in velocity will have a more dramatic
-   * effect. e.g. if interval=16, then we have: attentuation = (actual_velocity
-   * - velocity_center) / interval so for every 16 lower than velocity_center,
-   * attenuation is increased by 1.
-   * One value per operator.
-   * 0 = no scaling.
+  /** Degree of scaling. -64 - 63: Negative numbers mean higher velocity is
+   * quieter. 0 means no scaling is applied.
    */
-  signed interval[4];
+  signed operator_scaling[4];
 };
 
 /** A superset of the parameters sent to YMxxxx chips, including software-driven
@@ -209,6 +204,7 @@ public:
   unsigned getFrequencyCents() {
     return (100 * _pitch) + frequency_lfo_state.getValue();
   }
+  unsigned getOperatorLevel(unsigned op);
   bool isActive() { return _held; }
 
   LfoState frequency_lfo_state;

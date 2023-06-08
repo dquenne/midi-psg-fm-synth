@@ -53,6 +53,9 @@ public:
   FmVoice();
   void setPatch(FmPatch *patch, bool is_delay) {
     _patch_state.setPatch(patch, is_delay);
+    for (unsigned op = 0; op < 4; op++) {
+      operator_levels[op] = patch->core_parameters.operators[op].total_level;
+    }
     _is_delay = is_delay;
   }
   const FmPatch *getPatch() { return _patch_state.getPatch(); }
@@ -75,7 +78,11 @@ public:
   void tick() {
     _patch_state.tick();
     frequency_cents = _patch_state.getFrequencyCents() + detune_cents;
+    for (unsigned op = 0; op < 4; op++) {
+      operator_levels[op] = _patch_state.getOperatorLevel(op);
+    }
   }
+  byte operator_levels[4];
 
 private:
   FmPatchState _patch_state;
