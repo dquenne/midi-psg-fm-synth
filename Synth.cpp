@@ -2,13 +2,6 @@
 #include "NoteMappings.h"
 
 void Synth::noteOn(byte channel, byte pitch, byte velocity) {
-  // FIXME: make this dependant on target chip.
-  // if (NOTES_125KHZ[pitch] > 1023) {
-  //   return;
-  // }
-  if (NOTES_250KHZ[pitch] > 4095) {
-    return;
-  }
 
   MultiChannel *multi_channel = &_active_multi->channels[channel % 16];
   if (multi_channel->mode == MULTI_CHANNEL_MODE_FM) {
@@ -21,7 +14,13 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
     voice->detune_cents = 0;
 
   } else {
-
+    // FIXME: make this dependant on target chip.
+    // if (NOTES_125KHZ[pitch] > 1023) {
+    //   return;
+    // }
+    if (NOTES_250KHZ[pitch] > 4095) {
+      return;
+    }
     PsgPatch *active_patch = _psg_patch_manager.getPatch(
         _active_multi->channels[channel % 16].patch_id);
     PsgVoice *voice = _psg_voice_manager.getVoice(channel, pitch);
