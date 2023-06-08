@@ -111,7 +111,7 @@ void applyControlChange(PsgPatch *patch, byte cc_number, byte data) {
 void MidiManager::handleProgramChange(byte channel, byte program) {
   digitalWrite(13, HIGH);
 
-  MultiChannel *multi_channel = &_synth->getMulti()->channels[channel % 16];
+  MultiChannel *multi_channel = &_synth->getMulti()->channels[channel];
   multi_channel->patch_id = {program, multi_channel->patch_id.bank_number};
 
   digitalWrite(13, LOW);
@@ -125,11 +125,23 @@ void MidiManager::handleProgramChange(byte channel, byte program) {
 void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
   state.channels[channel].cc[cc_number] = data;
 
+  // bank select
+  if (cc_number == 0) {
+    _synth->getMulti()->channels[channel].mode =
+        (data >> 6 == 0 ? MULTI_CHANNEL_MODE_FM : MULTI_CHANNEL_MODE_PSG);
+    return;
+  }
+
   // if (cc_number == 38) {
   //   _synth->saveMulti();
   //   return;
   // }
 
-  // need to move this into Synth.h to handl PSG & FM smoothly
-  // applyControlChange(_synth->getPatch(channel), cc_number, data);
+  MultiChannel *multi_channel = &_synth->getMulti()->channels[channel];
+  if (multi_channel->mode == MULTI_CHANNEL_MODE_PSG) {
+    // need to move this into Synth.h to handl PSG & FM smoothly
+    applyControlChange(
+        _synth->getPsgPatchManager()->getPatch(multi_channel->patch_id),
+        cc_number, data);
+  }
 }
