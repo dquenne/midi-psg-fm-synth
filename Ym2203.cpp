@@ -285,15 +285,8 @@ void Ym2203FmChannel::_writeFNumberBlock(unsigned block, unsigned f_number) {
  * words it is 100 * midi_note + offset_cents.
  */
 void Ym2203FmChannel::writePitch(unsigned frequency_cents) {
-  unsigned note = frequency_cents / 100;
-  if (note < 12) {
-    // The lowest note that the YM2203 can produce is C0. This should throw an
-    // exception.
-    return;
-  }
-  unsigned block = note / 12 - 1;
-
-  _writeFNumberBlock(block, getFNumber(frequency_cents, F_NUMBERS_4MHZ));
+  _writeFNumberBlock(getBlock(frequency_cents),
+                     getFNumber(frequency_cents, F_NUMBERS_4MHZ));
 }
 
 void Ym2203FmChannel::writeKeyOnOff(bool key_on, bool force) {
