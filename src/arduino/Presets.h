@@ -2,10 +2,10 @@
 
 static const PsgPatch PRESET_PATCH_0 = {
     {true, 100, 16, 3},
-    {{{7, 60}, {9, 25}, {9, 25}, {3, 200}, {0, 0}}, true, 2, 2, 3, 4},
+    {{{5, 90}, {7, 90}, {9, 25}, {5, 200}, {3, 100}}, true, 2, 2, 3, 4},
     {},
     {0, 0, triangle, 0, 0},
-    {20, 170, triangle, 1600, 100},
+    {0, 170, triangle, 0, 0},
     {72, 12},
     0,
 };
@@ -31,8 +31,8 @@ static const PsgPatch PRESET_PATCH_2 = {
 };
 
 static const PsgPatch PRESET_PATCH_3 = {
-    {true, 140, 6, 5},
-    {{{12, 60}, {8, 50}, {6, 25}, {3, 200}, {0, 0}}, true, 2, 2, 3, 4},
+    {true, 140, 10, 3},
+    {{{12, 60}, {10, 50}, {9, 25}, {3, 200}, {0, 0}}, true, 2, 2, 3, 4},
     {},
     {0, 0, triangle, 0, 0},
     {16, 170, triangle, 600, 100},
@@ -123,7 +123,7 @@ static const FmPatch FM_PRESET_PATCH_3 = {
          {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
      }},
     {127, {0, 0, 31, 31}},
-    {0, 1000, triangle, 0, 0},
+    {18, 160, triangle, 1000, 0},
     {false},
 };
 
