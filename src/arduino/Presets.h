@@ -76,7 +76,7 @@ static const FmPatch FM_PRESET_PATCH_0 = {
       {28, 15, 5, 20, 2, 1, 0, 1, 0, false}}},
     {127, {0, 31, 0, 31}},
     {16, 170, triangle, 600, 100},
-    {true, 200, 6, 5},
+    {true, 200, 6, 7},
 };
 
 static const FmPatch FM_PRESET_PATCH_1 = {
@@ -124,7 +124,7 @@ static const FmPatch FM_PRESET_PATCH_3 = {
      }},
     {127, {0, 0, 31, 31}},
     {18, 160, triangle, 1000, 0},
-    {false},
+    {true, 300, 0, 2},
 };
 
 // organ from Ys I - Feena (PC-88)

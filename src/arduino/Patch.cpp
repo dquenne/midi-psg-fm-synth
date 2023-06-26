@@ -116,8 +116,8 @@ unsigned FmPatchState::getOperatorLevel(unsigned op) {
       _patch->core_parameters.operators[op].total_level + attenuation, 0, 127);
 
   if (_is_delay) {
-    return LIMIT(velocity_scaled_level + _patch->delay_config.attenuation, 0,
-                 127);
+    return LIMIT(velocity_scaled_level + _patch->delay_config.attenuation * 8,
+                 0, 127);
   }
   return velocity_scaled_level;
 }
