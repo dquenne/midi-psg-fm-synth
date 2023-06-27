@@ -108,17 +108,10 @@ enum FmPanningMode : byte {
   FM_PANNING_CENTER = 0b11
 };
 
-/**
- * Note: For YM2203, it seems like algorithm 4 has operators 3 & 4 as carriers
- * as represented here. This conflicts with the algorithms as defined in the
- * YM2608 and YM2612 manuals (which have operators 2 & 4 as carriers for
- * algorithm 4), so some work may be required to target those chips with this
- * code.
- */
 static const bool FM_CARRIERS_BY_ALGORITHM[8][4] = {
     {false, false, false, true}, {false, false, false, true},
     {false, false, false, true}, {false, false, false, true},
-    {false, false, true, true},  {false, true, true, true},
+    {false, true, false, true},  {false, true, true, true},
     {false, true, true, true},   {true, true, true, true},
 };
 

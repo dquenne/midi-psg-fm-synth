@@ -46,8 +46,10 @@
 // FM
 #define YM2203_MAX_F_NUMBER 2047 // max possible 11-bit unsigned int
 
+// operator order in memory is 1, 3, 2, 4 (or 0, 2, 1, 3 zero-indexed)
+#define OPERATOR_INDEX(op) (op == 1 ? 2 : op == 2 ? 1 : op)
 #define PER_CHAN(start, channel) (start + channel)
-#define PER_OP(start, channel, op) (start + (op * 4) + channel)
+#define PER_OP(start, channel, op) (start + (OPERATOR_INDEX(op) * 4) + channel)
 
 #define YM2203_ADDRESS_FM_SLOT_KEY_ON 0x28
 
