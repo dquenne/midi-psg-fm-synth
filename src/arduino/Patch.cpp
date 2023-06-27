@@ -8,6 +8,8 @@
 /** a - b, except never go lower than 0 (for unsigned values) */
 #define FLOOR_MINUS(a, b) (a < b ? 0 : a - b)
 
+unsigned getDelayTicks(byte delay_time) { return 4 * delay_time; }
+
 // PSG
 
 PsgPatchState::PsgPatchState() {

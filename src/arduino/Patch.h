@@ -13,12 +13,17 @@ struct PatchId {
   uint16_t bank_number; // 14-bit MIDI bank number
 };
 
+/** Convert delay time (0-127) to ticks (ms) */
+unsigned getDelayTicks(byte delay_time);
+
 struct PatchDelayConfig {
   bool enable;
-  unsigned long delay_ticks;
-  signed detune_cents;
+  /** Delay time (0-127), in increments of 4ms (0ms - 508ms). */
+  byte delay_time;
+  /** Detune in cents, from -64 to +63. */
+  int8_t detune_cents;
   /** Number from 0-15 to be subtracted from loudness. */
-  unsigned attenuation;
+  byte attenuation;
 };
 
 struct Patch {
@@ -164,16 +169,15 @@ struct FmParameters {
   FmOperator operators[4];
 };
 
-// WIP, not implemented
 struct FmPatchVelocityConfig {
   /** What velocity has no attenuation/amplification applied. This is typically
    * 64 or 72. */
-  unsigned velocity_center;
+  byte velocity_center;
 
   /** Degree of scaling. -64 - 63: Negative numbers mean higher velocity is
    * quieter. 0 means no scaling is applied.
    */
-  signed operator_scaling[4];
+  int8_t operator_scaling[4];
 };
 
 /** A superset of the parameters sent to YMxxxx chips, including software-driven

@@ -23,8 +23,9 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
   _synth->noteOn(channel, pitch, velocity);
 
   if (_delay && channel < 16 && _synth->getDelayConfig(channel)->enable) {
-    _delay->enqueue(midi::MidiType::NoteOn, channel + 16, pitch, velocity,
-                    _synth->getDelayConfig(channel % 16)->delay_ticks);
+    _delay->enqueue(
+        midi::MidiType::NoteOn, channel + 16, pitch, velocity,
+        getDelayTicks(_synth->getDelayConfig(channel % 16)->delay_time));
   }
 }
 
@@ -40,8 +41,9 @@ void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
   _synth->noteOff(channel, pitch, velocity);
 
   if (_delay && channel < 16 && _synth->getDelayConfig(channel % 16)->enable) {
-    _delay->enqueue(midi::MidiType::NoteOff, channel + 16, pitch, velocity,
-                    _synth->getDelayConfig(channel % 16)->delay_ticks);
+    _delay->enqueue(
+        midi::MidiType::NoteOff, channel + 16, pitch, velocity,
+        getDelayTicks(_synth->getDelayConfig(channel % 16)->delay_time));
   }
 }
 
@@ -89,7 +91,7 @@ void applyControlChange(PsgPatch *patch, byte cc_number, byte data) {
     patch->frequency_lfo.waveform = LfoWaveform(data >> 5);
     break;
   case 87:
-    patch->frequency_lfo.start_delay_ticks = (0 + data) << 4;
+    patch->frequency_lfo.start_delay_time = data;
     break;
   // delay voice
   case 91:
@@ -99,7 +101,7 @@ void applyControlChange(PsgPatch *patch, byte cc_number, byte data) {
     patch->delay_config.detune_cents = data - 63;
     break;
   case 95:
-    patch->delay_config.delay_ticks = data << 2;
+    patch->delay_config.delay_time = data;
     break;
   // voice-level parameters
   case 94:

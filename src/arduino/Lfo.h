@@ -47,8 +47,8 @@ struct Lfo {
   byte speed;
   LfoWaveform waveform;
 
-  unsigned start_delay_ticks;
-  unsigned off_ticks;
+  /** Delay time (0-127), in increments of 16ms (0ms - 2032ms). */
+  byte start_delay_time;
 };
 
 class LfoState {
@@ -72,6 +72,7 @@ private:
   unsigned _ticks_passed;
   unsigned _wavelength;
   unsigned _wavelength_ticks_pased;
+  unsigned _start_delay_ticks;
 };
 
 #endif

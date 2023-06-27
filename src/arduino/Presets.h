@@ -1,11 +1,11 @@
 #include "Patch.h"
 
 static const PsgPatch PRESET_PATCH_0 = {
-    {true, 100, 16, 3},
+    {true, 25, 16, 3},
     {{{5, 90}, {7, 90}, {9, 25}, {5, 200}, {3, 100}}, true, 2, 2, 3, 4},
     {},
-    {0, 0, triangle, 0, 0},
-    {0, 30, triangle, 0, 0},
+    {0, 0, triangle, 0},
+    {0, 30, triangle, 0},
     {72, 12},
     0,
 };
@@ -14,8 +14,8 @@ static const PsgPatch PRESET_PATCH_1 = {
     {false, 0, 0, 0},
     {{{10, 80}, {12, 60}, {12, 60}, {3, 400}, {0, 0}}, true, 2, 2, 3, 4},
     {},
-    {0, 0, triangle, 0, 0},
-    {10, 54, triangle, 500, 100},
+    {0, 0, triangle, 0},
+    {10, 54, triangle, 31},
     {72, 8},
     0,
 };
@@ -24,18 +24,18 @@ static const PsgPatch PRESET_PATCH_2 = {
     {false},
     {{{13, 80}, {9, 50}, {6, 25}, {3, 400}, {1, 400}}, true, 2, 2, 3, 4},
     {},
-    {0, 0, triangle, 0, 0},
-    {0, 30, triangle, 500, 100},
+    {0, 0, triangle, 0},
+    {0, 30, triangle, 31},
     {72, 8},
     0,
 };
 
 static const PsgPatch PRESET_PATCH_3 = {
-    {true, 140, 10, 3},
+    {true, 35, 10, 3},
     {{{12, 60}, {10, 50}, {9, 25}, {3, 200}, {0, 0}}, true, 2, 2, 3, 4},
     {},
-    {0, 0, triangle, 0, 0},
-    {16, 30, triangle, 600, 100},
+    {0, 0, triangle, 0},
+    {16, 30, triangle, 38},
     {72, 8},
     0,
 };
@@ -75,8 +75,8 @@ static const FmPatch FM_PRESET_PATCH_0 = {
       {28, 17, 6, 20, 2, 10, 0, 2, 0, false},
       {28, 15, 5, 20, 2, 1, 0, 1, 0, false}}},
     {127, {0, 31, 0, 31}},
-    {16, 30, triangle, 600, 100},
-    {true, 200, 6, 7},
+    {16, 30, triangle, 38},
+    {true, 50, 6, 7},
 };
 
 static const FmPatch FM_PRESET_PATCH_1 = {
@@ -90,7 +90,7 @@ static const FmPatch FM_PRESET_PATCH_1 = {
       {31, 10, 0, 8, 5, 42, 0, 2, 0, false},
       {31, 31, 0, 8, 0, 0, 0, 0, 0, false}}},
     {127, {0, 0, 0, 31}},
-    {0, 0, triangle, 0, 0},
+    {0, 0, triangle, 0},
     {false},
 };
 
@@ -105,7 +105,7 @@ static const FmPatch FM_PRESET_PATCH_2 = {
       {30, 10, 2, 0, 4, 27, 0, 7, 3, false},
       {30, 0, 0, 8, 4, 0, 0, 2, 3, false}}},
     {127, {0, 0, 0, 31}},
-    {0, 0, triangle, 0, 0},
+    {0, 0, triangle, 0},
     {false},
 };
 
@@ -123,8 +123,8 @@ static const FmPatch FM_PRESET_PATCH_3 = {
          {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
      }},
     {127, {0, 0, 31, 31}},
-    {18, 54, triangle, 1000, 0},
-    {true, 300, 0, 2},
+    {18, 54, triangle, 63},
+    {true, 75, 0, 2},
 };
 
 // organ from Ys I - Feena (PC-88)
@@ -141,7 +141,7 @@ static const FmPatch FM_PRESET_PATCH_4 = {
          {18, 0, 0, 6, 0, 0, 0, 2, 0, false},
      }},
     {127, {0, 0, 31, 31}},
-    {0, 0, triangle, 0, 0},
+    {0, 0, triangle, 0},
     {false},
 };
 
@@ -159,7 +159,7 @@ static const FmPatch FM_PRESET_PATCH_5 = {
          {22, 2, 3, 4, 2, 0, 1, 2, 1, false},
      }},
     {127, {0, 0, 31, 31}},
-    {0, 0, triangle, 0, 0},
+    {0, 0, triangle, 0},
     {false},
 };
 
@@ -177,7 +177,7 @@ static const FmPatch FM_PRESET_PATCH_6 = {
          {22, 8, 6, 7, 3, 0, 1, 1, 1, false},
      }},
     {127, {0, 0, 31, 31}},
-    {0, 0, triangle, 0, 0},
+    {0, 0, triangle, 0},
     {false},
 };
 
@@ -195,8 +195,8 @@ static const FmPatch FM_PRESET_PATCH_7 = {
          {14, 4, 0, 6, 0, 0, 1, 1, 4, false},
      }},
     {127, {0, 0, 0, 31}},
-    {16, 30, triangle, 600, 100},
-    {true, 100, 16, 10},
+    {16, 30, triangle, 38},
+    {true, 25, 16, 2},
 };
 
 const FmPatch *FM_PRESETS[] = {
