@@ -83,7 +83,7 @@ void applyControlChange(PsgPatch *patch, byte cc_number, byte data) {
     patch->frequency_lfo.depth = data;
     break;
   case 85:
-    patch->frequency_lfo.wavelength = (int(128 / (data + 1)) << 4) + 80;
+    patch->frequency_lfo.speed = data;
     break;
   case 86:
     patch->frequency_lfo.waveform = LfoWaveform(data >> 5);

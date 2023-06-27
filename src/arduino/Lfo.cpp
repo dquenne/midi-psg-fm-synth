@@ -1,5 +1,7 @@
 #include "Lfo.h"
 
+unsigned getLfoWavelength(byte speed) { return LFO_WAVELENGTHS[speed]; }
+
 LfoState::LfoState() { initialize(); }
 void LfoState::setLfo(const Lfo *lfo) {
   _lfo = lfo;
@@ -9,6 +11,7 @@ void LfoState::setLfo(const Lfo *lfo) {
 void LfoState::initialize() {
   _held = false;
   _ticks_passed = 0;
+  _wavelength = getLfoWavelength(_lfo->speed);
   _wavelength_ticks_pased = 0;
   _active = false;
 }
@@ -30,9 +33,10 @@ void LfoState::done() { _active = false; }
 
 /** tick LFO forward one frame */
 bool LfoState::tick() {
+  _wavelength = getLfoWavelength(_lfo->speed);
   _ticks_passed++;
   _wavelength_ticks_pased++;
-  if (_wavelength_ticks_pased >= _lfo->wavelength) {
+  if (_wavelength_ticks_pased >= _wavelength) {
     _wavelength_ticks_pased = 0;
   }
 
@@ -116,8 +120,8 @@ signed LfoState::getValue() {
     start_delay_coefficient = _ticks_passed * 1024 / _lfo->start_delay_ticks;
   }
 
-  signed magnitude = getLfoMagnitude(_lfo->waveform, _lfo->wavelength,
-                                     _wavelength_ticks_pased);
+  signed magnitude =
+      getLfoMagnitude(_lfo->waveform, _wavelength, _wavelength_ticks_pased);
 
   signed value = magnitude * _lfo->depth / 1024;
 
