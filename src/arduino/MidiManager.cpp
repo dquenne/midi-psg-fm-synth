@@ -47,7 +47,7 @@ void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
   }
 }
 
-void applyControlChange(PsgPatch *patch, byte cc_number, byte data) {
+void applyPsgControlChange(PsgPatch *patch, byte cc_number, byte data) {
   switch (cc_number) {
   // envelopes
   case 70:
@@ -110,6 +110,149 @@ void applyControlChange(PsgPatch *patch, byte cc_number, byte data) {
   }
 }
 
+/**
+ * Note: for many parameters (total level, and all envelope parameters), they
+ * are flipped. The patch format keeps the numbers the exact same as the values
+ * sent to the chip (e.g. if operator.total_level is 127, it is silent, if
+ * attack is 31, the sound is instantaneous), while for the CC values they are
+ * scaled to 127 and flipped to normal values (127 is the maximium total level,
+ * and 127 is the slowest possible attack rate).
+ */
+void applyFmControlChange(FmPatch *patch, byte cc_number, byte data) {
+  switch (cc_number) {
+  // voice-level parameters
+  case 14:
+    patch->core_parameters.algorithm = data >> 4;
+    break;
+  case 15:
+    patch->core_parameters.feedback = data >> 4;
+    break;
+  case 75:
+    patch->core_parameters.lfo_frequency_sensitivity = data >> 4;
+    break;
+  case 76:
+    patch->core_parameters.lfo_amplitude_sensitivity = data >> 5;
+    break;
+  case 77:
+    patch->core_parameters.panning = FmPanningMode(data >> 5);
+    break;
+
+  // per-operator parameters
+
+  // tl
+  case 16:
+  case 17:
+  case 18:
+  case 19:
+    patch->core_parameters.operators[cc_number - 16].total_level = 127 - data;
+    break;
+  // mult
+  case 20:
+  case 21:
+  case 22:
+  case 23:
+    patch->core_parameters.operators[cc_number - 20].multiple = data >> 3;
+    break;
+  // dt1
+  case 24:
+  case 25:
+  case 26:
+  case 27:
+    patch->core_parameters.operators[cc_number - 24].detune = data >> 4;
+    break;
+  // rs
+  case 39:
+  case 40:
+  case 41:
+  case 42:
+    patch->core_parameters.operators[cc_number - 39].key_scale = data >> 5;
+    break;
+  // ar
+  case 43:
+  case 44:
+  case 45:
+  case 46:
+    patch->core_parameters.operators[cc_number - 43].attack_rate =
+        (127 - data) >> 2;
+    break;
+  // d1r
+  case 47:
+  case 48:
+  case 49:
+  case 50:
+    patch->core_parameters.operators[cc_number - 47].decay_rate =
+        (127 - data) >> 2;
+    break;
+  // d2r
+  case 51:
+  case 52:
+  case 53:
+  case 54:
+    patch->core_parameters.operators[cc_number - 51].sustain_rate =
+        (127 - data) >> 2;
+    break;
+  // dl
+  case 55:
+  case 56:
+  case 57:
+  case 58:
+    patch->core_parameters.operators[cc_number - 55].sustain_level =
+        (127 - data) >> 3;
+    break;
+  // rr
+  case 59:
+  case 60:
+  case 61:
+  case 62:
+    patch->core_parameters.operators[cc_number - 59].release_rate =
+        (127 - data) >> 3;
+    break;
+  // am
+  case 70:
+  case 71:
+  case 72:
+  case 73:
+    patch->core_parameters.operators[cc_number - 70].lfo_amplitude_enable =
+        data >> 7;
+    break;
+  // TODO: implement SSG_EG
+  // case 90:
+  // case 91:
+  // case 92:
+  // case 93:
+  //   patch->core_parameters.operators[cc_number - 90].ssg_eg = data;
+  //   break;
+
+  // software frequency LFO
+  case 84:
+    patch->frequency_lfo.depth = data;
+    break;
+  case 85:
+    patch->frequency_lfo.speed = data;
+    break;
+  case 86:
+    patch->frequency_lfo.waveform = LfoWaveform(data >> 5);
+    break;
+  case 87:
+    patch->frequency_lfo.start_delay_time = data;
+    break;
+  // delay voice
+  case 91:
+    patch->delay_config.attenuation = 15 - (data >> 3);
+    break;
+  case 93:
+    patch->delay_config.detune_cents = data - 63;
+    break;
+  case 95:
+    patch->delay_config.delay_time = data;
+    break;
+  // voice-level parameters
+  case 94:
+    // patch->detune_cents = data - 63;
+    break;
+  }
+}
+
 void MidiManager::handleProgramChange(byte channel, byte program) {
   digitalWrite(13, HIGH);
 
@@ -141,9 +284,12 @@ void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
 
   MultiChannel *multi_channel = &_synth->getMulti()->channels[channel];
   if (multi_channel->mode == MULTI_CHANNEL_MODE_PSG) {
-    // need to move this into Synth.h to handl PSG & FM smoothly
-    applyControlChange(
+    applyPsgControlChange(
         _synth->getPsgPatchManager()->getPatch(multi_channel->patch_id),
+        cc_number, data);
+  } else if (multi_channel->mode == MULTI_CHANNEL_MODE_FM) {
+    applyFmControlChange(
+        _synth->getFmPatchManager()->getPatch(multi_channel->patch_id),
         cc_number, data);
   }
 }
