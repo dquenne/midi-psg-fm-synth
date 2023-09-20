@@ -12,8 +12,10 @@
 #include "sn76489.h"
 #include <Arduino.h>
 #include <MIDI.h>
+#include <USB-MIDI.h>
 
 MIDI_CREATE_DEFAULT_INSTANCE();
+USBMIDI_CREATE_INSTANCE(0, MIDI_USB);
 
 // Chip *sound_chip = new Sn76489Instance(2);
 Chip *sound_chip = new Ym2203Instance(2);
@@ -101,6 +103,10 @@ void setup() {
   MIDI.setHandleControlChange(handleControlChange);
   MIDI.setHandleProgramChange(handleProgramChange);
 
+  MIDI_USB.turnThruOff();
+  MIDI_USB.begin(MIDI_CHANNEL_OMNI);
+  MIDI_USB.setHandleControlChange(handleControlChange);
+
   initializeMainMulti();
 }
 
@@ -108,6 +114,7 @@ unsigned long last_millis = millis();
 
 void loop() {
   MIDI.read();
+  MIDI_USB.read();
 
   // silly way to get 1ms ticks
   while (last_millis >= millis())
