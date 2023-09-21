@@ -42,6 +42,14 @@ void handleNoteOff(byte channel, byte pitch, byte velocity) {
   midi_manager.handleNoteOff(zero_indexed_channel, pitch, velocity);
 }
 
+void handlePitchBend(byte channel, int bend) {
+  // Arduino MIDI Library adds 1 to the channel so that it's 1-indexed, which
+  // is not ideal, and hard to keep track of.
+  byte zero_indexed_channel = channel - 1;
+
+  midi_manager.handlePitchBend(zero_indexed_channel, bend);
+}
+
 void handleControlChange(byte channel, byte pitch, byte velocity) {
   // Arduino MIDI Library adds 1 to the channel so that it's 1-indexed, which
   // is not ideal, and hard to keep track of.
@@ -100,6 +108,7 @@ void setup() {
   MIDI.begin(MIDI_CHANNEL_OMNI);
   MIDI.setHandleNoteOn(handleNoteOn);
   MIDI.setHandleNoteOff(handleNoteOff);
+  MIDI.setHandlePitchBend(handlePitchBend);
   MIDI.setHandleControlChange(handleControlChange);
   MIDI.setHandleProgramChange(handleProgramChange);
 

@@ -47,6 +47,10 @@ void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
   }
 }
 
+void MidiManager::handlePitchBend(byte channel, int bend) {
+  _synth->setPitchBend(channel, bend);
+}
+
 void applyPsgControlChange(PsgPatch *patch, byte cc_number, byte data) {
   switch (cc_number) {
   // envelopes
@@ -256,8 +260,8 @@ void applyFmControlChange(FmPatch *patch, byte cc_number, byte data) {
 void MidiManager::handleProgramChange(byte channel, byte program) {
   digitalWrite(13, HIGH);
 
-  MultiChannel *multi_channel = &_synth->getMulti()->channels[channel];
-  multi_channel->patch_id = {program, multi_channel->patch_id.bank_number};
+  SynthChannel *synth_channel = _synth->getChannel(channel);
+  synth_channel->patch_id = {program, synth_channel->patch_id.bank_number};
 
   digitalWrite(13, LOW);
 }
@@ -272,7 +276,7 @@ void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
 
   // bank select
   if (cc_number == 0) {
-    _synth->getMulti()->channels[channel].mode =
+    _synth->getChannel(channel)->mode =
         (data >> 6 == 0 ? MULTI_CHANNEL_MODE_FM : MULTI_CHANNEL_MODE_PSG);
     return;
   }
@@ -282,14 +286,14 @@ void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
   //   return;
   // }
 
-  MultiChannel *multi_channel = &_synth->getMulti()->channels[channel];
-  if (multi_channel->mode == MULTI_CHANNEL_MODE_PSG) {
+  SynthChannel *synth_channel = _synth->getChannel(channel);
+  if (synth_channel->mode == MULTI_CHANNEL_MODE_PSG) {
     applyPsgControlChange(
-        _synth->getPsgPatchManager()->getPatch(multi_channel->patch_id),
+        _synth->getPsgPatchManager()->getPatch(synth_channel->patch_id),
         cc_number, data);
-  } else if (multi_channel->mode == MULTI_CHANNEL_MODE_FM) {
+  } else if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
     applyFmControlChange(
-        _synth->getFmPatchManager()->getPatch(multi_channel->patch_id),
+        _synth->getFmPatchManager()->getPatch(synth_channel->patch_id),
         cc_number, data);
   }
 }

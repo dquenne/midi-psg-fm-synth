@@ -3,10 +3,10 @@
 
 void Synth::noteOn(byte channel, byte pitch, byte velocity) {
 
-  MultiChannel *multi_channel = &_active_multi->channels[channel % 16];
-  if (multi_channel->mode == MULTI_CHANNEL_MODE_FM) {
-    FmPatch *active_patch = _fm_patch_manager.getPatch(
-        _active_multi->channels[channel % 16].patch_id);
+  SynthChannel *synth_channel = &_synth_channels[channel % 16];
+  if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
+    FmPatch *active_patch =
+        _fm_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
     FmVoice *voice = _fm_voice_manager.getVoice(channel, pitch);
     voice->setPatch(active_patch, channel >= 16);
     voice->noteOn(channel, pitch, velocity);
@@ -21,8 +21,8 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
     if (NOTES_250KHZ[pitch] > 4095) {
       return;
     }
-    PsgPatch *active_patch = _psg_patch_manager.getPatch(
-        _active_multi->channels[channel % 16].patch_id);
+    PsgPatch *active_patch =
+        _psg_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
     PsgVoice *voice = _psg_voice_manager.getVoice(channel, pitch);
     voice->setPatch(active_patch, channel >= 16);
     voice->noteOn(channel, pitch, velocity);
@@ -31,9 +31,13 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
   }
 }
 
+// hardcoded at 2 semitone pitch bend range for now, but could be made
+// configurable as part of the patch
+signed getPitchBendCents(int pitch_bend) { return pitch_bend * 2 * 100 / 8192; }
+
 void Synth::noteOff(byte channel, byte pitch, byte velocity) {
   Voice *voice;
-  if (_active_multi->channels[channel % 16].mode == MULTI_CHANNEL_MODE_FM) {
+  if (_synth_channels[channel % 16].mode == MULTI_CHANNEL_MODE_FM) {
     voice = _fm_voice_manager.getExactVoice(channel, pitch);
   } else {
     voice = _psg_voice_manager.getExactVoice(channel, pitch);
@@ -41,12 +45,14 @@ void Synth::noteOff(byte channel, byte pitch, byte velocity) {
   voice->noteOff();
 }
 
-void syncPsgChannel(PsgChannel *channel, PsgVoice *voice) {
+void Synth::syncPsgChannel(PsgChannel *channel, PsgVoice *voice) {
   channel->writeLevel(voice->level);
-  channel->writePitch(voice->frequency_cents);
+  channel->writePitch(
+      voice->frequency_cents +
+      getPitchBendCents(_synth_channels[voice->channel % 16].pitch_bend));
 }
 
-void syncFmChannel(FmChannel *channel, FmVoice *voice) {
+void Synth::syncFmChannel(FmChannel *channel, FmVoice *voice) {
   if (!voice->getIsSynced() && voice->getStatus() == voice_held) {
     channel->writeKeyOnOff(false);
     channel->writeStaticPatchParameters(voice->getPatch());
@@ -56,7 +62,9 @@ void syncFmChannel(FmChannel *channel, FmVoice *voice) {
   for (unsigned op = 0; op < 4; op++) {
     channel->writeTotalLevel(op, voice->operator_levels[op]);
   }
-  channel->writePitch(voice->frequency_cents);
+  channel->writePitch(
+      voice->frequency_cents +
+      getPitchBendCents(_synth_channels[voice->channel % 16].pitch_bend));
   channel->writeKeyOnOff(voice->getStatus() == voice_held);
 }
 
