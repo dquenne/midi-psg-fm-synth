@@ -16,7 +16,7 @@ struct PsgPatch {
 static const PsgPatch PRESET_PATCH_0 = {
     {true, 25, 16, 3},
     {{{11, 110}, {13, 130}, {15, 25}, {13, 200}, {11, 100}}, true, 2, 2, 3, 4},
-    {},
+    {-1, {0, 70, 0, 0}},
     {0, 0, triangle, 0},
     {0, 30, triangle, 0},
     {105, 20},
@@ -26,7 +26,7 @@ static const PsgPatch PRESET_PATCH_0 = {
 static const PsgPatch PRESET_PATCH_1 = {
     {false, 0, 0, 0},
     {{{12, 80}, {14, 60}, {15, 60}, {5, 400}, {0, 0}}, true, 2, 2, 3, 4},
-    {},
+    {0},
     {0, 0, triangle, 0},
     {10, 54, triangle, 31},
     {105, 20},
@@ -36,7 +36,7 @@ static const PsgPatch PRESET_PATCH_1 = {
 static const PsgPatch PRESET_PATCH_2 = {
     {false},
     {{{15, 80}, {11, 50}, {8, 25}, {5, 400}, {1, 400}}, true, 2, 2, 3, 4},
-    {},
+    {3, {40, 44, 64, 110}},
     {0, 0, triangle, 0},
     {0, 30, triangle, 31},
     {105, 20},
@@ -46,7 +46,7 @@ static const PsgPatch PRESET_PATCH_2 = {
 static const PsgPatch PRESET_PATCH_3 = {
     {true, 35, 10, 3},
     {{{15, 60}, {14, 50}, {13, 25}, {6, 200}, {0, 0}}, true, 2, 2, 3, 4},
-    {},
+    {2, {0, 38, 0, 00}},
     {0, 0, triangle, 0},
     {16, 30, triangle, 38},
     {105, 20},

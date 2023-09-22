@@ -30,6 +30,11 @@ struct Patch {
   PatchDelayConfig delay_config;
 };
 
+struct PitchEnvelope {
+  signed scaling;
+  AdsrEnvelopeShape envelope_shape;
+};
+
 class PatchState {
 public:
   virtual void initialize() = 0;
@@ -64,7 +69,7 @@ struct PsgPatchVelocityConfig {
 struct PsgPatch {
   PatchDelayConfig delay_config;
   EnvelopeShape amplitude_envelope;
-  EnvelopeShape frequency_envelope;
+  PitchEnvelope frequency_envelope;
 
   Lfo amplitude_lfo;
   Lfo frequency_lfo;
@@ -86,7 +91,7 @@ public:
   unsigned getLevel();
   bool isActive();
   EnvelopeState amplitude_envelope_state;
-  EnvelopeState frequency_envelope_state;
+  AdsrEnvelopeState frequency_envelope_state;
 
   LfoState amplitude_lfo_state;
   LfoState frequency_lfo_state;

@@ -5,6 +5,7 @@
 #define MIN(a, b) (a < b ? a : b)
 #define MAX(a, b) (a > b ? a : b)
 
+// TODO: extract to common utils file
 /** a - b, except never go lower than 0 (for unsigned values) */
 #define FLOOR_MINUS(a, b) (a < b ? 0 : a - b)
 
@@ -32,7 +33,8 @@ void PsgPatchState::setPatch(const PsgPatch *patch, bool is_delay) {
   _patch = patch;
   initialize();
   amplitude_envelope_state.setEnvelopeShape(&_patch->amplitude_envelope);
-  frequency_envelope_state.setEnvelopeShape(&_patch->frequency_envelope);
+  frequency_envelope_state.setEnvelopeShape(
+      &_patch->frequency_envelope.envelope_shape);
   amplitude_lfo_state.setLfo(&_patch->amplitude_lfo);
   frequency_lfo_state.setLfo(&_patch->frequency_lfo);
   _patch_set = true;
@@ -70,6 +72,11 @@ void PsgPatchState::tick() {
 unsigned PsgPatchState::getFrequencyCents() {
   unsigned frequency_cents =
       (_pitch * 100) + frequency_lfo_state.getValue() + _patch->detune_cents;
+
+  frequency_cents = (signed)frequency_cents +
+                    _patch->frequency_envelope.scaling * 25 *
+                        (signed)frequency_envelope_state.getValue() / 1024;
+
   if (_is_delay) {
     return frequency_cents + _patch->delay_config.detune_cents;
   }

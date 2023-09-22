@@ -69,20 +69,22 @@ void applyPsgControlChange(PsgPatch *patch, byte cc_number, byte data) {
   case 76:
     patch->amplitude_envelope.steps[4].value = data >> 3;
     break;
+
+  // frequency envelope
   case 77:
-    patch->amplitude_envelope.steps[0].hold_ticks = data << 2;
+    patch->frequency_envelope.scaling = data - 63;
     break;
   case 78:
-    patch->amplitude_envelope.steps[1].hold_ticks = data << 2;
+    patch->frequency_envelope.envelope_shape.attack = data;
     break;
   case 79:
-    patch->amplitude_envelope.steps[2].hold_ticks = data << 2;
+    patch->frequency_envelope.envelope_shape.decay = data;
     break;
   case 80:
-    patch->amplitude_envelope.steps[3].hold_ticks = data << 2;
+    patch->frequency_envelope.envelope_shape.sustain = data;
     break;
   case 81:
-    patch->amplitude_envelope.steps[4].hold_ticks = data << 2;
+    patch->frequency_envelope.envelope_shape.release = data;
     break;
   // frequency LFO
   case 84:
