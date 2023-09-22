@@ -1,42 +1,55 @@
 #include "Patch.h"
 
+/*
+struct PsgPatch {
+  PatchDelayConfig delay_config;
+  EnvelopeShape amplitude_envelope;
+  EnvelopeShape frequency_envelope;
+
+  Lfo amplitude_lfo;
+  Lfo frequency_lfo;
+  PsgPatchVelocityConfig velocity_config;
+  signed detune_cents;
+};
+*/
+
 static const PsgPatch PRESET_PATCH_0 = {
     {true, 25, 16, 3},
-    {{{5, 90}, {7, 90}, {9, 25}, {5, 200}, {3, 100}}, true, 2, 2, 3, 4},
+    {{{11, 110}, {13, 130}, {15, 25}, {13, 200}, {11, 100}}, true, 2, 2, 3, 4},
     {},
     {0, 0, triangle, 0},
     {0, 30, triangle, 0},
-    {72, 12},
+    {105, 20},
     0,
 };
 
 static const PsgPatch PRESET_PATCH_1 = {
     {false, 0, 0, 0},
-    {{{10, 80}, {12, 60}, {12, 60}, {3, 400}, {0, 0}}, true, 2, 2, 3, 4},
+    {{{12, 80}, {14, 60}, {15, 60}, {5, 400}, {0, 0}}, true, 2, 2, 3, 4},
     {},
     {0, 0, triangle, 0},
     {10, 54, triangle, 31},
-    {72, 8},
+    {105, 20},
     0,
 };
 
 static const PsgPatch PRESET_PATCH_2 = {
     {false},
-    {{{13, 80}, {9, 50}, {6, 25}, {3, 400}, {1, 400}}, true, 2, 2, 3, 4},
+    {{{15, 80}, {11, 50}, {8, 25}, {5, 400}, {1, 400}}, true, 2, 2, 3, 4},
     {},
     {0, 0, triangle, 0},
     {0, 30, triangle, 31},
-    {72, 8},
+    {105, 20},
     0,
 };
 
 static const PsgPatch PRESET_PATCH_3 = {
     {true, 35, 10, 3},
-    {{{12, 60}, {10, 50}, {9, 25}, {3, 200}, {0, 0}}, true, 2, 2, 3, 4},
+    {{{15, 60}, {14, 50}, {13, 25}, {6, 200}, {0, 0}}, true, 2, 2, 3, 4},
     {},
     {0, 0, triangle, 0},
     {16, 30, triangle, 38},
-    {72, 8},
+    {105, 20},
     0,
 };
 
