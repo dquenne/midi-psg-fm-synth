@@ -139,9 +139,9 @@ void applyFmControlChange(FmPatch *patch, byte cc_number, byte data) {
   case 76:
     patch->core_parameters.lfo_amplitude_sensitivity = data >> 5;
     break;
-  case 77:
-    patch->core_parameters.panning = FmPanningMode(data >> 5);
-    break;
+  // case 77:
+  //   patch->core_parameters.panning = FmPanningMode(data >> 5);
+  //   break;
 
   // per-operator parameters
 
@@ -220,6 +220,22 @@ void applyFmControlChange(FmPatch *patch, byte cc_number, byte data) {
   case 73:
     patch->core_parameters.operators[cc_number - 70].lfo_amplitude_enable =
         data >> 7;
+    break;
+  // pitch envelope
+  case 77:
+    patch->pitch_envelope.scaling = data - 63;
+    break;
+  case 78:
+    patch->pitch_envelope.envelope_shape.attack = data;
+    break;
+  case 79:
+    patch->pitch_envelope.envelope_shape.decay = data;
+    break;
+  case 80:
+    patch->pitch_envelope.envelope_shape.sustain = data;
+    break;
+  case 81:
+    patch->pitch_envelope.envelope_shape.release = data;
     break;
   // TODO: implement SSG_EG
   // case 90:
