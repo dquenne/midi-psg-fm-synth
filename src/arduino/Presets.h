@@ -88,6 +88,7 @@ static const FmPatch FM_PRESET_PATCH_0 = {
       {28, 17, 6, 20, 2, 10, 0, 2, 0, false},
       {28, 15, 5, 20, 2, 1, 0, 1, 0, false}}},
     {115, {0, 15, 0, 15}},
+    {0},
     {16, 30, triangle, 38},
     {true, 50, 6, 7},
 };
@@ -103,6 +104,7 @@ static const FmPatch FM_PRESET_PATCH_1 = {
       {31, 19, 0, 5, 5, 12, 0, 0, 7, false},
       {31, 31, 0, 8, 0, 0, 0, 0, 0, false}}},
     {115, {0, 0, 0, 15}},
+    {0},
     {0, 0, triangle, 0},
     {false},
 };
@@ -118,6 +120,7 @@ static const FmPatch FM_PRESET_PATCH_2 = {
       {31, 5, 2, 0, 8, 15, 0, 2, 1, false},
       {30, 0, 0, 8, 4, 0, 0, 2, 3, false}}},
     {115, {0, 0, 0, 15}},
+    {0},
     {0, 0, triangle, 0},
     {false},
 };
@@ -136,6 +139,7 @@ static const FmPatch FM_PRESET_PATCH_3 = {
          {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
      }},
     {115, {0, 15, 0, 15}},
+    {0},
     {18, 54, triangle, 63},
     {true, 75, 0, 2},
 };
@@ -154,6 +158,7 @@ static const FmPatch FM_PRESET_PATCH_4 = {
          {18, 0, 0, 6, 0, 0, 0, 2, 0, false},
      }},
     {115, {0, 15, 0, 15}},
+    {0},
     {0, 0, triangle, 0},
     {false},
 };
@@ -172,6 +177,7 @@ static const FmPatch FM_PRESET_PATCH_5 = {
          {22, 2, 3, 4, 2, 0, 1, 2, 1, false},
      }},
     {115, {0, 15, 0, 15}},
+    {0},
     {0, 0, triangle, 0},
     {false},
 };
@@ -190,6 +196,7 @@ static const FmPatch FM_PRESET_PATCH_6 = {
          {22, 8, 6, 7, 3, 0, 1, 1, 1, false},
      }},
     {115, {0, 15, 0, 15}},
+    {0},
     {0, 0, triangle, 0},
     {false},
 };
@@ -208,6 +215,7 @@ static const FmPatch FM_PRESET_PATCH_7 = {
          {14, 4, 0, 6, 0, 0, 1, 1, 4, false},
      }},
     {115, {0, 0, 0, 15}},
+    {-2, {0, 45, 0, 45}},
     {16, 30, triangle, 38},
     {true, 25, 16, 1},
 };
