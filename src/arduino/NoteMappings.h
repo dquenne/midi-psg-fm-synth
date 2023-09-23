@@ -45,24 +45,22 @@ const static unsigned F_NUMBERS_4MHZ[] = {
     618, 654, 693, 734, 778, 824, 873, 925, 980, 1038, 1100, 1165, 1234,
 };
 
-// PSG frequency utils
+// PSG pitch utils
 
 /** @returns The number to subtract from the note's N to get note + cents */
 unsigned getFrequencyNForCents(unsigned note, unsigned cents,
                                const unsigned note_mappings[128]);
 
-unsigned getFrequencyN(unsigned frequency_cents,
-                       const unsigned note_mappings[128]);
+unsigned getFrequencyN(unsigned pitch_cents, const unsigned note_mappings[128]);
 
-// FM frequency utils
+// FM pitch utils
 
-unsigned getBlock(unsigned frequency_cents);
+unsigned getBlock(unsigned pitch_cents);
 
 /** @returns The number to add to the note's F-Number to get note + cents */
 unsigned getFNumberForCents(unsigned note, unsigned cents,
                             const unsigned note_mappings[128]);
 
-unsigned getFNumber(unsigned frequency_cents,
-                    const unsigned note_mappings[128]);
+unsigned getFNumber(unsigned pitch_cents, const unsigned note_mappings[128]);
 
 #endif

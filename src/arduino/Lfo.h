@@ -62,9 +62,6 @@ public:
   bool tick();
   signed getValue();
 
-  unsigned amplitude_lfo_ticks_passed;
-  unsigned frequency_lfo_ticks_passed;
-
 private:
   const Lfo *_lfo;
   bool _active;

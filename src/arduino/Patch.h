@@ -41,7 +41,7 @@ public:
   virtual void noteOn(byte pitch, byte velocity) = 0;
   virtual void noteOff() = 0;
   virtual void tick() = 0;
-  virtual unsigned getFrequencyCents() = 0;
+  virtual unsigned getPitchCents() = 0;
   virtual bool isActive() = 0;
 
 protected:
@@ -69,10 +69,10 @@ struct PsgPatchVelocityConfig {
 struct PsgPatch {
   PatchDelayConfig delay_config;
   EnvelopeShape amplitude_envelope;
-  PitchEnvelope frequency_envelope;
+  PitchEnvelope pitch_envelope;
 
   Lfo amplitude_lfo;
-  Lfo frequency_lfo;
+  Lfo pitch_lfo;
   PsgPatchVelocityConfig velocity_config;
   signed detune_cents;
 };
@@ -87,14 +87,14 @@ public:
   void noteOn(byte pitch, byte velocity);
   void noteOff();
   void tick();
-  unsigned getFrequencyCents();
+  unsigned getPitchCents();
   unsigned getLevel();
   bool isActive();
   EnvelopeState amplitude_envelope_state;
-  AdsrEnvelopeState frequency_envelope_state;
+  AdsrEnvelopeState pitch_envelope_state;
 
   LfoState amplitude_lfo_state;
-  LfoState frequency_lfo_state;
+  LfoState pitch_lfo_state;
 
 private:
   bool _patch_set;
@@ -187,7 +187,7 @@ struct FmPatch {
 
   /** This LFO is distinct from some YM chips' built-in global LFO and
    * calculated at a per voice level. */
-  Lfo frequency_lfo;
+  Lfo pitch_lfo;
   PatchDelayConfig delay_config;
 };
 
@@ -197,11 +197,11 @@ public:
     _is_patch_set = false;
     _is_delay = false;
   }
-  void initialize() { frequency_lfo_state.initialize(); }
+  void initialize() { pitch_lfo_state.initialize(); }
   void setPatch(const FmPatch *patch, bool is_delay) {
     _patch = patch;
     initialize();
-    frequency_lfo_state.setLfo(&_patch->frequency_lfo);
+    pitch_lfo_state.setLfo(&_patch->pitch_lfo);
     _is_patch_set = true;
     _is_delay = is_delay;
   }
@@ -210,20 +210,20 @@ public:
     _pitch = pitch;
     _velocity = velocity;
     _held = true;
-    frequency_lfo_state.start();
+    pitch_lfo_state.start();
   }
   void noteOff() {
     _held = false;
-    frequency_lfo_state.noteOff();
+    pitch_lfo_state.noteOff();
   }
-  void tick() { frequency_lfo_state.tick(); }
-  unsigned getFrequencyCents() {
-    return (100 * _pitch) + frequency_lfo_state.getValue();
+  void tick() { pitch_lfo_state.tick(); }
+  unsigned getPitchCents() {
+    return (100 * _pitch) + pitch_lfo_state.getValue();
   }
   unsigned getOperatorLevel(unsigned op);
   bool isActive() { return _held; }
 
-  LfoState frequency_lfo_state;
+  LfoState pitch_lfo_state;
 
 private:
   const FmPatch *_patch;

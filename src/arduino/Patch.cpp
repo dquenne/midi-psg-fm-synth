@@ -20,9 +20,9 @@ PsgPatchState::PsgPatchState() {
 
 void PsgPatchState::initialize() {
   amplitude_envelope_state.initialize();
-  frequency_envelope_state.initialize();
+  pitch_envelope_state.initialize();
   amplitude_lfo_state.initialize();
-  frequency_lfo_state.initialize();
+  pitch_lfo_state.initialize();
 }
 
 void applyPsgPreset(PsgPatch *target, const PsgPatch *preset) {
@@ -33,10 +33,9 @@ void PsgPatchState::setPatch(const PsgPatch *patch, bool is_delay) {
   _patch = patch;
   initialize();
   amplitude_envelope_state.setEnvelopeShape(&_patch->amplitude_envelope);
-  frequency_envelope_state.setEnvelopeShape(
-      &_patch->frequency_envelope.envelope_shape);
+  pitch_envelope_state.setEnvelopeShape(&_patch->pitch_envelope.envelope_shape);
   amplitude_lfo_state.setLfo(&_patch->amplitude_lfo);
-  frequency_lfo_state.setLfo(&_patch->frequency_lfo);
+  pitch_lfo_state.setLfo(&_patch->pitch_lfo);
   _patch_set = true;
   _is_delay = is_delay;
 }
@@ -46,17 +45,17 @@ void PsgPatchState::noteOn(byte pitch, byte velocity) {
   _velocity = velocity;
   _held = true;
   amplitude_envelope_state.start();
-  frequency_envelope_state.start();
+  pitch_envelope_state.start();
   amplitude_lfo_state.start();
-  frequency_lfo_state.start();
+  pitch_lfo_state.start();
 }
 
 void PsgPatchState::noteOff() {
   _held = false;
   amplitude_envelope_state.noteOff();
-  frequency_envelope_state.noteOff();
+  pitch_envelope_state.noteOff();
   amplitude_lfo_state.noteOff();
-  frequency_lfo_state.noteOff();
+  pitch_lfo_state.noteOff();
 }
 
 void PsgPatchState::tick() {
@@ -64,23 +63,23 @@ void PsgPatchState::tick() {
     return;
   }
   amplitude_envelope_state.tick();
-  frequency_envelope_state.tick();
+  pitch_envelope_state.tick();
   amplitude_lfo_state.tick();
-  frequency_lfo_state.tick();
+  pitch_lfo_state.tick();
 }
 
-unsigned PsgPatchState::getFrequencyCents() {
-  unsigned frequency_cents =
-      (_pitch * 100) + frequency_lfo_state.getValue() + _patch->detune_cents;
+unsigned PsgPatchState::getPitchCents() {
+  unsigned pitch_cents =
+      (_pitch * 100) + pitch_lfo_state.getValue() + _patch->detune_cents;
 
-  frequency_cents = (signed)frequency_cents +
-                    _patch->frequency_envelope.scaling * 25 *
-                        (signed)frequency_envelope_state.getValue() / 1024;
+  pitch_cents =
+      (signed)pitch_cents + _patch->pitch_envelope.scaling * 25 *
+                                (signed)pitch_envelope_state.getValue() / 1024;
 
   if (_is_delay) {
-    return frequency_cents + _patch->delay_config.detune_cents;
+    return pitch_cents + _patch->delay_config.detune_cents;
   }
-  return frequency_cents;
+  return pitch_cents;
 }
 
 unsigned PsgPatchState::getLevel() {

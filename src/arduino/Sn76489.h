@@ -44,7 +44,7 @@ public:
   void writeAttenuation(unsigned attenuation, bool force = false);
 
   // write methods in terms of pitch & level
-  void writePitch(unsigned frequency_cents);
+  void writePitch(unsigned pitch_cents);
   void writeLevel(unsigned level, bool force = false);
 
 private:

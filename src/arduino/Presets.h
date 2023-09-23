@@ -4,10 +4,10 @@
 struct PsgPatch {
   PatchDelayConfig delay_config;
   EnvelopeShape amplitude_envelope;
-  EnvelopeShape frequency_envelope;
+  {scaling, AdsrEnvelopeShape} pitch_envelope;
 
   Lfo amplitude_lfo;
-  Lfo frequency_lfo;
+  Lfo pitch_lfo;
   PsgPatchVelocityConfig velocity_config;
   signed detune_cents;
 };
@@ -74,7 +74,7 @@ Parameter Order:
       multiple
       detune
   velocity
-  frequency LFO
+  pitch LFO
   delay
 */
 static const FmPatch FM_PRESET_PATCH_0 = {

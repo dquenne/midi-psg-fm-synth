@@ -48,7 +48,7 @@ void Synth::noteOff(byte channel, byte pitch, byte velocity) {
 void Synth::syncPsgChannel(PsgChannel *channel, PsgVoice *voice) {
   channel->writeLevel(voice->level);
   channel->writePitch(
-      voice->frequency_cents +
+      voice->pitch_cents +
       getPitchBendCents(_synth_channels[voice->channel % 16].pitch_bend));
 }
 
@@ -63,7 +63,7 @@ void Synth::syncFmChannel(FmChannel *channel, FmVoice *voice) {
     channel->writeTotalLevel(op, voice->operator_levels[op]);
   }
   channel->writePitch(
-      voice->frequency_cents +
+      voice->pitch_cents +
       getPitchBendCents(_synth_channels[voice->channel % 16].pitch_bend));
   channel->writeKeyOnOff(voice->getStatus() == voice_held);
 }

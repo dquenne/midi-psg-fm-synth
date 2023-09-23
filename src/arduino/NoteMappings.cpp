@@ -14,18 +14,18 @@ unsigned getFrequencyNForCents(unsigned note, unsigned cents,
   return (n_diff * cents) / 100;
 }
 
-unsigned getFrequencyN(unsigned frequency_cents,
+unsigned getFrequencyN(unsigned pitch_cents,
                        const unsigned note_mappings[128]) {
-  unsigned note = frequency_cents / 100;
-  unsigned cents = frequency_cents % 100;
+  unsigned note = pitch_cents / 100;
+  unsigned cents = pitch_cents % 100;
 
   return note_mappings[note] -
          getFrequencyNForCents(note, cents, note_mappings);
 }
 
 // FM
-unsigned getBlock(unsigned frequency_cents) {
-  unsigned note = frequency_cents / 100;
+unsigned getBlock(unsigned pitch_cents) {
+  unsigned note = pitch_cents / 100;
   if (note < 24) {
     return note / 12; // lowest MIDI octave handled the same as second-lowest
   }
@@ -44,10 +44,9 @@ unsigned getFNumberForCents(unsigned block_note, unsigned cents,
   return (n_diff * cents) / 100;
 }
 
-unsigned getFNumber(unsigned frequency_cents,
-                    const unsigned note_mappings[13]) {
-  unsigned block_note = (frequency_cents / 100) % 12;
-  unsigned cents = frequency_cents % 100;
+unsigned getFNumber(unsigned pitch_cents, const unsigned note_mappings[13]) {
+  unsigned block_note = (pitch_cents / 100) % 12;
+  unsigned cents = pitch_cents % 100;
 
   return note_mappings[block_note] +
          getFNumberForCents(block_note, cents, note_mappings);

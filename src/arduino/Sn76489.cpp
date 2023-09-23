@@ -88,11 +88,11 @@ void Sn76489ToneChannel::writeAttenuation(unsigned attenuation, bool force) {
 }
 
 /**
- * @param frequency_cents is the number of cents from MIDI note 0, in other
+ * @param pitch_cents is the number of cents from MIDI note 0, in other
  * words it is 100 * midi_note + offset_cents.
  */
-void Sn76489ToneChannel::writePitch(unsigned frequency_cents) {
-  writeFrequencyN(getFrequencyN(frequency_cents, NOTES_125KHZ));
+void Sn76489ToneChannel::writePitch(unsigned pitch_cents) {
+  writeFrequencyN(getFrequencyN(pitch_cents, NOTES_125KHZ));
 }
 
 /**

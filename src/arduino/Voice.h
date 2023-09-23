@@ -24,7 +24,7 @@ public:
   byte channel;
 
   byte pitch;
-  unsigned frequency_cents;
+  unsigned pitch_cents;
   byte detune_cents;
 
 protected:
@@ -77,7 +77,7 @@ public:
   bool getIsSynced() { return _trigger == false; }
   void tick() {
     _patch_state.tick();
-    frequency_cents = _patch_state.getFrequencyCents() + detune_cents;
+    pitch_cents = _patch_state.getPitchCents() + detune_cents;
     for (unsigned op = 0; op < 4; op++) {
       operator_levels[op] = _patch_state.getOperatorLevel(op);
     }

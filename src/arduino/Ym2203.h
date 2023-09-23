@@ -105,7 +105,7 @@ public:
   void initialize();
 
   // write methods in terms of pitch & level
-  void writePitch(unsigned frequency_cents);
+  void writePitch(unsigned pitch_cents);
   void writeLevel(unsigned level, bool force = false);
 
 private:
@@ -126,7 +126,7 @@ public:
 
   // write methods in terms of pitch & level
   void writeStaticPatchParameters(const FmPatch *patch);
-  void writePitch(unsigned frequency_cents);
+  void writePitch(unsigned pitch_cents);
   void writeKeyOnOff(bool key_on, bool force = false);
 
   void writeFeedbackAlgorithm(unsigned feedback, unsigned algorithm);

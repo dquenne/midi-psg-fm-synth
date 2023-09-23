@@ -70,34 +70,34 @@ void applyPsgControlChange(PsgPatch *patch, byte cc_number, byte data) {
     patch->amplitude_envelope.steps[4].value = data >> 3;
     break;
 
-  // frequency envelope
+  // pitch envelope
   case 77:
-    patch->frequency_envelope.scaling = data - 63;
+    patch->pitch_envelope.scaling = data - 63;
     break;
   case 78:
-    patch->frequency_envelope.envelope_shape.attack = data;
+    patch->pitch_envelope.envelope_shape.attack = data;
     break;
   case 79:
-    patch->frequency_envelope.envelope_shape.decay = data;
+    patch->pitch_envelope.envelope_shape.decay = data;
     break;
   case 80:
-    patch->frequency_envelope.envelope_shape.sustain = data;
+    patch->pitch_envelope.envelope_shape.sustain = data;
     break;
   case 81:
-    patch->frequency_envelope.envelope_shape.release = data;
+    patch->pitch_envelope.envelope_shape.release = data;
     break;
-  // frequency LFO
+  // pitch LFO
   case 84:
-    patch->frequency_lfo.depth = data;
+    patch->pitch_lfo.depth = data;
     break;
   case 85:
-    patch->frequency_lfo.speed = data;
+    patch->pitch_lfo.speed = data;
     break;
   case 86:
-    patch->frequency_lfo.waveform = LfoWaveform(data >> 5);
+    patch->pitch_lfo.waveform = LfoWaveform(data >> 5);
     break;
   case 87:
-    patch->frequency_lfo.start_delay_time = data;
+    patch->pitch_lfo.start_delay_time = data;
     break;
   // delay voice
   case 91:
@@ -229,18 +229,18 @@ void applyFmControlChange(FmPatch *patch, byte cc_number, byte data) {
   //   patch->core_parameters.operators[cc_number - 90].ssg_eg = data;
   //   break;
 
-  // software frequency LFO
+  // software pitch LFO
   case 84:
-    patch->frequency_lfo.depth = data;
+    patch->pitch_lfo.depth = data;
     break;
   case 85:
-    patch->frequency_lfo.speed = data;
+    patch->pitch_lfo.speed = data;
     break;
   case 86:
-    patch->frequency_lfo.waveform = LfoWaveform(data >> 5);
+    patch->pitch_lfo.waveform = LfoWaveform(data >> 5);
     break;
   case 87:
-    patch->frequency_lfo.start_delay_time = data;
+    patch->pitch_lfo.start_delay_time = data;
     break;
   // delay voice
   case 91:

@@ -110,7 +110,7 @@ signed getLfoMagnitude(LfoWaveform waveform, unsigned wavelength,
 }
 
 /**
- * @returns Returns the amount of cents to be added to frequency
+ * @returns Returns the amount of cents to be added to pitch
  */
 signed LfoState::getValue() {
   if (!_active || _lfo->depth == 0) {

@@ -3,7 +3,7 @@
 // PSG
 
 PsgVoice::PsgVoice() {
-  frequency_cents = 0;
+  pitch_cents = 0;
   level = 0;
   pitch = 0;
   channel = 0;
@@ -37,7 +37,7 @@ void PsgVoice::tick() {
   }
   _patch_state.tick();
   level = _patch_state.getLevel();
-  frequency_cents = _patch_state.getFrequencyCents() + detune_cents;
+  pitch_cents = _patch_state.getPitchCents() + detune_cents;
 
   if (_patch_state.amplitude_envelope_state.getStatus() == done) {
     _on = false;
@@ -48,7 +48,7 @@ void PsgVoice::tick() {
 
 FmVoice::FmVoice() {
   channel = 0;
-  frequency_cents = 0;
+  pitch_cents = 0;
   pitch = 0;
   detune_cents = 0;
   _on = false;

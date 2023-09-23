@@ -125,11 +125,11 @@ void Ym2203PsgChannel::_writeFrequencyN(unsigned frequency_n) {
 }
 
 /**
- * @param frequency_cents is the number of cents from MIDI note 0, in other
+ * @param pitch_cents is the number of cents from MIDI note 0, in other
  * words it is 100 * midi_note + offset_cents.
  */
-void Ym2203PsgChannel::writePitch(unsigned frequency_cents) {
-  _writeFrequencyN(getFrequencyN(frequency_cents, NOTES_250KHZ));
+void Ym2203PsgChannel::writePitch(unsigned pitch_cents) {
+  _writeFrequencyN(getFrequencyN(pitch_cents, NOTES_250KHZ));
 }
 
 /**
@@ -280,12 +280,12 @@ void Ym2203FmChannel::_writeFNumberBlock(unsigned block, unsigned f_number) {
 }
 
 /**
- * @param frequency_cents is the number of cents from MIDI note 0, in other
+ * @param pitch_cents is the number of cents from MIDI note 0, in other
  * words it is 100 * midi_note + offset_cents.
  */
-void Ym2203FmChannel::writePitch(unsigned frequency_cents) {
-  _writeFNumberBlock(getBlock(frequency_cents),
-                     getFNumber(frequency_cents, F_NUMBERS_4MHZ));
+void Ym2203FmChannel::writePitch(unsigned pitch_cents) {
+  _writeFNumberBlock(getBlock(pitch_cents),
+                     getFNumber(pitch_cents, F_NUMBERS_4MHZ));
 }
 
 void Ym2203FmChannel::writeKeyOnOff(bool key_on, bool force) {
