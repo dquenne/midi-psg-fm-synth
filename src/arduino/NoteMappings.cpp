@@ -27,7 +27,10 @@ unsigned getFrequencyN(unsigned pitch_cents,
 unsigned getBlock(unsigned pitch_cents) {
   unsigned note = pitch_cents / 100;
   if (note < 24) {
-    return note / 12; // lowest MIDI octave handled the same as second-lowest
+    // block 0 corresponds to C1-B1 _and_ the two octaves below. The two octaves
+    // below use lower F-numbers instead of the default F-numbers because block
+    // 0 is the lowest block.
+    return 0;
   }
   return note / 12 - 2;
 }
@@ -44,10 +47,24 @@ unsigned getFNumberForCents(unsigned block_note, unsigned cents,
   return (n_diff * cents) / 100;
 }
 
-unsigned getFNumber(unsigned pitch_cents, const unsigned note_mappings[13]) {
-  unsigned block_note = (pitch_cents / 100) % 12;
+unsigned getFNumber(unsigned pitch_cents, const unsigned note_mappings[37]) {
+  unsigned note = (pitch_cents / 100);
+  unsigned block_note = note % 12;
   unsigned cents = pitch_cents % 100;
 
-  return note_mappings[block_note] +
-         getFNumberForCents(block_note, cents, note_mappings);
+  // by default, use the top octave of F-numbers, which is the highest
+  // resolution supported by 11-bit numbers.
+  unsigned note_mappings_offset = 24;
+
+  // only use F-numbers below 618 if the pitch is below C1 (F-number 618 in
+  // block 0), because block 0 is the lowest block.
+  if (note < 12) {
+    note_mappings_offset = 0;
+  } else if (note < 24) {
+    note_mappings_offset = 12;
+  }
+
+  return note_mappings[block_note + note_mappings_offset] +
+         getFNumberForCents(block_note + note_mappings_offset, cents,
+                            note_mappings);
 }

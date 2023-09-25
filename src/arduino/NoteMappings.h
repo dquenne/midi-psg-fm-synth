@@ -39,10 +39,15 @@ const static unsigned NOTES_250KHZ[] = {
     28,    27,    25,    24,    22,    21,    20,
 };
 
-/** F-Numbers for an octave plus an extra C at the top for interpolating
- * F-Numbers for pitches between B and C (e.g. for slides, vibrato).*/
+/** F-Numbers for 3 octaves plus an extra C at the top for interpolating
+ * F-Numbers for pitches between B and C (e.g. for slides, vibrato). In general,
+ * only the top octave is used, because it has higher pitch resolution. The
+ * first two octaves are only used if the pitch is in the first two MIDI
+ * octaves, which are all under block 0. */
 const static unsigned F_NUMBERS_4MHZ[] = {
-    618, 654, 693, 734, 778, 824, 873, 925, 980, 1038, 1100, 1165, 1234,
+    154, 163, 173, 183, 194, 206, 218, 231,  245,  259,  275,  291, 309,
+    327, 346, 367, 389, 412, 436, 462, 490,  519,  550,  582,  618, 654,
+    693, 734, 778, 824, 873, 925, 980, 1038, 1100, 1165, 1234,
 };
 
 // PSG pitch utils
