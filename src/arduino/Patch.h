@@ -162,11 +162,11 @@ struct FmOperator {
    * maximum level. */
   byte decay_rate;
 
-  /** 0-15 (4 bit): 15 is instantaneous, at 0 the sound will not decay after
+  /** 0-31 (5 bit): 31 is instantaneous, at 0 the sound will not decay after
    * first decay stage. */
   byte sustain_rate;
 
-  /** 0-31 (5 bit): 31 is instantaneous, at 0 the sound will be held as long as
+  /** 0-15 (4 bit): 15 is instantaneous, at 0 the sound will be held as long as
    * possible. */
   byte release_rate;
 

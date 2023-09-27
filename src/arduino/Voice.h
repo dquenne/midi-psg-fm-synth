@@ -21,6 +21,7 @@ public:
     return voice_off;
   }
   bool getIsDelay() { return _is_delay; }
+  bool getChangedChannel() { return channel != _previous_channel; }
   byte channel;
 
   byte pitch;
@@ -32,6 +33,7 @@ protected:
   bool _on;
   bool _held;
   bool _is_delay;
+  byte _previous_channel;
 };
 
 class PsgVoice : public Voice {
@@ -63,6 +65,7 @@ public:
 
   void noteOn(byte _channel, byte _pitch, byte velocity) {
     pitch = _pitch;
+    _previous_channel = channel;
     channel = _channel;
     triggered_at = millis();
     _patch_state.noteOn(_pitch, velocity);

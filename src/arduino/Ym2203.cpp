@@ -225,6 +225,17 @@ void Ym2203FmChannel::writeSustainLevelRelease(unsigned op,
                           data);
 }
 
+/**
+ * Note: this creates a popping sound about half the time from forcing the
+ * envelopes closed so quickly. More noticeable if the envelopes are at high
+ * level when this is invoked.
+ * */
+void Ym2203FmChannel::writeReleaseZero(bool force) {
+  for (unsigned op = 0; op < 4; op++) {
+    writeSustainLevelRelease(op, 15, 15);
+  }
+}
+
 void Ym2203FmChannel::_writeOperatorParameters(
     unsigned op, const FmOperator *operator_params) {
   writeDetuneMultiple(op, operator_params->detune, operator_params->multiple);

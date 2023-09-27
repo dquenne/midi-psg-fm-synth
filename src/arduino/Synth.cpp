@@ -56,7 +56,24 @@ void Synth::syncPsgChannel(PsgChannel *channel, PsgVoice *voice) {
 
 void Synth::syncFmChannel(FmChannel *channel, FmVoice *voice) {
   if (!voice->getIsSynced() && voice->getStatus() == voice_held) {
-    channel->writeKeyOnOff(false);
+    RetriggerMode retrigger_mode =
+        voice->getPatch()->polyphony_config.retrigger_mode;
+    if (retrigger_mode == RETRIGGER_MODE_SOFT) {
+      channel->writeKeyOnOff(false);
+    } else if (retrigger_mode == RETRIGGER_MODE_HARD ||
+               voice->getChangedChannel()) {
+      channel->writeReleaseZero();
+      channel->writeKeyOnOff(false);
+
+      // Might need a better approach here. This will fully stop the synth for
+      // 2ms, which will mess up timing for any software LFOs, envelopes, etc.
+      // 2ms was the smallest amount that seemed sufficient to let the YM2203
+      // envelopes completely discharge at the fastest release rate.
+      delay(2);
+    } else if (retrigger_mode == RETRIGGER_MODE_OFF) {
+      // Do not set the previous note off. This creates a hammer-on / glissando
+      // effect.
+    }
     channel->writeStaticPatchParameters(voice->getPatch());
     voice->setSynced();
     channel->writeKeyOnOff(voice->getStatus() == voice_held);

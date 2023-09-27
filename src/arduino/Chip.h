@@ -24,6 +24,7 @@ public:
   virtual void writePitch(unsigned pitch_cents) = 0;
   virtual void writeTotalLevel(unsigned op, unsigned total_level) = 0;
   virtual void writeKeyOnOff(bool key_on, bool force = false) = 0;
+  virtual void writeReleaseZero(bool force = false) = 0;
 };
 
 class Chip {

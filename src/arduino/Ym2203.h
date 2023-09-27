@@ -138,6 +138,7 @@ public:
   void writeSustainRate(unsigned op, unsigned sustain_rate);
   void writeSustainLevelRelease(unsigned op, unsigned sustain_level,
                                 unsigned release_rate);
+  void writeReleaseZero(bool force = false);
 
 private:
   void _writeOperatorParameters(unsigned op, const FmOperator *operator_params);
