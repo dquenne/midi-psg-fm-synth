@@ -234,11 +234,171 @@ static const FmPatch FM_PRESET_PATCH_7 = {
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},
 };
 
+// fade-in bass from YU-NO (1996)
+static const FmPatch FM_PRESET_PATCH_8 = {
+    {FM_PANNING_CENTER,
+     0,
+     4,
+     0,
+     0,
+     {
+         {31, 31, 0, 0, 1, 10, 1, 0, 0, false},
+         {6, 5, 4, 10, 1, 0, 0, 1, 0, false},
+         {31, 31, 0, 0, 1, 10, 1, 0, 6, false},
+         {6, 5, 4, 10, 1, 0, 0, 1, 6, false},
+     }},
+    {64, {3, 15, 3, 15}},
+    {0},
+    {0},
+    {false},
+    {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+};
+
+// celeste piano from Desire (1994)
+static const FmPatch FM_PRESET_PATCH_9 = {
+    {FM_PANNING_CENTER,
+     0,
+     4,
+     0,
+     0,
+     {
+         {31, 25, 10, 0, 3, 23, 0, 14, 0, false},
+         {31, 15, 6, 7, 2, 10, 0, 2, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+     }},
+    {64, {3, 15, 3, 15}},
+    {0},
+    {18, 54, triangle, 63},
+    {false},
+    {2, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+};
+
+// celeste piano from Desire (1994)
+static const FmPatch FM_PRESET_PATCH_10 = {
+    {FM_PANNING_CENTER,
+     0,
+     4,
+     0,
+     0,
+     {
+         {31, 25, 10, 0, 3, 23, 0, 14, 0, false},
+         {31, 15, 6, 7, 2, 10, 0, 2, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+     }},
+    {64, {3, 15, 3, 15}},
+    {0},
+    {18, 54, triangle, 63},
+    {false},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+};
+
+// celeste piano from Desire (1994)
+static const FmPatch FM_PRESET_PATCH_11 = {
+    {FM_PANNING_CENTER,
+     0,
+     4,
+     0,
+     0,
+     {
+         {31, 25, 10, 0, 3, 23, 0, 14, 0, false},
+         {31, 15, 6, 7, 2, 10, 0, 2, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+     }},
+    {64, {3, 15, 3, 15}},
+    {0},
+    {18, 54, triangle, 63},
+    {false},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+};
+
+// celeste piano from Desire (1994)
+static const FmPatch FM_PRESET_PATCH_12 = {
+    {FM_PANNING_CENTER,
+     0,
+     4,
+     0,
+     0,
+     {
+         {31, 25, 10, 0, 3, 23, 0, 14, 0, false},
+         {31, 15, 6, 7, 2, 10, 0, 2, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+     }},
+    {64, {3, 15, 3, 15}},
+    {0},
+    {18, 54, triangle, 63},
+    {false},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+};
+
+// celeste piano from Desire (1994)
+static const FmPatch FM_PRESET_PATCH_13 = {
+    {FM_PANNING_CENTER,
+     0,
+     4,
+     0,
+     0,
+     {
+         {31, 25, 10, 0, 3, 23, 0, 14, 0, false},
+         {31, 15, 6, 7, 2, 10, 0, 2, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+     }},
+    {64, {3, 15, 3, 15}},
+    {0},
+    {18, 54, triangle, 63},
+    {false},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+};
+
+// celeste piano from Desire (1994)
+static const FmPatch FM_PRESET_PATCH_14 = {
+    {FM_PANNING_CENTER,
+     0,
+     4,
+     0,
+     0,
+     {
+         {31, 25, 10, 0, 3, 23, 0, 14, 0, false},
+         {31, 15, 6, 7, 2, 10, 0, 2, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+     }},
+    {64, {3, 15, 3, 15}},
+    {0},
+    {18, 54, triangle, 63},
+    {false},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+};
+
+// celeste piano from Desire (1994)
+static const FmPatch FM_PRESET_PATCH_15 = {
+    {FM_PANNING_CENTER,
+     0,
+     4,
+     0,
+     0,
+     {
+         {31, 25, 10, 0, 3, 23, 0, 14, 0, false},
+         {31, 15, 6, 7, 2, 10, 0, 2, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+         {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
+     }},
+    {64, {3, 15, 3, 15}},
+    {0},
+    {18, 54, triangle, 63},
+    {false},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+};
+
 const FmPatch *FM_PRESETS[] = {
-    &FM_PRESET_PATCH_0, &FM_PRESET_PATCH_1, &FM_PRESET_PATCH_2,
-    &FM_PRESET_PATCH_3, &FM_PRESET_PATCH_4, &FM_PRESET_PATCH_5,
-    &FM_PRESET_PATCH_6, &FM_PRESET_PATCH_7, &FM_PRESET_PATCH_0,
-    &FM_PRESET_PATCH_1, &FM_PRESET_PATCH_2, &FM_PRESET_PATCH_3,
-    &FM_PRESET_PATCH_0, &FM_PRESET_PATCH_1, &FM_PRESET_PATCH_2,
-    &FM_PRESET_PATCH_3,
+    &FM_PRESET_PATCH_0,  &FM_PRESET_PATCH_1,  &FM_PRESET_PATCH_2,
+    &FM_PRESET_PATCH_3,  &FM_PRESET_PATCH_4,  &FM_PRESET_PATCH_5,
+    &FM_PRESET_PATCH_6,  &FM_PRESET_PATCH_7,  &FM_PRESET_PATCH_8,
+    &FM_PRESET_PATCH_9,  &FM_PRESET_PATCH_10, &FM_PRESET_PATCH_11,
+    &FM_PRESET_PATCH_12, &FM_PRESET_PATCH_13, &FM_PRESET_PATCH_14,
+    &FM_PRESET_PATCH_15,
 };
