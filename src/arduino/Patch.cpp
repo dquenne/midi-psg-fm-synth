@@ -1,10 +1,6 @@
 #include "Patch.h"
 #include "NoteMappings.h"
 
-#define LIMIT(val, min, max) MIN(MAX(val, min), max)
-#define MIN(a, b) (a < b ? a : b)
-#define MAX(a, b) (a > b ? a : b)
-
 // TODO: extract to common utils file
 /** a - b, except never go lower than 0 (for unsigned values) */
 #define FLOOR_MINUS(a, b) (a < b ? 0 : a - b)
@@ -69,7 +65,7 @@ void PsgPatchState::tick() {
 }
 
 unsigned PsgPatchState::getPitchCents() {
-  unsigned pitch_cents =
+  signed pitch_cents =
       (_pitch * 100) + pitch_lfo_state.getValue() + _patch->detune_cents;
 
   pitch_cents =
@@ -79,7 +75,7 @@ unsigned PsgPatchState::getPitchCents() {
   if (_is_delay) {
     return pitch_cents + _patch->delay_config.detune_cents;
   }
-  return pitch_cents;
+  return MAX(0, pitch_cents);
 }
 
 unsigned PsgPatchState::getLevel() {

@@ -8,6 +8,10 @@
 /** will extend this to standard 128 when EEPROM storage is implemented */
 #define PATCH_BANK_SIZE 16
 
+#define LIMIT(val, min, max) MIN(MAX(val, min), max)
+#define MIN(a, b) (a < b ? a : b)
+#define MAX(a, b) (a > b ? a : b)
+
 struct PatchId {
   byte program_number;  // 7-bit MIDI program number
   uint16_t bank_number; // 14-bit MIDI bank number
@@ -229,13 +233,13 @@ public:
     pitch_lfo_state.tick();
   }
   unsigned getPitchCents() {
-    unsigned pitch_cents = (100 * _pitch) + pitch_lfo_state.getValue();
+    signed pitch_cents = (100 * _pitch) + pitch_lfo_state.getValue();
 
     pitch_cents = (signed)pitch_cents +
                   _patch->pitch_envelope.scaling * 25 *
                       (signed)pitch_envelope_state.getValue() / 1024;
 
-    return pitch_cents;
+    return MAX(0, pitch_cents);
   }
   unsigned getOperatorLevel(unsigned op);
   bool isActive() { return _held; }
