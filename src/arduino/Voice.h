@@ -26,6 +26,7 @@ public:
   byte pitch;
   unsigned pitch_cents;
   byte detune_cents;
+  unsigned long triggered_at;
 
 protected:
   bool _on;
@@ -63,6 +64,7 @@ public:
   void noteOn(byte _channel, byte _pitch, byte velocity) {
     pitch = _pitch;
     channel = _channel;
+    triggered_at = millis();
     _patch_state.noteOn(_pitch, velocity);
     _trigger = true;
     _on = true;

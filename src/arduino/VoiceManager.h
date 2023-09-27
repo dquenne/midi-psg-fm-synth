@@ -16,7 +16,8 @@
 template <typename VoiceType>
 unsigned getAvailableVoiceIndex(byte channel, byte pitch,
                                 VoiceType voice_options[], unsigned voice_count,
-                                unsigned last_voice_used);
+                                unsigned last_voice_used,
+                                PatchPolyphonyConfig *patch_polyphony_config);
 
 template <typename VoiceType> class VoiceManager {
 public:
@@ -29,9 +30,11 @@ public:
     }
   };
 
-  VoiceType *getVoice(byte channel, byte note) {
+  VoiceType *getVoice(byte channel, byte note,
+                      PatchPolyphonyConfig *patch_polyphony_config) {
     unsigned index = getAvailableVoiceIndex<VoiceType>(
-        channel, note, voices, _voice_count, _last_voice_used);
+        channel, note, voices, _voice_count, _last_voice_used,
+        patch_polyphony_config);
 
     if (index == NO_AVAILABLE_VOICE_INDEX) {
       return &_null_voice;

@@ -1,4 +1,5 @@
 #include "Voice.h"
+#include <Arduino.h>
 
 // PSG
 
@@ -21,6 +22,7 @@ void PsgVoice::setPatch(PsgPatch *patch, bool is_delay) {
 void PsgVoice::noteOn(byte _channel, byte _pitch, byte velocity) {
   pitch = _pitch;
   channel = _channel;
+  triggered_at = millis();
   _patch_state.noteOn(_pitch, velocity);
   _on = true;
   _held = true;

@@ -15,6 +15,7 @@ struct PsgPatch {
 
 static const PsgPatch PRESET_PATCH_0 = {
     {true, 25, 16, 3},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
     {{{11, 110}, {13, 130}, {15, 25}, {13, 200}, {11, 100}}, true, 2, 2, 3, 4},
     {-1, {0, 70, 0, 0}},
     {0, 0, triangle, 0},
@@ -25,6 +26,7 @@ static const PsgPatch PRESET_PATCH_0 = {
 
 static const PsgPatch PRESET_PATCH_1 = {
     {false, 0, 0, 0},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
     {{{12, 80}, {14, 60}, {15, 60}, {5, 400}, {0, 0}}, true, 2, 2, 3, 4},
     {0},
     {0, 0, triangle, 0},
@@ -35,6 +37,7 @@ static const PsgPatch PRESET_PATCH_1 = {
 
 static const PsgPatch PRESET_PATCH_2 = {
     {false},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
     {{{15, 80}, {11, 50}, {8, 25}, {5, 400}, {1, 400}}, true, 2, 2, 3, 4},
     {3, {40, 44, 64, 110}},
     {0, 0, triangle, 0},
@@ -45,6 +48,7 @@ static const PsgPatch PRESET_PATCH_2 = {
 
 static const PsgPatch PRESET_PATCH_3 = {
     {true, 35, 10, 3},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
     {{{15, 60}, {14, 50}, {13, 25}, {6, 200}, {0, 0}}, true, 2, 2, 3, 4},
     {2, {0, 38, 0, 00}},
     {0, 0, triangle, 0},
@@ -91,6 +95,7 @@ static const FmPatch FM_PRESET_PATCH_0 = {
     {0},
     {16, 30, triangle, 38},
     {true, 50, 6, 7},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
 };
 
 // bass from Desire (1994)
@@ -108,6 +113,7 @@ static const FmPatch FM_PRESET_PATCH_1 = {
     {0},
     {0, 0, triangle, 0},
     {false},
+    {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},
 };
 
 // burst sound from Desire (1994)
@@ -125,6 +131,7 @@ static const FmPatch FM_PRESET_PATCH_2 = {
     {0},
     {0, 0, triangle, 0},
     {false},
+    {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
 };
 
 // celeste piano from Desire (1994)
@@ -144,6 +151,7 @@ static const FmPatch FM_PRESET_PATCH_3 = {
     {0},
     {18, 54, triangle, 63},
     {true, 75, 0, 2},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
 };
 
 // organ from Ys I - Feena (1987)
@@ -163,6 +171,7 @@ static const FmPatch FM_PRESET_PATCH_4 = {
     {0},
     {0, 0, triangle, 0},
     {false},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
 };
 
 // bass from Ys I - Feena (1987)
@@ -182,6 +191,7 @@ static const FmPatch FM_PRESET_PATCH_5 = {
     {0},
     {0, 0, triangle, 0},
     {false},
+    {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},
 };
 
 // piano from Ys I - Feena (1987)
@@ -201,6 +211,7 @@ static const FmPatch FM_PRESET_PATCH_6 = {
     {0},
     {0, 0, triangle, 0},
     {false},
+    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
 };
 
 // violin from Ys I - Feena (1987)
@@ -220,6 +231,7 @@ static const FmPatch FM_PRESET_PATCH_7 = {
     {-1, {0, 45, 0, 45}},
     {16, 30, triangle, 38},
     {true, 25, 16, 1},
+    {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},
 };
 
 const FmPatch *FM_PRESETS[] = {

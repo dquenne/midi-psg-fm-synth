@@ -8,6 +8,8 @@
 /** will extend this to standard 128 when EEPROM storage is implemented */
 #define PATCH_BANK_SIZE 16
 
+#define MAX_POLYPHONY_UNLIMITED 0
+
 #define LIMIT(val, min, max) MIN(MAX(val, min), max)
 #define MIN(a, b) (a < b ? a : b)
 #define MAX(a, b) (a > b ? a : b)
@@ -30,8 +32,33 @@ struct PatchDelayConfig {
   byte attenuation;
 };
 
+enum NotePriorityMode : byte {
+  NOTE_PRIORITY_MODE_LATEST,
+  NOTE_PRIORITY_MODE_HIGHEST,
+  NOTE_PRIORITY_MODE_LOWEST
+};
+
+enum RetriggerMode : byte {
+  /** If voice is stolen, reset envelope to the beginning and reset envelope
+     levels to zero. */
+  RETRIGGER_MODE_HARD,
+  /** If voice is stolen, reset envelope to the beginning but retain envelope
+     levels. */
+  RETRIGGER_MODE_SOFT,
+  /** If voice is stolen, just update params without resetting envelopes. */
+  RETRIGGER_MODE_OFF,
+};
+
+struct PatchPolyphonyConfig {
+  /** 0 = no limit. */
+  byte max_polyphony;
+  NotePriorityMode note_priority_mode;
+  RetriggerMode retrigger_mode;
+};
+
 struct Patch {
   PatchDelayConfig delay_config;
+  PatchPolyphonyConfig polyphony_config;
 };
 
 struct PitchEnvelope {
@@ -72,6 +99,7 @@ struct PsgPatchVelocityConfig {
 
 struct PsgPatch {
   PatchDelayConfig delay_config;
+  PatchPolyphonyConfig polyphony_config;
   EnvelopeShape amplitude_envelope;
   PitchEnvelope pitch_envelope;
 
@@ -194,6 +222,7 @@ struct FmPatch {
    * calculated at a per voice level. */
   Lfo pitch_lfo;
   PatchDelayConfig delay_config;
+  PatchPolyphonyConfig polyphony_config;
 };
 
 class FmPatchState : public PatchState {

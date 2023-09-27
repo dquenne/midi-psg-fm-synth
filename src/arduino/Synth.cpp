@@ -7,7 +7,8 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
   if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
     FmPatch *active_patch =
         _fm_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
-    FmVoice *voice = _fm_voice_manager.getVoice(channel, pitch);
+    FmVoice *voice = _fm_voice_manager.getVoice(
+        channel, pitch, &active_patch->polyphony_config);
     voice->setPatch(active_patch, channel >= 16);
     voice->noteOn(channel, pitch, velocity);
 
@@ -23,7 +24,8 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
     }
     PsgPatch *active_patch =
         _psg_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
-    PsgVoice *voice = _psg_voice_manager.getVoice(channel, pitch);
+    PsgVoice *voice = _psg_voice_manager.getVoice(
+        channel, pitch, &active_patch->polyphony_config);
     voice->setPatch(active_patch, channel >= 16);
     voice->noteOn(channel, pitch, velocity);
 
