@@ -111,13 +111,14 @@ unsigned FmPatchState::getOperatorLevel(unsigned op) {
   if (_patch->velocity_level_scaling.operator_scaling[op] == 0) {
     return _patch->core_parameters.operators[op].total_level;
   }
-  signed velocity_magnitude =
-      (signed(_patch->velocity_level_scaling.velocity_center) - _velocity);
+
   signed velocity_scaling = _patch->velocity_level_scaling.operator_scaling[op];
 
-  signed attenuation = velocity_magnitude * velocity_scaling / 64;
+  signed attenuation = -1 * VELOCITY_SCALING[_velocity] * velocity_scaling / 64;
+
   unsigned velocity_scaled_level = LIMIT(
-      _patch->core_parameters.operators[op].total_level + attenuation, 0, 127);
+      (signed)_patch->core_parameters.operators[op].total_level + attenuation,
+      0, 127);
 
   if (_is_delay &&
       FM_CARRIERS_BY_ALGORITHM[_patch->core_parameters.algorithm][op]) {

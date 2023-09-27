@@ -86,13 +86,14 @@ static const FmPatch FM_PRESET_PATCH_0 = {
      {{28, 15, 8, 20, 2, 40, 0, 5, 0, false},
       {28, 15, 6, 20, 2, 127, 0, 3, 0, false},
       {28, 17, 6, 20, 2, 10, 0, 2, 0, false},
-      {28, 15, 5, 20, 2, 1, 0, 1, 0, false}}},
-    {115, {0, 15, 0, 15}},
+      {28, 15, 5, 20, 2, 10, 0, 1, 0, false}}},
+    {64, {0, 15, 0, 15}},
     {0},
     {16, 30, triangle, 38},
     {true, 50, 6, 7},
 };
 
+// bass from Desire (1994)
 static const FmPatch FM_PRESET_PATCH_1 = {
     {FM_PANNING_CENTER,
      7,
@@ -102,13 +103,14 @@ static const FmPatch FM_PRESET_PATCH_1 = {
      {{31, 14, 0, 7, 3, 32, 0, 10, 3, false},
       {31, 10, 0, 8, 5, 42, 0, 2, 0, false},
       {31, 19, 0, 5, 5, 12, 0, 0, 7, false},
-      {31, 31, 0, 8, 0, 0, 0, 0, 0, false}}},
-    {115, {0, 0, 0, 15}},
+      {31, 31, 0, 8, 0, 10, 0, 0, 0, false}}},
+    {64, {0, 3, 2, 15}},
     {0},
     {0, 0, triangle, 0},
     {false},
 };
 
+// burst sound from Desire (1994)
 static const FmPatch FM_PRESET_PATCH_2 = {
     {FM_PANNING_CENTER,
      6,
@@ -118,14 +120,14 @@ static const FmPatch FM_PRESET_PATCH_2 = {
      {{31, 13, 0, 0, 2, 10, 0, 1, 7, false},
       {30, 10, 2, 0, 4, 27, 0, 7, 3, false},
       {31, 5, 2, 0, 8, 15, 0, 2, 1, false},
-      {30, 0, 0, 8, 4, 0, 0, 2, 3, false}}},
-    {115, {0, 0, 0, 15}},
+      {30, 0, 0, 8, 4, 10, 0, 2, 3, false}}},
+    {64, {0, 0, 0, 15}},
     {0},
     {0, 0, triangle, 0},
     {false},
 };
 
-// celeste piano from Desire (PC-98)
+// celeste piano from Desire (1994)
 static const FmPatch FM_PRESET_PATCH_3 = {
     {FM_PANNING_CENTER,
      0,
@@ -134,17 +136,17 @@ static const FmPatch FM_PRESET_PATCH_3 = {
      0,
      {
          {31, 25, 10, 0, 3, 23, 0, 14, 0, false},
-         {31, 15, 6, 7, 2, 0, 0, 2, 0, false},
+         {31, 15, 6, 7, 2, 10, 0, 2, 0, false},
          {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
          {0, 0, 0, 15, 0, 127, 0, 0, 0, false},
      }},
-    {115, {0, 15, 0, 15}},
+    {64, {3, 15, 3, 15}},
     {0},
     {18, 54, triangle, 63},
     {true, 75, 0, 2},
 };
 
-// organ from Ys I - Feena (PC-88)
+// organ from Ys I - Feena (1987)
 static const FmPatch FM_PRESET_PATCH_4 = {
     {FM_PANNING_CENTER,
      0,
@@ -153,17 +155,17 @@ static const FmPatch FM_PRESET_PATCH_4 = {
      0,
      {
          {18, 0, 0, 6, 0, 35, 0, 2, 6, false},
-         {18, 0, 0, 6, 0, 0, 0, 2, 5, false},
+         {18, 0, 0, 6, 0, 10, 0, 2, 5, false},
          {18, 0, 0, 6, 0, 35, 0, 2, 1, false},
-         {18, 0, 0, 6, 0, 0, 0, 2, 0, false},
+         {18, 0, 0, 6, 0, 10, 0, 2, 0, false},
      }},
-    {115, {0, 15, 0, 15}},
+    {64, {5, 15, 5, 15}},
     {0},
     {0, 0, triangle, 0},
     {false},
 };
 
-// bass from Ys I - Feena (PC-88)
+// bass from Ys I - Feena (1987)
 static const FmPatch FM_PRESET_PATCH_5 = {
     {FM_PANNING_CENTER,
      7,
@@ -172,17 +174,17 @@ static const FmPatch FM_PRESET_PATCH_5 = {
      0,
      {
          {31, 2, 2, 0, 0, 33, 2, 2, 6, false},
-         {22, 2, 3, 4, 2, 0, 1, 2, 5, false},
+         {22, 2, 3, 4, 2, 15, 1, 2, 5, false},
          {31, 2, 2, 0, 0, 13, 1, 1, 2, false},
-         {22, 2, 3, 4, 2, 0, 1, 2, 1, false},
+         {22, 2, 3, 4, 2, 15, 1, 2, 1, false},
      }},
-    {115, {0, 15, 0, 15}},
+    {64, {0, 15, 0, 15}},
     {0},
     {0, 0, triangle, 0},
     {false},
 };
 
-// piano from Ys I - Feena (PC-88)
+// piano from Ys I - Feena (1987)
 static const FmPatch FM_PRESET_PATCH_6 = {
     {FM_PANNING_CENTER,
      7,
@@ -191,17 +193,17 @@ static const FmPatch FM_PRESET_PATCH_6 = {
      0,
      {
          {31, 0, 8, 0, 4, 32, 3, 1, 2, false},
-         {31, 7, 7, 7, 3, 0, 2, 1, 4, false},
+         {31, 7, 7, 7, 3, 10, 2, 1, 4, false},
          {22, 0, 8, 0, 4, 28, 3, 3, 5, false},
-         {22, 8, 6, 7, 3, 0, 1, 1, 1, false},
+         {22, 8, 6, 7, 3, 10, 1, 1, 1, false},
      }},
-    {115, {0, 15, 0, 15}},
+    {64, {3, 15, 3, 15}},
     {0},
     {0, 0, triangle, 0},
     {false},
 };
 
-// violin from Ys I - Feena (PC-88)
+// violin from Ys I - Feena (1987)
 static const FmPatch FM_PRESET_PATCH_7 = {
     {FM_PANNING_CENTER,
      7,
@@ -212,10 +214,10 @@ static const FmPatch FM_PRESET_PATCH_7 = {
          {25, 10, 0, 5, 1, 29, 1, 1, 4, false},
          {25, 11, 0, 8, 5, 15, 1, 5, 4, false},
          {28, 13, 0, 6, 2, 48, 1, 1, 3, false},
-         {14, 4, 0, 6, 0, 0, 1, 1, 4, false},
+         {14, 4, 0, 6, 0, 10, 1, 1, 4, false},
      }},
-    {115, {0, 0, 0, 15}},
-    {-2, {0, 45, 0, 45}},
+    {64, {0, 3, 4, 15}},
+    {-1, {0, 45, 0, 45}},
     {16, 30, triangle, 38},
     {true, 25, 16, 1},
 };
