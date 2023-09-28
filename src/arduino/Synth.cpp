@@ -52,6 +52,37 @@ void Synth::noteOff(byte channel, byte pitch, byte velocity) {
   voice->noteOff();
 }
 
+void Synth::setPitchBend(byte _channel, int bend) {
+  _synth_channels[_channel].pitch_bend = bend;
+}
+
+PatchDelayConfig *Synth::getDelayConfig(unsigned channel) {
+  SynthChannel *synth_channel = &_synth_channels[channel];
+  if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
+    return &_fm_patch_manager.getPatch(synth_channel->patch_id)->delay_config;
+  }
+  return &_psg_patch_manager.getPatch(synth_channel->patch_id)->delay_config;
+}
+
+PatchManager<PsgPatch> *Synth::getPsgPatchManager() {
+  return &_psg_patch_manager;
+}
+
+PatchManager<FmPatch> *Synth::getFmPatchManager() { return &_fm_patch_manager; }
+
+void Synth::loadMulti(Multi *multi) {
+  for (byte channel_index = 0; channel_index < SYNTH_CHANNEL_COUNT;
+       channel_index++) {
+    _synth_channels[channel_index].mode = multi->channels[channel_index].mode;
+    _synth_channels[channel_index].patch_id =
+        multi->channels[channel_index].patch_id;
+  }
+}
+
+SynthChannel *Synth::getChannel(byte _channel) {
+  return &_synth_channels[_channel];
+}
+
 void Synth::syncPsgChannel(PsgChannel *channel, PsgVoice *voice) {
   channel->writeLevel(voice->level);
   channel->writePitch(

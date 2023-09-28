@@ -36,6 +36,8 @@ void PsgPatchState::setPatch(const PsgPatch *patch, bool is_delay) {
   _is_delay = is_delay;
 }
 
+const PsgPatch *PsgPatchState::getPatch() { return _patch; }
+
 void PsgPatchState::noteOn(byte pitch, byte velocity, bool retrigger) {
   _pitch = pitch;
   _velocity = velocity;
@@ -106,6 +108,64 @@ bool PsgPatchState::isActive() {
 
 // FM
 
+void applyFmPreset(FmPatch *target, const FmPatch *preset) {
+  memcpy(target, preset, sizeof(*preset));
+}
+
+FmPatchState::FmPatchState() {
+  _is_patch_set = false;
+  _is_delay = false;
+}
+
+void FmPatchState::initialize() {
+  pitch_envelope_state.initialize();
+  pitch_lfo_state.initialize();
+}
+
+void FmPatchState::setPatch(const FmPatch *patch, bool is_delay) {
+  _patch = patch;
+  initialize();
+  pitch_envelope_state.setEnvelopeShape(&_patch->pitch_envelope.envelope_shape);
+  pitch_lfo_state.setLfo(&_patch->pitch_lfo);
+  _is_patch_set = true;
+  _is_delay = is_delay;
+}
+
+const FmPatch *FmPatchState::getPatch() { return _patch; }
+
+void FmPatchState::noteOn(byte pitch, byte velocity, bool retrigger) {
+  _pitch = pitch;
+  _velocity = velocity;
+  _held = true;
+  if (retrigger) {
+    pitch_envelope_state.initialize();
+    pitch_envelope_state.start();
+    pitch_lfo_state.initialize();
+    pitch_lfo_state.start();
+  }
+}
+
+void FmPatchState::noteOff() {
+  _held = false;
+  pitch_envelope_state.noteOff();
+  pitch_lfo_state.noteOff();
+}
+
+void FmPatchState::tick() {
+  pitch_envelope_state.tick();
+  pitch_lfo_state.tick();
+}
+
+unsigned FmPatchState::getPitchCents() {
+  signed pitch_cents = (100 * _pitch) + pitch_lfo_state.getValue();
+
+  pitch_cents =
+      (signed)pitch_cents + _patch->pitch_envelope.scaling * 25 *
+                                (signed)pitch_envelope_state.getValue() / 1024;
+
+  return MAX(0, pitch_cents);
+}
+
 unsigned FmPatchState::getOperatorLevel(unsigned op) {
   if (_patch->velocity_level_scaling.operator_scaling[op] == 0) {
     return _patch->core_parameters.operators[op].total_level;
@@ -127,6 +187,4 @@ unsigned FmPatchState::getOperatorLevel(unsigned op) {
   return velocity_scaled_level;
 }
 
-void applyFmPreset(FmPatch *target, const FmPatch *preset) {
-  memcpy(target, preset, sizeof(*preset));
-}
+bool FmPatchState::isActive() { return _held; }

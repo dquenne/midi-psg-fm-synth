@@ -31,35 +31,20 @@ public:
   void tick();
   void noteOn(byte _channel, byte _pitch, byte velocity);
   void noteOff(byte _channel, byte _pitch, byte velocity);
-  void setPitchBend(byte _channel, int bend) {
-    _synth_channels[_channel].pitch_bend = bend;
-  }
+  void setPitchBend(byte _channel, int bend);
 
   /* Would like to remove this. This is just to support querying MIDI delay
    * functionality. */
-  PatchDelayConfig *getDelayConfig(unsigned channel) {
-    SynthChannel *synth_channel = &_synth_channels[channel];
-    if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
-      return &_fm_patch_manager.getPatch(synth_channel->patch_id)->delay_config;
-    }
-    return &_psg_patch_manager.getPatch(synth_channel->patch_id)->delay_config;
-  }
+  PatchDelayConfig *getDelayConfig(unsigned channel);
 
-  PatchManager<PsgPatch> *getPsgPatchManager() { return &_psg_patch_manager; }
-  PatchManager<FmPatch> *getFmPatchManager() { return &_fm_patch_manager; }
-  void loadMulti(Multi *multi) {
-    for (byte channel_index = 0; channel_index < SYNTH_CHANNEL_COUNT;
-         channel_index++) {
-      _synth_channels[channel_index].mode = multi->channels[channel_index].mode;
-      _synth_channels[channel_index].patch_id =
-          multi->channels[channel_index].patch_id;
-    }
-  }
-  SynthChannel *getChannel(byte _channel) { return &_synth_channels[_channel]; }
+  PatchManager<PsgPatch> *getPsgPatchManager();
+  PatchManager<FmPatch> *getFmPatchManager();
+  void loadMulti(Multi *multi);
+  SynthChannel *getChannel(byte _channel);
 
   // Patch and multi storage needs to be pretty fully re-thought, this is just a
   // stop-gap.
-  void saveMulti() {} // storeMulti(_active_multi); }
+  void saveMulti() {}
 
 private:
   void syncPsgChannel(PsgChannel *channel, PsgVoice *voice);

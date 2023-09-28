@@ -115,7 +115,7 @@ class PsgPatchState : public PatchState {
 public:
   PsgPatchState();
   void setPatch(const PsgPatch *patch, bool is_delay);
-  const PsgPatch *getPatch() { return _patch; }
+  const PsgPatch *getPatch();
   void initialize();
   void noteOn(byte pitch, byte velocity, bool retrigger);
   void noteOff();
@@ -228,55 +228,16 @@ struct FmPatch {
 
 class FmPatchState : public PatchState {
 public:
-  FmPatchState() {
-    _is_patch_set = false;
-    _is_delay = false;
-  }
-  void initialize() {
-    pitch_envelope_state.initialize();
-    pitch_lfo_state.initialize();
-  }
-  void setPatch(const FmPatch *patch, bool is_delay) {
-    _patch = patch;
-    initialize();
-    pitch_envelope_state.setEnvelopeShape(
-        &_patch->pitch_envelope.envelope_shape);
-    pitch_lfo_state.setLfo(&_patch->pitch_lfo);
-    _is_patch_set = true;
-    _is_delay = is_delay;
-  }
-  const FmPatch *getPatch() { return _patch; }
-  void noteOn(byte pitch, byte velocity, bool retrigger) {
-    _pitch = pitch;
-    _velocity = velocity;
-    _held = true;
-    if (retrigger) {
-      pitch_envelope_state.initialize();
-      pitch_envelope_state.start();
-      pitch_lfo_state.initialize();
-      pitch_lfo_state.start();
-    }
-  }
-  void noteOff() {
-    _held = false;
-    pitch_envelope_state.noteOff();
-    pitch_lfo_state.noteOff();
-  }
-  void tick() {
-    pitch_envelope_state.tick();
-    pitch_lfo_state.tick();
-  }
-  unsigned getPitchCents() {
-    signed pitch_cents = (100 * _pitch) + pitch_lfo_state.getValue();
-
-    pitch_cents = (signed)pitch_cents +
-                  _patch->pitch_envelope.scaling * 25 *
-                      (signed)pitch_envelope_state.getValue() / 1024;
-
-    return MAX(0, pitch_cents);
-  }
+  FmPatchState();
+  void initialize();
+  void setPatch(const FmPatch *patch, bool is_delay);
+  const FmPatch *getPatch();
+  void noteOn(byte pitch, byte velocity, bool retrigger);
+  void noteOff();
+  void tick();
+  unsigned getPitchCents();
   unsigned getOperatorLevel(unsigned op);
-  bool isActive() { return _held; }
+  bool isActive();
 
   AdsrEnvelopeState pitch_envelope_state;
   LfoState pitch_lfo_state;

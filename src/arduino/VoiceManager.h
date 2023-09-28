@@ -24,45 +24,19 @@ public:
   VoiceManager(byte voice_count)
       : _voice_count(voice_count), _last_voice_used{0} {}
 
-  void tick() {
-    for (byte voice_index = 0; voice_index < _voice_count; voice_index++) {
-      voices[voice_index].tick();
-    }
-  };
+  void tick();
 
   VoiceType *getVoice(byte channel, byte note,
-                      PatchPolyphonyConfig *patch_polyphony_config) {
-    unsigned index = getAvailableVoiceIndex<VoiceType>(
-        channel, note, voices, _voice_count, _last_voice_used,
-        patch_polyphony_config);
-
-    if (index == NO_AVAILABLE_VOICE_INDEX) {
-      return &_null_voice;
-    }
-    _last_voice_used = index;
-    return getVoiceByIndex(index);
-  }
+                      PatchPolyphonyConfig *patch_polyphony_config);
 
   /**
    * getExactVoice is intended for handling note off messages. It will only
    * yield voices that match the channel and pitch exactly, and are either in
    * the held or decaying state.
    */
-  VoiceType *getExactVoice(byte channel, byte note) {
-    VoiceType *voice_hypothesis;
-    for (byte voice_index = 0; voice_index < _voice_count; voice_index++) {
-      voice_hypothesis = getVoiceByIndex(voice_index);
-      if (voice_hypothesis->getStatus() == voice_held &&
-          voice_hypothesis->pitch == note &&
-          voice_hypothesis->channel == channel) {
-        return voice_hypothesis;
-      }
-    }
+  VoiceType *getExactVoice(byte channel, byte note);
 
-    return &_null_voice;
-  }
-
-  VoiceType *getVoiceByIndex(unsigned index) { return &voices[index]; };
+  VoiceType *getVoiceByIndex(unsigned index);
 
 private:
   VoiceType voices[MAX_VOICE_COUNT];
