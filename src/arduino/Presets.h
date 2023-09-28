@@ -28,7 +28,7 @@ static const PsgPatch PRESET_PATCH_0 = {
 static const PsgPatch PRESET_PATCH_1 = {
     {false, 0, 0, 0},
     {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
-    {30, 70, 127, 90},
+    {0, 70, 100, 60},
     {0},
     {0, 0, triangle, 0},
     {10, 54, triangle, 31},
@@ -39,8 +39,8 @@ static const PsgPatch PRESET_PATCH_1 = {
 static const PsgPatch PRESET_PATCH_2 = {
     {false},
     {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
-    {0, 30, 80, 20},
-    {3, {40, 44, 64, 110}},
+    {5, 0, 120, 40},
+    {0, {0, 0, 0, 0}},
     {0, 0, triangle, 0},
     {0, 30, triangle, 31},
     {105, 20},
@@ -205,7 +205,7 @@ static const FmPatch FM_PRESET_PATCH_6 = {
          {22, 0, 8, 0, 4, 28, 3, 3, 5, false},
          {22, 8, 6, 7, 3, 10, 1, 1, 1, false},
      }},
-    {64, {3, 15, 3, 15}},
+    {64, {1, 15, 3, 15}},
     {0},
     {0, 0, triangle, 0},
     {false},
