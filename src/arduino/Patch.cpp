@@ -36,14 +36,21 @@ void PsgPatchState::setPatch(const PsgPatch *patch, bool is_delay) {
   _is_delay = is_delay;
 }
 
-void PsgPatchState::noteOn(byte pitch, byte velocity) {
+void PsgPatchState::noteOn(byte pitch, byte velocity, bool retrigger) {
   _pitch = pitch;
   _velocity = velocity;
   _held = true;
-  amplitude_envelope_state.start();
-  pitch_envelope_state.start();
-  amplitude_lfo_state.start();
-  pitch_lfo_state.start();
+  if (retrigger) {
+    amplitude_envelope_state.initialize();
+    pitch_envelope_state.initialize();
+    amplitude_lfo_state.initialize();
+    pitch_lfo_state.initialize();
+
+    amplitude_envelope_state.start();
+    pitch_envelope_state.start();
+    amplitude_lfo_state.start();
+    pitch_lfo_state.start();
+  }
 }
 
 void PsgPatchState::noteOff() {

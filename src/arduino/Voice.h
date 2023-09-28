@@ -40,6 +40,7 @@ class PsgVoice : public Voice {
 public:
   PsgVoice();
   void setPatch(PsgPatch *patch, bool is_delay);
+  const PsgPatch *getPatch() { return _patch_state.getPatch(); }
   void noteOn(byte _channel, byte _pitch, byte velocity);
   void noteOff();
   void tick();
@@ -68,8 +69,10 @@ public:
     _previous_channel = channel;
     channel = _channel;
     triggered_at = millis();
-    _patch_state.noteOn(_pitch, velocity);
-    _trigger = true;
+    _trigger = !_held || _previous_channel != channel ||
+               _patch_state.getPatch()->polyphony_config.retrigger_mode !=
+                   RETRIGGER_MODE_OFF;
+    _patch_state.noteOn(_pitch, velocity, _trigger);
     _on = true;
     _held = true;
   }

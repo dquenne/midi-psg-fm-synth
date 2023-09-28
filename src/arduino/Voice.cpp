@@ -21,9 +21,14 @@ void PsgVoice::setPatch(PsgPatch *patch, bool is_delay) {
 
 void PsgVoice::noteOn(byte _channel, byte _pitch, byte velocity) {
   pitch = _pitch;
+  _previous_channel = channel;
   channel = _channel;
   triggered_at = millis();
-  _patch_state.noteOn(_pitch, velocity);
+  _patch_state.noteOn(
+      _pitch, velocity,
+      !_held || _previous_channel != channel ||
+          _patch_state.getPatch()->polyphony_config.retrigger_mode !=
+              RETRIGGER_MODE_OFF);
   _on = true;
   _held = true;
 }
@@ -49,7 +54,8 @@ void PsgVoice::tick() {
 // FM
 
 FmVoice::FmVoice() {
-  channel = 0;
+  _previous_channel = 255;
+  channel = 255;
   pitch_cents = 0;
   pitch = 0;
   detune_cents = 0;

@@ -69,7 +69,7 @@ struct PitchEnvelope {
 class PatchState {
 public:
   virtual void initialize() = 0;
-  virtual void noteOn(byte pitch, byte velocity) = 0;
+  virtual void noteOn(byte pitch, byte velocity, bool retrigger) = 0;
   virtual void noteOff() = 0;
   virtual void tick() = 0;
   virtual unsigned getPitchCents() = 0;
@@ -115,8 +115,9 @@ class PsgPatchState : public PatchState {
 public:
   PsgPatchState();
   void setPatch(const PsgPatch *patch, bool is_delay);
+  const PsgPatch *getPatch() { return _patch; }
   void initialize();
-  void noteOn(byte pitch, byte velocity);
+  void noteOn(byte pitch, byte velocity, bool retrigger);
   void noteOff();
   void tick();
   unsigned getPitchCents();
@@ -245,12 +246,16 @@ public:
     _is_delay = is_delay;
   }
   const FmPatch *getPatch() { return _patch; }
-  void noteOn(byte pitch, byte velocity) {
+  void noteOn(byte pitch, byte velocity, bool retrigger) {
     _pitch = pitch;
     _velocity = velocity;
     _held = true;
-    pitch_envelope_state.start();
-    pitch_lfo_state.start();
+    if (retrigger) {
+      pitch_envelope_state.initialize();
+      pitch_envelope_state.start();
+      pitch_lfo_state.initialize();
+      pitch_lfo_state.start();
+    }
   }
   void noteOff() {
     _held = false;

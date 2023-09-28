@@ -15,7 +15,7 @@ struct PsgPatch {
 
 static const PsgPatch PRESET_PATCH_0 = {
     {true, 25, 16, 3},
-    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
+    {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},
     {{{11, 110}, {13, 130}, {15, 25}, {13, 200}, {11, 100}}, true, 2, 2, 3, 4},
     {-1, {0, 70, 0, 0}},
     {0, 0, triangle, 0},
@@ -48,7 +48,7 @@ static const PsgPatch PRESET_PATCH_2 = {
 
 static const PsgPatch PRESET_PATCH_3 = {
     {true, 35, 10, 3},
-    {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
+    {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
     {{{15, 60}, {14, 50}, {13, 25}, {6, 200}, {0, 0}}, true, 2, 2, 3, 4},
     {2, {0, 38, 0, 00}},
     {0, 0, triangle, 0},

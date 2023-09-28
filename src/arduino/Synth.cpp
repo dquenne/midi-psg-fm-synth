@@ -9,7 +9,9 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
         _fm_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
     FmVoice *voice = _fm_voice_manager.getVoice(
         channel, pitch, &active_patch->polyphony_config);
-    voice->setPatch(active_patch, channel >= 16);
+    if (voice->channel != channel || voice->getPatch() != active_patch) {
+      voice->setPatch(active_patch, channel >= 16);
+    }
     voice->noteOn(channel, pitch, velocity);
 
     voice->detune_cents = 0;
@@ -26,7 +28,10 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
         _psg_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
     PsgVoice *voice = _psg_voice_manager.getVoice(
         channel, pitch, &active_patch->polyphony_config);
-    voice->setPatch(active_patch, channel >= 16);
+
+    if (voice->channel != channel || voice->getPatch() != active_patch) {
+      voice->setPatch(active_patch, channel >= 16);
+    }
     voice->noteOn(channel, pitch, velocity);
 
     voice->detune_cents = 0;
@@ -76,7 +81,6 @@ void Synth::syncFmChannel(FmChannel *channel, FmVoice *voice) {
     }
     channel->writeStaticPatchParameters(voice->getPatch());
     voice->setSynced();
-    channel->writeKeyOnOff(voice->getStatus() == voice_held);
   }
   for (unsigned op = 0; op < 4; op++) {
     channel->writeTotalLevel(op, voice->operator_levels[op]);
