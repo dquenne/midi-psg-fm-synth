@@ -89,23 +89,15 @@ unsigned PsgPatchState::getLevel() {
   if (!isActive()) {
     return 0;
   }
-  signed envelope_amplitude = amplitude_envelope_state.getValue();
-
-  // positive velocity scaling should never bring it louder than 0
-  if (envelope_amplitude == 0) {
-    return 0;
-  }
-
-  signed velocity_attenuation =
-      (signed(_patch->velocity_config.velocity_center) - _velocity) /
-      _patch->velocity_config.interval;
+  unsigned envelope_amplitude = amplitude_envelope_state.getValue();
 
   unsigned scaled_level =
-      LIMIT(envelope_amplitude - velocity_attenuation, 0, 15);
+      envelope_amplitude / 32 * (480 + VELOCITY_SCALING[_velocity]) / 1024;
+
   if (_is_delay) {
     return FLOOR_MINUS(scaled_level, _patch->delay_config.attenuation);
   }
-  return scaled_level;
+  return MIN(scaled_level, 15);
 }
 
 bool PsgPatchState::isActive() {

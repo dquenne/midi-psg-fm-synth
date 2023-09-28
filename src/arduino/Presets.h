@@ -3,7 +3,7 @@
 /*
 struct PsgPatch {
   PatchDelayConfig delay_config;
-  EnvelopeShape amplitude_envelope;
+  AdsrEnvelopeShape amplitude_envelope;
   {scaling, AdsrEnvelopeShape} pitch_envelope;
 
   Lfo amplitude_lfo;
@@ -13,10 +13,11 @@ struct PsgPatch {
 };
 */
 
+// fade-in for Ys - Feena (1987)
 static const PsgPatch PRESET_PATCH_0 = {
     {true, 25, 16, 3},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},
-    {{{11, 110}, {13, 130}, {15, 25}, {13, 200}, {11, 100}}, true, 2, 2, 3, 4},
+    {120, 120, 127, 127},
     {-1, {0, 70, 0, 0}},
     {0, 0, triangle, 0},
     {0, 30, triangle, 0},
@@ -27,7 +28,7 @@ static const PsgPatch PRESET_PATCH_0 = {
 static const PsgPatch PRESET_PATCH_1 = {
     {false, 0, 0, 0},
     {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
-    {{{12, 80}, {14, 60}, {15, 60}, {5, 400}, {0, 0}}, true, 2, 2, 3, 4},
+    {30, 70, 127, 90},
     {0},
     {0, 0, triangle, 0},
     {10, 54, triangle, 31},
@@ -38,7 +39,7 @@ static const PsgPatch PRESET_PATCH_1 = {
 static const PsgPatch PRESET_PATCH_2 = {
     {false},
     {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
-    {{{15, 80}, {11, 50}, {8, 25}, {5, 400}, {1, 400}}, true, 2, 2, 3, 4},
+    {0, 30, 80, 20},
     {3, {40, 44, 64, 110}},
     {0, 0, triangle, 0},
     {0, 30, triangle, 31},
@@ -46,15 +47,12 @@ static const PsgPatch PRESET_PATCH_2 = {
     0,
 };
 
+// percussive lead for Ys - Feena (1987)
 static const PsgPatch PRESET_PATCH_3 = {
-    {true, 35, 10, 3},
-    {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
-    {{{15, 60}, {14, 50}, {13, 25}, {6, 200}, {0, 0}}, true, 2, 2, 3, 4},
-    {2, {0, 38, 0, 00}},
-    {0, 0, triangle, 0},
-    {16, 30, triangle, 38},
-    {105, 20},
-    0,
+    {true, 35, 10, 3},   {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+    {0, 70, 95, 70},     {0, {0, 38, 0, 00}},
+    {0, 0, triangle, 0}, {16, 30, triangle, 38},
+    {105, 20},           0,
 };
 
 const PsgPatch *PSG_PRESETS[] = {
@@ -228,7 +226,7 @@ static const FmPatch FM_PRESET_PATCH_7 = {
          {14, 4, 0, 6, 0, 10, 1, 1, 4, false},
      }},
     {64, {0, 3, 4, 15}},
-    {-1, {0, 45, 0, 45}},
+    {0, {0, 45, 0, 45}},
     {16, 30, triangle, 38},
     {true, 25, 16, 1},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},

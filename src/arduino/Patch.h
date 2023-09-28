@@ -100,7 +100,7 @@ struct PsgPatchVelocityConfig {
 struct PsgPatch {
   PatchDelayConfig delay_config;
   PatchPolyphonyConfig polyphony_config;
-  EnvelopeShape amplitude_envelope;
+  AdsrEnvelopeShape amplitude_envelope;
   PitchEnvelope pitch_envelope;
 
   Lfo amplitude_lfo;
@@ -123,7 +123,7 @@ public:
   unsigned getPitchCents();
   unsigned getLevel();
   bool isActive();
-  EnvelopeState amplitude_envelope_state;
+  AdsrEnvelopeState amplitude_envelope_state;
   AdsrEnvelopeState pitch_envelope_state;
 
   LfoState amplitude_lfo_state;

@@ -55,19 +55,19 @@ void applyPsgControlChange(PsgPatch *patch, byte cc_number, byte data) {
   switch (cc_number) {
   // envelopes
   case 70:
-    patch->amplitude_envelope.steps[0].value = data >> 3;
+    // patch->amplitude_envelope.steps[0].value = data >> 3;
     break;
   case 72:
-    patch->amplitude_envelope.steps[1].value = data >> 3;
+    patch->amplitude_envelope.attack = data;
     break;
   case 73:
-    patch->amplitude_envelope.steps[2].value = data >> 3;
+    patch->amplitude_envelope.decay = data;
     break;
   case 75:
-    patch->amplitude_envelope.steps[3].value = data >> 3;
+    patch->amplitude_envelope.sustain = data;
     break;
   case 76:
-    patch->amplitude_envelope.steps[4].value = data >> 3;
+    patch->amplitude_envelope.release = data;
     break;
 
   // pitch envelope
