@@ -56,6 +56,20 @@ void Synth::setPitchBend(byte _channel, int bend) {
   _synth_channels[_channel].pitch_bend = bend;
 }
 
+void Synth::programChange(byte channel, byte program) {
+  SynthChannel *synth_channel = &_synth_channels[channel];
+  synth_channel->setProgram(program);
+}
+
+void Synth::bankChange(byte channel, byte bank_number) {
+  SynthChannel *synth_channel = &_synth_channels[channel];
+
+  synth_channel->mode =
+      (bank_number >> 6 == 0 ? MULTI_CHANNEL_MODE_FM : MULTI_CHANNEL_MODE_PSG);
+
+  programChange(channel, synth_channel->patch_id.program_number);
+}
+
 PatchDelayConfig *Synth::getDelayConfig(unsigned channel) {
   SynthChannel *synth_channel = &_synth_channels[channel];
   if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {

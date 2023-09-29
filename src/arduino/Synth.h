@@ -17,6 +17,15 @@ public:
     pitch_bend = 0;
   }
 
+  void setProgram(byte program_number) {
+    patch_id.program_number = program_number;
+  }
+
+  void setBank(int bank_number) {
+    mode = (bank_number >> 6 == 0 ? MULTI_CHANNEL_MODE_FM
+                                  : MULTI_CHANNEL_MODE_PSG);
+  }
+
   PatchId patch_id;
   MultiChannelMode mode;
 
@@ -32,6 +41,8 @@ public:
   void noteOn(byte _channel, byte _pitch, byte velocity);
   void noteOff(byte _channel, byte _pitch, byte velocity);
   void setPitchBend(byte _channel, int bend);
+  void programChange(byte channel, byte program);
+  void bankChange(byte channel, byte bank);
 
   /* Would like to remove this. This is just to support querying MIDI delay
    * functionality. */

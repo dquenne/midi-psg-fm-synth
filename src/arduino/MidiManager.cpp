@@ -278,8 +278,7 @@ void applyFmControlChange(FmPatch *patch, byte cc_number, byte data) {
 void MidiManager::handleProgramChange(byte channel, byte program) {
   digitalWrite(13, HIGH);
 
-  SynthChannel *synth_channel = _synth->getChannel(channel);
-  synth_channel->patch_id = {program, synth_channel->patch_id.bank_number};
+  _synth->programChange(channel, program);
 
   digitalWrite(13, LOW);
 }
@@ -294,8 +293,7 @@ void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
 
   // bank select
   if (cc_number == 0) {
-    _synth->getChannel(channel)->mode =
-        (data >> 6 == 0 ? MULTI_CHANNEL_MODE_FM : MULTI_CHANNEL_MODE_PSG);
+    _synth->bankChange(channel, data);
     return;
   }
 
