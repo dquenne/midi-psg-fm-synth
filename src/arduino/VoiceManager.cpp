@@ -106,7 +106,7 @@ VoiceType *VoiceManager<VoiceType>::getVoice(
       patch_polyphony_config);
 
   if (index == NO_AVAILABLE_VOICE_INDEX) {
-    return &_null_voice;
+    return nullptr;
   }
   _last_voice_used = index;
   return getVoiceByIndex(index);
@@ -129,7 +129,7 @@ VoiceType *VoiceManager<VoiceType>::getExactVoice(byte channel, byte note) {
     }
   }
 
-  return &_null_voice;
+  return nullptr;
 }
 
 template <typename VoiceType>

@@ -9,6 +9,11 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
         _fm_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
     FmVoice *voice = _fm_voice_manager.getVoice(
         channel, pitch, &active_patch->polyphony_config);
+
+    if (!voice) {
+      return;
+    }
+
     if (voice->channel != channel || voice->getPatch() != active_patch) {
       voice->setPatch(active_patch, channel >= 16);
     }
@@ -29,6 +34,10 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
     PsgVoice *voice = _psg_voice_manager.getVoice(
         channel, pitch, &active_patch->polyphony_config);
 
+    if (!voice) {
+      return;
+    }
+
     if (voice->channel != channel || voice->getPatch() != active_patch) {
       voice->setPatch(active_patch, channel >= 16);
     }
@@ -48,6 +57,9 @@ void Synth::noteOff(byte channel, byte pitch, byte velocity) {
     voice = _fm_voice_manager.getExactVoice(channel, pitch);
   } else {
     voice = _psg_voice_manager.getExactVoice(channel, pitch);
+  }
+  if (!voice) {
+    return;
   }
   voice->noteOff();
 }

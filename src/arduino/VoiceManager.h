@@ -40,7 +40,6 @@ public:
 
 private:
   VoiceType voices[MAX_VOICE_COUNT];
-  VoiceType _null_voice;
   unsigned _voice_count;
   unsigned _last_voice_used;
 };
