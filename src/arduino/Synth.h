@@ -9,6 +9,36 @@
 
 #define SYNTH_CHANNEL_COUNT 16
 
+enum NoteStatus { NOTE_STATUS_OFF, NOTE_STATUS_ON };
+
+struct NoteState {
+  byte pitch;
+  byte velocity;
+  NoteState *next_priority_note;
+  NoteState(byte _pitch, byte _velocity) : pitch(_pitch), velocity(_velocity) {
+    next_priority_note = nullptr;
+  }
+};
+
+struct NoteSwap {
+  NoteState *old_note;
+  NoteState *new_note;
+};
+
+class NoteManager {
+public:
+  NoteSwap noteOn(byte pitch, byte velocity);
+  NoteSwap noteOff(byte pitch, byte velocity);
+  void noteStolen(byte pitch);
+  void setPolyphonyConfig(const PatchPolyphonyConfig *_polyphony_config);
+
+  NoteState *top_priority_note;
+
+private:
+  signed _compareNotePriority(NoteState *a, NoteState *b);
+  const PatchPolyphonyConfig *polyphony_config;
+};
+
 class SynthChannel {
 public:
   SynthChannel() {
@@ -58,6 +88,7 @@ public:
   void saveMulti() {}
 
 private:
+  void stealNote(byte channel, byte pitch);
   void syncPsgChannel(PsgChannel *channel, PsgVoice *voice);
   void syncFmChannel(FmChannel *channel, FmVoice *voice);
 
@@ -68,6 +99,7 @@ private:
   Chip *_chip;
   Multi *_active_multi;
   SynthChannel _synth_channels[16];
+  NoteManager _note_managers[32];
 };
 
 #endif

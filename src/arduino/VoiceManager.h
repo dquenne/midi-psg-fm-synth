@@ -16,8 +16,7 @@
 template <typename VoiceType>
 unsigned getAvailableVoiceIndex(byte channel, byte pitch,
                                 VoiceType voice_options[], unsigned voice_count,
-                                unsigned last_voice_used,
-                                PatchPolyphonyConfig *patch_polyphony_config);
+                                unsigned last_voice_used);
 
 template <typename VoiceType> class VoiceManager {
 public:
@@ -26,8 +25,7 @@ public:
 
   void tick();
 
-  VoiceType *getVoice(byte channel, byte note,
-                      PatchPolyphonyConfig *patch_polyphony_config);
+  VoiceType *getVoice(byte channel, byte note);
 
   /**
    * getExactVoice is intended for handling note off messages. It will only

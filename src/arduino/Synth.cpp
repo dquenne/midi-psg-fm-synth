@@ -1,17 +1,147 @@
 #include "Synth.h"
 #include "NoteMappings.h"
+#include <Arduino.h>
+
+NoteSwap NoteManager::noteOn(byte pitch, byte velocity) {
+  NoteState *new_note_state = new NoteState(pitch, velocity);
+  NoteState *current_note = top_priority_note;
+
+  if (!top_priority_note) {
+    top_priority_note = new_note_state;
+  } else if (_compareNotePriority(top_priority_note, new_note_state) > 0) {
+    new_note_state->next_priority_note = top_priority_note;
+    top_priority_note = new_note_state;
+  } else {
+    while (current_note) {
+      if (!current_note->next_priority_note) {
+        current_note->next_priority_note = new_note_state;
+        break;
+      }
+      if (_compareNotePriority(current_note->next_priority_note,
+                               new_note_state) > 0) {
+
+        new_note_state->next_priority_note = current_note->next_priority_note;
+        current_note->next_priority_note = new_note_state;
+        break;
+      }
+      current_note = current_note->next_priority_note;
+    }
+  }
+
+  current_note = top_priority_note;
+  unsigned active_note_count = 0;
+  bool new_note_is_sounded = false;
+  while (current_note) {
+    active_note_count++;
+    if (current_note->pitch == new_note_state->pitch) {
+      new_note_is_sounded = true;
+    }
+    if (polyphony_config->max_polyphony != MAX_POLYPHONY_UNLIMITED &&
+        active_note_count >= polyphony_config->max_polyphony) {
+      if (!new_note_is_sounded) {
+
+        return {nullptr, nullptr};
+      }
+      return {current_note->next_priority_note, new_note_state};
+    }
+    current_note = current_note->next_priority_note;
+  }
+  if (new_note_is_sounded) {
+    return {nullptr, new_note_state};
+  }
+  return {nullptr, new_note_state};
+}
+
+NoteSwap NoteManager::noteOff(byte pitch, byte velocity) {
+  if (top_priority_note->pitch == pitch) {
+    NoteState *old_note = top_priority_note;
+    top_priority_note = top_priority_note->next_priority_note;
+    delete old_note;
+  }
+
+  NoteState *current_note = top_priority_note;
+
+  while (current_note) {
+    if (current_note->next_priority_note->pitch == pitch) {
+      NoteState *old_note = current_note->next_priority_note;
+      current_note->next_priority_note =
+          current_note->next_priority_note->next_priority_note;
+      delete old_note;
+    }
+    current_note = current_note->next_priority_note;
+  }
+
+  current_note = top_priority_note;
+  unsigned active_note_count = 0;
+  while (current_note) {
+    active_note_count++;
+    if (active_note_count >= polyphony_config->max_polyphony) {
+      return {nullptr, current_note};
+    }
+    current_note = current_note->next_priority_note;
+  }
+  return {nullptr, nullptr};
+}
+
+void NoteManager::noteStolen(byte pitch) {}
+
+void NoteManager::setPolyphonyConfig(
+    const PatchPolyphonyConfig *_polyphony_config) {
+  polyphony_config = _polyphony_config;
+}
+
+signed NoteManager::_compareNotePriority(NoteState *older_note,
+                                         NoteState *newer_note) {
+  switch (polyphony_config->note_priority_mode) {
+  case (NOTE_PRIORITY_MODE_LATEST):
+    return 1;
+    break;
+  case (NOTE_PRIORITY_MODE_HIGHEST):
+    return newer_note->pitch > older_note->pitch ? 1 : -1;
+    break;
+  case (NOTE_PRIORITY_MODE_LOWEST):
+    return newer_note->pitch < older_note->pitch ? 1 : -1;
+    break;
+  }
+  return 0;
+}
+
+void Synth::stealNote(byte channel, byte pitch) { noteOff(channel, pitch, 0); }
 
 void Synth::noteOn(byte channel, byte pitch, byte velocity) {
-
   SynthChannel *synth_channel = &_synth_channels[channel % 16];
+
+  NoteSwap note_swap = _note_managers[channel].noteOn(pitch, velocity);
+
+  if (!note_swap.new_note) {
+    // if the newly pressed note is too low a priority to be sounded, do nothing
+    return;
+  }
+
   if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
     FmPatch *active_patch =
         _fm_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
-    FmVoice *voice = _fm_voice_manager.getVoice(
-        channel, pitch, &active_patch->polyphony_config);
 
+    FmVoice *voice = nullptr;
+    if (note_swap.old_note) {
+      voice =
+          _fm_voice_manager.getExactVoice(channel, note_swap.old_note->pitch);
+    }
+    if (!voice) {
+      voice = _fm_voice_manager.getVoice(channel, pitch);
+    }
     if (!voice) {
       return;
+    }
+
+    // if voice was stolen from another channel, or this channel does not track
+    // maximum polyphony, force the stolen note off so that it is not
+    // retriggered when this note is released.
+    if ((voice->channel != channel ||
+         active_patch->polyphony_config.max_polyphony ==
+             MAX_POLYPHONY_UNLIMITED) &&
+        voice->getStatus() == voice_held && !voice->getIsDelay()) {
+      stealNote(voice->channel, voice->pitch);
     }
 
     if (voice->channel != channel || voice->getPatch() != active_patch) {
@@ -31,11 +161,28 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
     }
     PsgPatch *active_patch =
         _psg_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
-    PsgVoice *voice = _psg_voice_manager.getVoice(
-        channel, pitch, &active_patch->polyphony_config);
 
+    PsgVoice *voice = nullptr;
+
+    if (note_swap.old_note) {
+      voice =
+          _psg_voice_manager.getExactVoice(channel, note_swap.old_note->pitch);
+    }
+    if (!voice) {
+      voice = _psg_voice_manager.getVoice(channel, pitch);
+    }
     if (!voice) {
       return;
+    }
+
+    // if voice was stolen from another channel, or this channel does not track
+    // maximum polyphony, force the stolen note off so that it is not
+    // retriggered when this note is released.
+    if ((voice->channel != channel ||
+         active_patch->polyphony_config.max_polyphony ==
+             MAX_POLYPHONY_UNLIMITED) &&
+        voice->getStatus() == voice_held && !voice->getIsDelay()) {
+      stealNote(voice->channel, voice->pitch);
     }
 
     if (voice->channel != channel || voice->getPatch() != active_patch) {
@@ -52,15 +199,37 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
 signed getPitchBendCents(int pitch_bend) { return pitch_bend * 2 * 100 / 8192; }
 
 void Synth::noteOff(byte channel, byte pitch, byte velocity) {
+  SynthChannel *synth_channel = &_synth_channels[channel % 16];
+
   Voice *voice;
   if (_synth_channels[channel % 16].mode == MULTI_CHANNEL_MODE_FM) {
     voice = _fm_voice_manager.getExactVoice(channel, pitch);
   } else {
     voice = _psg_voice_manager.getExactVoice(channel, pitch);
   }
+
+  NoteSwap note_swap = _note_managers[channel].noteOff(pitch, velocity);
+
   if (!voice) {
+    // can't find matching voice -> voice has probably already been reassigned
     return;
   }
+  if (note_swap.new_note) {
+    Voice *new_note_existing_voice;
+    if (_synth_channels[channel % 16].mode == MULTI_CHANNEL_MODE_FM) {
+      new_note_existing_voice =
+          _fm_voice_manager.getExactVoice(channel, note_swap.new_note->pitch);
+    } else {
+      new_note_existing_voice =
+          _psg_voice_manager.getExactVoice(channel, note_swap.new_note->pitch);
+    }
+    if (!new_note_existing_voice) {
+      voice->noteOn(channel, note_swap.new_note->pitch,
+                    note_swap.new_note->velocity);
+      return;
+    }
+  }
+
   voice->noteOff();
 }
 
@@ -71,6 +240,18 @@ void Synth::setPitchBend(byte _channel, int bend) {
 void Synth::programChange(byte channel, byte program) {
   SynthChannel *synth_channel = &_synth_channels[channel];
   synth_channel->setProgram(program);
+
+  PatchPolyphonyConfig *polyphony_config;
+  if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
+    polyphony_config =
+        &_fm_patch_manager.getPatch(synth_channel->patch_id)->polyphony_config;
+  } else {
+    polyphony_config =
+        &_psg_patch_manager.getPatch(synth_channel->patch_id)->polyphony_config;
+  }
+
+  _note_managers[channel].setPolyphonyConfig(polyphony_config);
+  _note_managers[channel + 16].setPolyphonyConfig(polyphony_config);
 }
 
 void Synth::bankChange(byte channel, byte bank_number) {
@@ -100,8 +281,11 @@ void Synth::loadMulti(Multi *multi) {
   for (byte channel_index = 0; channel_index < SYNTH_CHANNEL_COUNT;
        channel_index++) {
     _synth_channels[channel_index].mode = multi->channels[channel_index].mode;
-    _synth_channels[channel_index].patch_id =
-        multi->channels[channel_index].patch_id;
+
+    bankChange(channel_index,
+               multi->channels[channel_index].patch_id.bank_number);
+    programChange(channel_index,
+                  multi->channels[channel_index].patch_id.program_number);
   }
 }
 

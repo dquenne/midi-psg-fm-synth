@@ -3,8 +3,7 @@
 template <typename VoiceType>
 unsigned getAvailableVoiceIndex(byte channel, byte note,
                                 VoiceType voice_options[], unsigned voice_count,
-                                unsigned last_voice_used,
-                                PatchPolyphonyConfig *patch_polyphony_config) {
+                                unsigned last_voice_used) {
   VoiceType *voice_hypothesis;
   unsigned voice_index;
 
@@ -18,33 +17,6 @@ unsigned getAvailableVoiceIndex(byte channel, byte note,
         voice_hypothesis->channel == channel) {
       return voice_index;
     }
-  }
-
-  if (patch_polyphony_config->max_polyphony != MAX_POLYPHONY_UNLIMITED) {
-    unsigned channel_used_voice_count = 0;
-    unsigned channel_lowest_priority_voice_index = voice_count;
-
-    for (voice_index = 0; voice_index < voice_count; voice_index++) {
-      voice_hypothesis = &voice_options[voice_index];
-      if (voice_hypothesis->channel == channel &
-          voice_hypothesis->getStatus() != voice_off) {
-        channel_used_voice_count += 1;
-
-        // if current note being analyzed is same channel and older, make that
-        // new lowest-priority hypothesis
-        if (channel_lowest_priority_voice_index >= voice_count ||
-            voice_hypothesis->triggered_at <
-                voice_options[channel_lowest_priority_voice_index]
-                    .triggered_at) {
-          channel_lowest_priority_voice_index = voice_index;
-        }
-      }
-    }
-    if (channel_used_voice_count >= patch_polyphony_config->max_polyphony) {
-      // at polyphony maximum, need to steal voice
-      return channel_lowest_priority_voice_index;
-    }
-    // else, just take next available voice from normal stealing logic
   }
 
   for (voice_index = 0; voice_index < voice_count; voice_index++) {
@@ -84,13 +56,15 @@ unsigned getAvailableVoiceIndex(byte channel, byte note,
   return ((last_voice_used + 1) % voice_count);
 }
 
-template unsigned getAvailableVoiceIndex<PsgVoice>(
-    byte channel, byte note, PsgVoice voice_options[], unsigned voice_count,
-    unsigned last_voice_used, PatchPolyphonyConfig *patch_polyphony_config);
+template unsigned getAvailableVoiceIndex<PsgVoice>(byte channel, byte note,
+                                                   PsgVoice voice_options[],
+                                                   unsigned voice_count,
+                                                   unsigned last_voice_used);
 
-template unsigned getAvailableVoiceIndex<FmVoice>(
-    byte channel, byte note, FmVoice voice_options[], unsigned voice_count,
-    unsigned last_voice_used, PatchPolyphonyConfig *patch_polyphony_config);
+template unsigned getAvailableVoiceIndex<FmVoice>(byte channel, byte note,
+                                                  FmVoice voice_options[],
+                                                  unsigned voice_count,
+                                                  unsigned last_voice_used);
 
 template <typename VoiceType> void VoiceManager<VoiceType>::tick() {
   for (byte voice_index = 0; voice_index < _voice_count; voice_index++) {
@@ -99,11 +73,9 @@ template <typename VoiceType> void VoiceManager<VoiceType>::tick() {
 };
 
 template <typename VoiceType>
-VoiceType *VoiceManager<VoiceType>::getVoice(
-    byte channel, byte note, PatchPolyphonyConfig *patch_polyphony_config) {
+VoiceType *VoiceManager<VoiceType>::getVoice(byte channel, byte note) {
   unsigned index = getAvailableVoiceIndex<VoiceType>(
-      channel, note, voices, _voice_count, _last_voice_used,
-      patch_polyphony_config);
+      channel, note, voices, _voice_count, _last_voice_used);
 
   if (index == NO_AVAILABLE_VOICE_INDEX) {
     return nullptr;
