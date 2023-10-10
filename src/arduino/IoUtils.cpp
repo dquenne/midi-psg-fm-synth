@@ -2,18 +2,21 @@
 
 #include <Arduino.h>
 
+/**
+ * Note: this follows the pin / GPIO mappings for Adafruit ItsyBitsy M0.
+ */
 void setupPinModes() {
   pinMode(LED_PIN, OUTPUT); // LED output
 
-  // pins connected to D0-D7 on SN76489AN chip
+  // pins connected to 8-bit data bus
   pinMode(A3, OUTPUT); // PA04
   pinMode(A4, OUTPUT); // PA05
   pinMode(5, OUTPUT);  // PA15
   pinMode(11, OUTPUT); // PA16
   pinMode(10, OUTPUT); // PA18
   pinMode(12, OUTPUT); // PA19
-  pinMode(20, OUTPUT); // PA22
-  pinMode(21, OUTPUT); // PA23
+  pinMode(26, OUTPUT); // PA22
+  pinMode(27, OUTPUT); // PA23
 
   // control pins
   pinMode(IO_PIN_WRITE_ENABLE, OUTPUT);
@@ -23,25 +26,23 @@ void setupPinModes() {
 /**
  * @param[in] division is the factor that 8MHz is divided by. Should be 2 or
  * greater for SN76489, which has a maximum of 4MHz input clock.
+ *
+ * Currently set to use GCLK 5, which is assignable to PA21 / pin 7 on Adafruit
+ * ItsyBitsy M0. Can switch to different GCLK as needed (GCLK 4 is convenient on
+ * Adafruit Feather M0 as it is assignable to PA20 / pin 6). Too much trouble to
+ * make this a function parameter. Could be set up to detect the target board
+ * and switch accordingly, though.
  */
 void setClockOut(unsigned division) {
-  PORT->Group[PORTA].PINCFG[20].bit.PMUXEN =
-      1; // Switch on port pin PA20's multiplexer
-  PORT->Group[PORTA].PMUX[20 >> 1].reg |=
-      PORT_PMUX_PMUXE_H; // Switch the PA20's port multiplexer to GCLK IO
+  PORT->Group[PORTA].PINCFG[21].bit.PMUXEN = 1;
+  PORT->Group[PORTA].PMUX[21 >> 1].reg |= PORT_PMUX_PMUXO_H;
 
-  GCLK->GENCTRL.reg = GCLK_GENCTRL_OE |        // Enable GCLK4 output
-                      GCLK_GENCTRL_IDC |       // Improve duty-cycle to 50%
-                      GCLK_GENCTRL_GENEN |     // Enable generic clock
-                      GCLK_GENCTRL_SRC_OSC8M | // Set the clock source to the
-                                               // internal 8MHz oscillator
-                      GCLK_GENCTRL_ID(4);      // Set the GCLK ID to GCLK4
+  GCLK->GENCTRL.reg = GCLK_GENCTRL_OE | GCLK_GENCTRL_IDC | GCLK_GENCTRL_GENEN |
+                      GCLK_GENCTRL_SRC_OSC8M | GCLK_GENCTRL_ID(5);
   while (GCLK->STATUS.bit.SYNCBUSY)
-    ; // Wait for synchronization
+    ;
 
-  GCLK->GENDIV.reg =
-      GCLK_GENDIV_DIV(division) |
-      GCLK_GENDIV_ID(4); // Set GLCK4 division to 2 (8MHz / 2 = 4MHz)
+  GCLK->GENDIV.reg = GCLK_GENDIV_DIV(division) | GCLK_GENDIV_ID(5);
   while (GCLK->STATUS.bit.SYNCBUSY)
     ;
 }

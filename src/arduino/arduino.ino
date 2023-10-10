@@ -94,14 +94,19 @@ void initializeMainMulti() {
 void setup() {
   midi_delay.handleNoteOn = handleNoteOn;
   midi_delay.handleNoteOff = handleNoteOff;
-  setClockOut(2);
 
+  setClockOut(2);
   setupPinModes();
 
-  delay(1);
+  digitalWrite(LED_PIN, HIGH);
+  // There seems to be some race condition where without a delay here, the chip
+  // is not properly initialized. Need to dig further but for now, a 1 second
+  // delay on start-up seems to work.
+  delay(1000);
 
   sound_chip->setup();
 
+  digitalWrite(LED_PIN, LOW);
   delay(10);
 
   MIDI.turnThruOff();

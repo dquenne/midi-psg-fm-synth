@@ -8,7 +8,6 @@
 
 #define LED_PIN 13
 
-#define IO_PIN_CLOCK_4MHZ 6   // Digital 6 == PA20 is used in setClockOut
 #define IO_PIN_WRITE_ENABLE 9 // WE write enable (low = enable)
 #define IO_PIN_YM_CHIPS_A0 19 // control writing an address vs data (YM chips)
 
