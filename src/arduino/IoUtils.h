@@ -8,8 +8,9 @@
 
 #define LED_PIN 13
 
-#define IO_PIN_WRITE_ENABLE 9 // WE write enable (low = enable)
-#define IO_PIN_YM_CHIPS_A0 19 // control writing an address vs data (YM chips)
+#define IO_PIN_INITIALIZE_CHIP 2 // set all chip registers to 0
+#define IO_PIN_WRITE_ENABLE 9    // WE write enable (low = enable)
+#define IO_PIN_YM_CHIPS_A0 A2 // control writing an address vs data (YM chips)
 
 void setupPinModes();
 
@@ -20,6 +21,8 @@ void setupPinModes();
 void setClockOut(unsigned division);
 
 void clockDelay(unsigned count);
+
+void initializeChip();
 
 void setA0(bool value);
 

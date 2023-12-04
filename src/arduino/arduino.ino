@@ -99,15 +99,11 @@ void setup() {
   setupPinModes();
 
   digitalWrite(LED_PIN, HIGH);
-  // There seems to be some race condition where without a delay here, the chip
-  // is not properly initialized. Need to dig further but for now, a 1 second
-  // delay on start-up seems to work.
-  delay(1000);
 
   sound_chip->setup();
 
-  digitalWrite(LED_PIN, LOW);
   delay(10);
+  digitalWrite(LED_PIN, LOW);
 
   MIDI.turnThruOff();
   MIDI.begin(MIDI_CHANNEL_OMNI);

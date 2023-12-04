@@ -19,6 +19,7 @@ void setupPinModes() {
   pinMode(27, OUTPUT); // PA23
 
   // control pins
+  pinMode(IO_PIN_INITIALIZE_CHIP, OUTPUT);
   pinMode(IO_PIN_WRITE_ENABLE, OUTPUT);
   pinMode(IO_PIN_YM_CHIPS_A0, OUTPUT);
 }
@@ -53,6 +54,12 @@ void clockDelay(unsigned count) {
     NOP4;
     NOP4;
   }
+}
+
+void initializeChip() {
+  digitalWrite(IO_PIN_INITIALIZE_CHIP, LOW);
+  clockDelay(400);
+  digitalWrite(IO_PIN_INITIALIZE_CHIP, HIGH);
 }
 
 uint32_t CUSTOM_PORT_OUT_MASK =

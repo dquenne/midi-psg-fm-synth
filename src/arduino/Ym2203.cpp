@@ -8,6 +8,8 @@ Ym2203Instance::Ym2203Instance(unsigned clock_division) {
 }
 
 void Ym2203Instance::setup() {
+  initializeChip();
+
   setWriteEnable(false);
 
   // set internal clock division to 1/2 (normal for 4MHz clock, I think)
