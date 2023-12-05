@@ -118,6 +118,8 @@ void setup() {
   MIDI_USB.setHandleControlChange(handleControlChange);
 
   initializeMainMulti();
+
+  synth.initialize();
 }
 
 unsigned long last_millis = millis();

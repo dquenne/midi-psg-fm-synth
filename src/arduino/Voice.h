@@ -31,6 +31,7 @@ protected:
 class PsgVoice : public Voice {
 public:
   PsgVoice();
+  void setSynthControlState(SynthControlState *synth_control_state);
   void setPatch(PsgPatch *patch, bool is_delay);
   const PsgPatch *getPatch() { return _patch_state.getPatch(); }
   void noteOn(byte _channel, byte _pitch, byte velocity);
@@ -47,6 +48,7 @@ protected:
 class FmVoice : public Voice {
 public:
   FmVoice();
+  void setSynthControlState(SynthControlState *synth_control_state);
   void setPatch(FmPatch *patch, bool is_delay);
   const FmPatch *getPatch();
 

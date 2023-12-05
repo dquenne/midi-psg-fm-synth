@@ -105,6 +105,16 @@ signed NoteManager::_compareNotePriority(NoteSwapNote *older_note,
   }
   return 0;
 }
+// Synth
+
+void Synth::initialize() {
+  _psg_voice_manager.getVoiceByIndex(0)->setSynthControlState(&_control_state);
+  _psg_voice_manager.getVoiceByIndex(1)->setSynthControlState(&_control_state);
+  _psg_voice_manager.getVoiceByIndex(2)->setSynthControlState(&_control_state);
+  _fm_voice_manager.getVoiceByIndex(0)->setSynthControlState(&_control_state);
+  _fm_voice_manager.getVoiceByIndex(1)->setSynthControlState(&_control_state);
+  _fm_voice_manager.getVoiceByIndex(2)->setSynthControlState(&_control_state);
+}
 
 void Synth::stealNote(byte channel, byte pitch) { noteOff(channel, pitch, 0); }
 

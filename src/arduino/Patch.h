@@ -3,6 +3,7 @@
 
 #include "Envelope.h"
 #include "Lfo.h"
+#include "SynthState.h"
 #include <Arduino.h>
 
 /** will extend this to standard 128 when EEPROM storage is implemented */
@@ -69,15 +70,20 @@ struct PitchEnvelope {
 class PatchState {
 public:
   virtual void initialize() = 0;
-  virtual void noteOn(byte pitch, byte velocity, bool retrigger) = 0;
+  virtual void noteOn(byte channel, byte pitch, byte velocity,
+                      bool retrigger) = 0;
   virtual void noteOff() = 0;
   virtual void tick() = 0;
   virtual unsigned getPitchCents() = 0;
   virtual bool isActive() = 0;
+  void setSynthControlState(SynthControlState *synth_control_state);
+  byte getVelocity();
 
 protected:
+  SynthControlState *_synth_control_state;
+  byte _channel;
+  byte _initial_velocity;
   byte _pitch;
-  byte _velocity;
   bool _held;
   bool _is_delay;
 };
@@ -117,7 +123,7 @@ public:
   void setPatch(const PsgPatch *patch, bool is_delay);
   const PsgPatch *getPatch();
   void initialize();
-  void noteOn(byte pitch, byte velocity, bool retrigger);
+  void noteOn(byte channel, byte pitch, byte velocity, bool retrigger);
   void noteOff();
   void tick();
   unsigned getPitchCents();
@@ -200,6 +206,18 @@ struct FmParameters {
   FmOperator operators[4];
 };
 
+enum FmPatchOperatorScalingMode {
+  FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING,
+  FM_PATCH_OPERATOR_SCALING_MODE_VELOCITY,
+  FM_PATCH_OPERATOR_SCALING_MODE_MOD_WHEEL,
+  FM_PATCH_OPERATOR_SCALING_MODE_EXPRESSION,
+};
+
+struct FmPatchOperatorScalingConfig {
+  FmPatchOperatorScalingMode scaling_mode;
+  byte alternative_value;
+};
+
 struct FmPatchVelocityConfig {
   /** What velocity has no attenuation/amplification applied. This is typically
    * 64 or 72. */
@@ -217,7 +235,7 @@ struct FmPatchVelocityConfig {
 struct FmPatch {
   FmParameters core_parameters;
   FmPatchVelocityConfig velocity_level_scaling;
-
+  FmPatchOperatorScalingConfig operator_scaling_config[4];
   PitchEnvelope pitch_envelope;
   /** This LFO is distinct from some YM chips' built-in global LFO and
    * calculated at a per voice level. */
@@ -232,11 +250,12 @@ public:
   void initialize();
   void setPatch(const FmPatch *patch, bool is_delay);
   const FmPatch *getPatch();
-  void noteOn(byte pitch, byte velocity, bool retrigger);
+  void noteOn(byte channel, byte pitch, byte velocity, bool retrigger);
   void noteOff();
   void tick();
   unsigned getPitchCents();
   unsigned getOperatorLevel(unsigned op);
+  unsigned getModLevel(FmPatchOperatorScalingMode scaling_mode);
   bool isActive();
 
   AdsrEnvelopeState pitch_envelope_state;

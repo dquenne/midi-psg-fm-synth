@@ -69,6 +69,7 @@ public:
   Synth(Chip *chip, Multi *active_multi)
       : _psg_voice_manager{3}, _fm_voice_manager{3}, _chip(chip),
         _active_multi(active_multi) {}
+  void initialize();
   void tick();
   void noteOn(byte _channel, byte _pitch, byte velocity);
   void noteOff(byte _channel, byte _pitch, byte velocity);

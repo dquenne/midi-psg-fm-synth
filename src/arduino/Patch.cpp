@@ -7,6 +7,12 @@
 
 unsigned getDelayTicks(byte delay_time) { return 4 * delay_time; }
 
+void PatchState::setSynthControlState(SynthControlState *synth_control_state) {
+  _synth_control_state = synth_control_state;
+}
+
+byte PatchState::getVelocity() { return _initial_velocity; }
+
 // PSG
 
 PsgPatchState::PsgPatchState() {
@@ -38,9 +44,11 @@ void PsgPatchState::setPatch(const PsgPatch *patch, bool is_delay) {
 
 const PsgPatch *PsgPatchState::getPatch() { return _patch; }
 
-void PsgPatchState::noteOn(byte pitch, byte velocity, bool retrigger) {
+void PsgPatchState::noteOn(byte channel, byte pitch, byte velocity,
+                           bool retrigger) {
+  _channel = channel;
+  _initial_velocity = velocity;
   _pitch = pitch;
-  _velocity = velocity;
   _held = true;
   if (retrigger) {
     amplitude_envelope_state.initialize();
@@ -94,7 +102,7 @@ unsigned PsgPatchState::getLevel() {
   unsigned envelope_amplitude = amplitude_envelope_state.getValue();
 
   unsigned scaled_level =
-      envelope_amplitude / 32 * (480 + VELOCITY_SCALING[_velocity]) / 1024;
+      envelope_amplitude / 32 * (480 + VELOCITY_SCALING[getVelocity()]) / 1024;
 
   if (_is_delay) {
     return FLOOR_MINUS(scaled_level, _patch->delay_config.attenuation);
@@ -133,9 +141,11 @@ void FmPatchState::setPatch(const FmPatch *patch, bool is_delay) {
 
 const FmPatch *FmPatchState::getPatch() { return _patch; }
 
-void FmPatchState::noteOn(byte pitch, byte velocity, bool retrigger) {
+void FmPatchState::noteOn(byte channel, byte pitch, byte velocity,
+                          bool retrigger) {
+  _channel = channel;
+  _initial_velocity = velocity;
   _pitch = pitch;
-  _velocity = velocity;
   _held = true;
   if (retrigger) {
     pitch_envelope_state.initialize();
@@ -167,24 +177,37 @@ unsigned FmPatchState::getPitchCents() {
 }
 
 unsigned FmPatchState::getOperatorLevel(unsigned op) {
-  if (_patch->velocity_level_scaling.operator_scaling[op] == 0) {
-    return _patch->core_parameters.operators[op].total_level;
+  unsigned total_level = _patch->core_parameters.operators[op].total_level;
+  unsigned scaled_level = total_level;
+
+  if (_patch->operator_scaling_config[op].scaling_mode !=
+      FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING) {
+    unsigned scalar =
+        getModLevel(_patch->operator_scaling_config[op].scaling_mode);
+    unsigned alternative_level =
+        _patch->operator_scaling_config[op].alternative_value;
+
+    scaled_level =
+        scaled_level + ((signed)alternative_level - (signed)scaled_level) *
+                           (signed)(scalar) / 127;
   }
-
-  signed velocity_scaling = _patch->velocity_level_scaling.operator_scaling[op];
-
-  signed attenuation = -1 * VELOCITY_SCALING[_velocity] * velocity_scaling / 64;
-
-  unsigned velocity_scaled_level = LIMIT(
-      (signed)_patch->core_parameters.operators[op].total_level + attenuation,
-      0, 127);
 
   if (_is_delay &&
       FM_CARRIERS_BY_ALGORITHM[_patch->core_parameters.algorithm][op]) {
-    return LIMIT(velocity_scaled_level + _patch->delay_config.attenuation * 8,
-                 0, 127);
+    return LIMIT(scaled_level + _patch->delay_config.attenuation * 8, 0, 127);
   }
-  return velocity_scaled_level;
+  return scaled_level;
+}
+
+unsigned FmPatchState::getModLevel(FmPatchOperatorScalingMode scaling_mode) {
+  switch (scaling_mode) {
+  case FM_PATCH_OPERATOR_SCALING_MODE_MOD_WHEEL:
+    return _synth_control_state->channels[_channel].cc[1];
+  case FM_PATCH_OPERATOR_SCALING_MODE_VELOCITY:
+    return 127 - _initial_velocity;
+  default:
+    return 127;
+  }
 }
 
 bool FmPatchState::isActive() { return _held; }
