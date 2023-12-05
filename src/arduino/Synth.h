@@ -5,24 +5,26 @@
 #include "Multi.h"
 #include "PatchManager.h"
 #include "Storage.h"
+#include "SynthState.h"
 #include "VoiceManager.h"
 
 #define SYNTH_CHANNEL_COUNT 16
 
 enum NoteStatus { NOTE_STATUS_OFF, NOTE_STATUS_ON };
 
-struct NoteState {
+struct NoteSwapNote {
   byte pitch;
   byte velocity;
-  NoteState *next_priority_note;
-  NoteState(byte _pitch, byte _velocity) : pitch(_pitch), velocity(_velocity) {
+  NoteSwapNote *next_priority_note;
+  NoteSwapNote(byte _pitch, byte _velocity)
+      : pitch(_pitch), velocity(_velocity) {
     next_priority_note = nullptr;
   }
 };
 
 struct NoteSwap {
-  NoteState *old_note;
-  NoteState *new_note;
+  NoteSwapNote *old_note;
+  NoteSwapNote *new_note;
 };
 
 class NoteManager {
@@ -32,10 +34,10 @@ public:
   void noteStolen(byte pitch);
   void setPolyphonyConfig(const PatchPolyphonyConfig *_polyphony_config);
 
-  NoteState *top_priority_note;
+  NoteSwapNote *top_priority_note;
 
 private:
-  signed _compareNotePriority(NoteState *a, NoteState *b);
+  signed _compareNotePriority(NoteSwapNote *a, NoteSwapNote *b);
   const PatchPolyphonyConfig *polyphony_config;
 };
 
@@ -73,6 +75,7 @@ public:
   void setPitchBend(byte _channel, int bend);
   void programChange(byte channel, byte program);
   void bankChange(byte channel, byte bank);
+  void controlChange(byte channel, byte cc_number, byte data);
 
   /* Would like to remove this. This is just to support querying MIDI delay
    * functionality. */
@@ -98,6 +101,7 @@ private:
   PatchManager<FmPatch> _fm_patch_manager;
   Chip *_chip;
   Multi *_active_multi;
+  SynthControlState _control_state;
   SynthChannel _synth_channels[16];
   NoteManager _note_managers[32];
 };

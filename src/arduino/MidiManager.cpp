@@ -16,9 +16,6 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
     handleNoteOff(channel, pitch, velocity);
     return;
   }
-  if (channel < 16) {
-    state.channels[channel].notes[pitch].velocity = velocity;
-  }
 
   _synth->noteOn(channel, pitch, velocity);
 
@@ -35,9 +32,6 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
  * normalized outside this function.
  */
 void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
-  if (channel < 16) {
-    state.channels[channel].notes[pitch].velocity = 0;
-  }
   _synth->noteOff(channel, pitch, velocity);
 
   if (_delay && channel < 16 && _synth->getDelayConfig(channel % 16)->enable) {
@@ -289,13 +283,13 @@ void MidiManager::handleProgramChange(byte channel, byte program) {
  * normalized outside this function.
  */
 void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
-  state.channels[channel].cc[cc_number] = data;
-
   // bank select
   if (cc_number == 0) {
     _synth->bankChange(channel, data);
     return;
   }
+
+  _synth->controlChange(channel, cc_number, data);
 
   // if (cc_number == 38) {
   //   _synth->saveMulti();

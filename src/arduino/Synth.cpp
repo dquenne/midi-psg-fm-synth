@@ -3,8 +3,8 @@
 #include <Arduino.h>
 
 NoteSwap NoteManager::noteOn(byte pitch, byte velocity) {
-  NoteState *new_note_state = new NoteState(pitch, velocity);
-  NoteState *current_note = top_priority_note;
+  NoteSwapNote *new_note_state = new NoteSwapNote(pitch, velocity);
+  NoteSwapNote *current_note = top_priority_note;
 
   if (!top_priority_note) {
     top_priority_note = new_note_state;
@@ -54,16 +54,16 @@ NoteSwap NoteManager::noteOn(byte pitch, byte velocity) {
 
 NoteSwap NoteManager::noteOff(byte pitch, byte velocity) {
   if (top_priority_note->pitch == pitch) {
-    NoteState *old_note = top_priority_note;
+    NoteSwapNote *old_note = top_priority_note;
     top_priority_note = top_priority_note->next_priority_note;
     delete old_note;
   }
 
-  NoteState *current_note = top_priority_note;
+  NoteSwapNote *current_note = top_priority_note;
 
   while (current_note) {
     if (current_note->next_priority_note->pitch == pitch) {
-      NoteState *old_note = current_note->next_priority_note;
+      NoteSwapNote *old_note = current_note->next_priority_note;
       current_note->next_priority_note =
           current_note->next_priority_note->next_priority_note;
       delete old_note;
@@ -90,8 +90,8 @@ void NoteManager::setPolyphonyConfig(
   polyphony_config = _polyphony_config;
 }
 
-signed NoteManager::_compareNotePriority(NoteState *older_note,
-                                         NoteState *newer_note) {
+signed NoteManager::_compareNotePriority(NoteSwapNote *older_note,
+                                         NoteSwapNote *newer_note) {
   switch (polyphony_config->note_priority_mode) {
   case (NOTE_PRIORITY_MODE_LATEST):
     return 1;
@@ -109,6 +109,10 @@ signed NoteManager::_compareNotePriority(NoteState *older_note,
 void Synth::stealNote(byte channel, byte pitch) { noteOff(channel, pitch, 0); }
 
 void Synth::noteOn(byte channel, byte pitch, byte velocity) {
+  if (channel < 16) {
+    _control_state.channels[channel].notes[pitch].velocity = velocity;
+  }
+
   SynthChannel *synth_channel = &_synth_channels[channel % 16];
 
   NoteSwap note_swap = _note_managers[channel].noteOn(pitch, velocity);
@@ -199,6 +203,10 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
 signed getPitchBendCents(int pitch_bend) { return pitch_bend * 2 * 100 / 8192; }
 
 void Synth::noteOff(byte channel, byte pitch, byte velocity) {
+  if (channel < 16) {
+    _control_state.channels[channel].notes[pitch].velocity = 0;
+  }
+
   SynthChannel *synth_channel = &_synth_channels[channel % 16];
 
   Voice *voice;
@@ -261,6 +269,10 @@ void Synth::bankChange(byte channel, byte bank_number) {
       (bank_number >> 6 == 0 ? MULTI_CHANNEL_MODE_FM : MULTI_CHANNEL_MODE_PSG);
 
   programChange(channel, synth_channel->patch_id.program_number);
+}
+
+void Synth::controlChange(byte channel, byte cc_number, byte data) {
+  _control_state.channels[channel].cc[cc_number] = data;
 }
 
 PatchDelayConfig *Synth::getDelayConfig(unsigned channel) {
