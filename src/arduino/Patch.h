@@ -218,23 +218,11 @@ struct FmPatchOperatorScalingConfig {
   byte alternative_value;
 };
 
-struct FmPatchVelocityConfig {
-  /** What velocity has no attenuation/amplification applied. This is typically
-   * 64 or 72. */
-  byte velocity_center;
-
-  /** Degree of scaling. -64 - 63: Negative numbers mean higher velocity is
-   * quieter. 0 means no scaling is applied.
-   */
-  int8_t operator_scaling[4];
-};
-
 /** A superset of the parameters sent to YMxxxx chips, including software-driven
  * parameters like velocity sensitivity and software LFOs.
  */
 struct FmPatch {
   FmParameters core_parameters;
-  FmPatchVelocityConfig velocity_level_scaling;
   FmPatchOperatorScalingConfig operator_scaling_config[4];
   PitchEnvelope pitch_envelope;
   /** This LFO is distinct from some YM chips' built-in global LFO and
