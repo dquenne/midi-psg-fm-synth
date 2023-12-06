@@ -12,6 +12,7 @@ public:
   virtual void noteOff() = 0;
   virtual void tick() = 0;
   VoiceStatus getStatus();
+  void setSynthControlState(SynthControlState *synth_control_state);
   bool getIsDelay();
   bool getChangedChannel();
   byte channel;
@@ -32,7 +33,6 @@ protected:
 class PsgVoice : public Voice {
 public:
   PsgVoice();
-  void setSynthControlState(SynthControlState *synth_control_state);
   void setPatch(PsgPatch *patch, bool is_delay);
   const PsgPatch *getPatch() { return _patch_state.getPatch(); }
   void noteOn(byte _channel, byte _pitch, byte velocity);
@@ -43,13 +43,17 @@ public:
   byte level;
 
 protected:
+  unsigned _getPitchCents();
+  unsigned _getLevel();
+  bool _isActive();
+
+  const PsgPatch *_patch;
   PsgPatchState _patch_state;
 };
 
 class FmVoice : public Voice {
 public:
   FmVoice();
-  void setSynthControlState(SynthControlState *synth_control_state);
   void setPatch(FmPatch *patch, bool is_delay);
   const FmPatch *getPatch();
 

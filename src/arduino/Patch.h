@@ -74,15 +74,9 @@ public:
                       bool retrigger) = 0;
   virtual void noteOff() = 0;
   virtual void tick() = 0;
-  virtual bool isActive() = 0;
-  byte getVelocity();
 
 protected:
-  byte _channel;
-  byte _initial_velocity;
-  byte _pitch;
   bool _held;
-  bool _is_delay;
 };
 
 // PSG
@@ -123,9 +117,6 @@ public:
   void noteOn(byte channel, byte pitch, byte velocity, bool retrigger);
   void noteOff();
   void tick();
-  unsigned getPitchCents();
-  unsigned getLevel();
-  bool isActive();
   AdsrEnvelopeState amplitude_envelope_state;
   AdsrEnvelopeState pitch_envelope_state;
 

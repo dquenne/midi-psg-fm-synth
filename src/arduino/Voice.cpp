@@ -3,6 +3,7 @@
 #include <Arduino.h>
 
 // Common voice parameters
+#define FLOOR_MINUS(a, b) (a < b ? 0 : a - b)
 
 VoiceStatus Voice::getStatus() {
   if (_on) {
@@ -18,6 +19,9 @@ bool Voice::getIsDelay() { return _is_delay; }
 
 bool Voice::getChangedChannel() { return channel != _previous_channel; }
 
+void Voice::setSynthControlState(SynthControlState *synth_control_state) {
+  _synth_control_state = synth_control_state;
+}
 // PSG
 
 PsgVoice::PsgVoice() {
@@ -30,17 +34,15 @@ PsgVoice::PsgVoice() {
   _patch_state.initialize();
 }
 
-void PsgVoice::setSynthControlState(SynthControlState *synth_control_state) {
-  _patch_state.setSynthControlState(synth_control_state);
-}
-
 void PsgVoice::setPatch(PsgPatch *patch, bool is_delay) {
+  _patch = patch;
   _patch_state.setPatch(patch, is_delay);
   _is_delay = is_delay;
 }
 
 void PsgVoice::noteOn(byte _channel, byte _pitch, byte velocity) {
   pitch = _pitch;
+  _initial_velocity = velocity;
   _previous_channel = channel;
   channel = _channel;
   triggered_at = millis();
@@ -63,12 +65,47 @@ void PsgVoice::tick() {
     return;
   }
   _patch_state.tick();
-  level = _patch_state.getLevel();
-  pitch_cents = _patch_state.getPitchCents();
+  level = _getLevel();
+  pitch_cents = _getPitchCents();
 
   if (_patch_state.amplitude_envelope_state.getStatus() == done) {
     _on = false;
   }
+}
+
+unsigned PsgVoice::_getPitchCents() {
+  signed _pitch_cents = (pitch * 100) +
+                        _patch_state.pitch_lfo_state.getValue() +
+                        _patch->detune_cents;
+
+  _pitch_cents = (signed)_pitch_cents +
+                 _patch->pitch_envelope.scaling * 25 *
+                     (signed)_patch_state.pitch_envelope_state.getValue() /
+                     1024;
+
+  if (_is_delay) {
+    return _pitch_cents + _patch->delay_config.detune_cents;
+  }
+  return MAX(0, _pitch_cents);
+}
+
+unsigned PsgVoice::_getLevel() {
+  if (!_isActive()) {
+    return 0;
+  }
+  unsigned envelope_amplitude =
+      _patch_state.amplitude_envelope_state.getValue();
+
+  unsigned scaled_level = envelope_amplitude / 32 *
+                          (480 + VELOCITY_SCALING[_initial_velocity]) / 1024;
+
+  if (_is_delay) {
+    return FLOOR_MINUS(scaled_level, _patch->delay_config.attenuation);
+  }
+  return MIN(scaled_level, 15);
+}
+bool PsgVoice::_isActive() {
+  return _patch_state.amplitude_envelope_state.getStatus() != done;
 }
 
 // FM
@@ -81,11 +118,6 @@ FmVoice::FmVoice() {
   _on = false;
   _held = false;
   _patch_state.initialize();
-}
-
-void FmVoice::setSynthControlState(SynthControlState *synth_control_state) {
-  _synth_control_state = synth_control_state;
-  _patch_state.setSynthControlState(synth_control_state);
 }
 
 void FmVoice::setPatch(FmPatch *patch, bool is_delay) {
