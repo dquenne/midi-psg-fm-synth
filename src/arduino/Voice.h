@@ -21,10 +21,12 @@ public:
   unsigned long triggered_at;
 
 protected:
+  byte _initial_velocity;
   bool _on;
   bool _held;
   bool _is_delay;
   byte _previous_channel;
+  SynthControlState *_synth_control_state;
 };
 
 class PsgVoice : public Voice {
@@ -56,9 +58,15 @@ public:
   void setSynced();
   bool getIsSynced();
   void tick();
+
   byte operator_levels[4];
 
 private:
+  unsigned _getPitchCents();
+  unsigned _getOperatorLevel(unsigned op);
+  unsigned _getModLevel(FmPatchOperatorScalingMode scaling_mode);
+
+  const FmPatch *_patch;
   FmPatchState _patch_state;
   bool _trigger;
 };

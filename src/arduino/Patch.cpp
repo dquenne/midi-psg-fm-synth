@@ -7,10 +7,6 @@
 
 unsigned getDelayTicks(byte delay_time) { return 4 * delay_time; }
 
-void PatchState::setSynthControlState(SynthControlState *synth_control_state) {
-  _synth_control_state = synth_control_state;
-}
-
 byte PatchState::getVelocity() { return _initial_velocity; }
 
 // PSG
@@ -164,50 +160,6 @@ void FmPatchState::noteOff() {
 void FmPatchState::tick() {
   pitch_envelope_state.tick();
   pitch_lfo_state.tick();
-}
-
-unsigned FmPatchState::getPitchCents() {
-  signed pitch_cents = (100 * _pitch) + pitch_lfo_state.getValue();
-
-  pitch_cents =
-      (signed)pitch_cents + _patch->pitch_envelope.scaling * 25 *
-                                (signed)pitch_envelope_state.getValue() / 1024;
-
-  return MAX(0, pitch_cents);
-}
-
-unsigned FmPatchState::getOperatorLevel(unsigned op) {
-  unsigned total_level = _patch->core_parameters.operators[op].total_level;
-  unsigned scaled_level = total_level;
-
-  if (_patch->operator_scaling_config[op].scaling_mode !=
-      FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING) {
-    unsigned scalar =
-        getModLevel(_patch->operator_scaling_config[op].scaling_mode);
-    unsigned alternative_level =
-        _patch->operator_scaling_config[op].alternative_value;
-
-    scaled_level =
-        scaled_level + ((signed)alternative_level - (signed)scaled_level) *
-                           (signed)(scalar) / 127;
-  }
-
-  if (_is_delay &&
-      FM_CARRIERS_BY_ALGORITHM[_patch->core_parameters.algorithm][op]) {
-    return LIMIT(scaled_level + _patch->delay_config.attenuation * 8, 0, 127);
-  }
-  return scaled_level;
-}
-
-unsigned FmPatchState::getModLevel(FmPatchOperatorScalingMode scaling_mode) {
-  switch (scaling_mode) {
-  case FM_PATCH_OPERATOR_SCALING_MODE_MOD_WHEEL:
-    return _synth_control_state->channels[_channel].cc[1];
-  case FM_PATCH_OPERATOR_SCALING_MODE_VELOCITY:
-    return 127 - _initial_velocity;
-  default:
-    return 127;
-  }
 }
 
 bool FmPatchState::isActive() { return _held; }

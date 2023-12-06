@@ -74,13 +74,10 @@ public:
                       bool retrigger) = 0;
   virtual void noteOff() = 0;
   virtual void tick() = 0;
-  virtual unsigned getPitchCents() = 0;
   virtual bool isActive() = 0;
-  void setSynthControlState(SynthControlState *synth_control_state);
   byte getVelocity();
 
 protected:
-  SynthControlState *_synth_control_state;
   byte _channel;
   byte _initial_velocity;
   byte _pitch;
@@ -241,9 +238,6 @@ public:
   void noteOn(byte channel, byte pitch, byte velocity, bool retrigger);
   void noteOff();
   void tick();
-  unsigned getPitchCents();
-  unsigned getOperatorLevel(unsigned op);
-  unsigned getModLevel(FmPatchOperatorScalingMode scaling_mode);
   bool isActive();
 
   AdsrEnvelopeState pitch_envelope_state;
