@@ -163,8 +163,6 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
     }
     voice->noteOn(channel, pitch, velocity);
 
-    voice->detune_cents = 0;
-
   } else {
     // FIXME: make this dependant on target chip.
     // if (NOTES_125KHZ[pitch] > 1023) {
@@ -203,8 +201,6 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
       voice->setPatch(active_patch, channel >= 16);
     }
     voice->noteOn(channel, pitch, velocity);
-
-    voice->detune_cents = 0;
   }
 }
 

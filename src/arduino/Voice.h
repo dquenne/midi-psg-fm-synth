@@ -18,7 +18,6 @@ public:
 
   byte pitch;
   unsigned pitch_cents;
-  byte detune_cents;
   unsigned long triggered_at;
 
 protected:

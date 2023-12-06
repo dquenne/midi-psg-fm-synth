@@ -24,7 +24,6 @@ PsgVoice::PsgVoice() {
   level = 0;
   pitch = 0;
   channel = 0;
-  detune_cents = 0;
   _on = false;
   _held = false;
   _patch_state.initialize();
@@ -64,7 +63,7 @@ void PsgVoice::tick() {
   }
   _patch_state.tick();
   level = _patch_state.getLevel();
-  pitch_cents = _patch_state.getPitchCents() + detune_cents;
+  pitch_cents = _patch_state.getPitchCents();
 
   if (_patch_state.amplitude_envelope_state.getStatus() == done) {
     _on = false;
@@ -78,7 +77,6 @@ FmVoice::FmVoice() {
   channel = 255;
   pitch_cents = 0;
   pitch = 0;
-  detune_cents = 0;
   _on = false;
   _held = false;
   _patch_state.initialize();
@@ -122,7 +120,7 @@ bool FmVoice::getIsSynced() { return _trigger == false; }
 
 void FmVoice::tick() {
   _patch_state.tick();
-  pitch_cents = _patch_state.getPitchCents() + detune_cents;
+  pitch_cents = _patch_state.getPitchCents();
   for (unsigned op = 0; op < 4; op++) {
     operator_levels[op] = _patch_state.getOperatorLevel(op);
   }
