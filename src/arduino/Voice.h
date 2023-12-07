@@ -1,6 +1,7 @@
 #ifndef Voice_h
 #define Voice_h
 
+#include "ModMatrix.h"
 #include "Patch.h"
 #include <Arduino.h>
 
@@ -76,6 +77,10 @@ private:
   unsigned _getPitchCents();
   unsigned _getOperatorLevel(unsigned op);
   unsigned _getModLevel(FmPatchOperatorScalingMode scaling_mode);
+  byte _getModSourceLevel(ModSource source);
+  void _updateModMatrixAccumlators();
+
+  int16_t _mod_matrix_accumlators[MOD_DESTINATION_COUNT];
 
   const FmPatch *_patch;
   bool _trigger;

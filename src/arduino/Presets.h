@@ -333,22 +333,24 @@ static const FmPatch FM_PRESET_PATCH_11 = {
      0,
      0,
      {
-         {31, 0, 0, 0, 0, 10, 0, 2, 7, false},
-         {31, 0, 2, 12, 0, 1, 0, 2, 7, false},
-         {31, 6, 0, 0, 4, 25, 0, 2, 7, false},
-         {31, 15, 2, 12, 2, 0, 0, 4, 3, false},
+         {31, 0, 0, 0, 0, 16, 0, 1, 7, false},
+         {31, 0, 2, 12, 0, 1, 0, 1, 7, false},
+         {31, 6, 0, 0, 4, 25, 0, 1, 7, false},
+         {31, 15, 2, 12, 2, 0, 0, 2, 3, false},
      }},
-    {
-        {FM_PATCH_OPERATOR_SCALING_MODE_MOD_WHEEL, 22},
-        {FM_PATCH_OPERATOR_SCALING_MODE_VELOCITY, 64},
-        {FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING},
-        {FM_PATCH_OPERATOR_SCALING_MODE_VELOCITY, 64},
-    },
+    {{FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING},
+     {FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING},
+     {FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING},
+     {FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING}},
     {0},
     {0, 0, triangle, 0},
     {false},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
-};
+    {
+        {MOD_DEST_TL_OP1, MOD_SRC_VELOCITY, 64, 127},
+        {MOD_DEST_TL_OP3, MOD_SRC_VELOCITY, 64, 127},
+        {MOD_DEST_TL_OP0, MOD_SRC_CC1_MOD_WHEEL, 12, 64},
+    }};
 
 // from YU-NO (1996), "Impatience"
 static const FmPatch FM_PRESET_PATCH_12 = {
@@ -383,22 +385,25 @@ static const FmPatch FM_PRESET_PATCH_13 = {
      0,
      0,
      {
-         {31, 0, 0, 0, 0, 38, 0, 1, 7, false},
-         {31, 0, 2, 12, 0, 48, 0, 1, 7, false},
-         {31, 6, 0, 0, 4, 32, 0, 1, 7, false},
+         {31, 0, 0, 0, 0, 21, 0, 1, 7, false},
+         {31, 0, 2, 12, 0, 0, 0, 1, 7, false},
+         {31, 6, 0, 0, 4, 26, 0, 1, 7, false},
          {31, 15, 2, 12, 2, 0, 0, 2, 3, false},
      }},
-    {
-        {FM_PATCH_OPERATOR_SCALING_MODE_MOD_WHEEL, 12},
-        {FM_PATCH_OPERATOR_SCALING_MODE_VELOCITY, 1},
-        {FM_PATCH_OPERATOR_SCALING_MODE_MOD_WHEEL, 20},
-        {FM_PATCH_OPERATOR_SCALING_MODE_VELOCITY, 64},
-    },
+    {{FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING},
+     {FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING},
+     {FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING},
+     {FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING}},
     {0},
     {0, 0, triangle, 0},
     {false},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
-};
+    {
+        {MOD_DEST_TL_OP1, MOD_SRC_VELOCITY, 64, 127},
+        {MOD_DEST_TL_OP3, MOD_SRC_VELOCITY, 64, 127},
+        {MOD_DEST_TL_OP0, MOD_SRC_CC1_MOD_WHEEL, 12, 64},
+        {MOD_DEST_TL_OP2, MOD_SRC_CC1_MOD_WHEEL, 12, 64},
+    }};
 
 // from YU-NO (1996), "Quickening"
 static const FmPatch FM_PRESET_PATCH_14 = {

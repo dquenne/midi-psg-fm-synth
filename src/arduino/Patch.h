@@ -3,6 +3,7 @@
 
 #include "Envelope.h"
 #include "Lfo.h"
+#include "ModMatrix.h"
 #include "SynthState.h"
 #include <Arduino.h>
 
@@ -174,6 +175,8 @@ struct FmPatchOperatorScalingConfig {
   byte alternative_value;
 };
 
+#define MOD_MATRIX_ENTRY_COUNT 8
+
 /** A superset of the parameters sent to YMxxxx chips, including software-driven
  * parameters like velocity sensitivity and software LFOs.
  */
@@ -186,6 +189,7 @@ struct FmPatch {
   Lfo pitch_lfo;
   PatchDelayConfig delay_config;
   PatchPolyphonyConfig polyphony_config;
+  ModMatrixEntry mod_matrix[MOD_MATRIX_ENTRY_COUNT];
 };
 
 void applyFmPreset(FmPatch *target, const FmPatch *preset);

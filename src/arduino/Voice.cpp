@@ -206,6 +206,8 @@ void FmVoice::tick() {
   _pitch_envelope_state.tick();
   _pitch_lfo_state.tick();
 
+  _updateModMatrixAccumlators();
+
   pitch_cents = _getPitchCents();
   for (unsigned op = 0; op < 4; op++) {
     operator_levels[op] = _getOperatorLevel(op);
@@ -224,7 +226,8 @@ unsigned FmVoice::_getPitchCents() {
 
 unsigned FmVoice::_getOperatorLevel(unsigned op) {
   unsigned total_level = _patch->core_parameters.operators[op].total_level;
-  unsigned scaled_level = total_level;
+  unsigned scaled_level = FLOOR_MINUS(
+      (signed)total_level, _mod_matrix_accumlators[MOD_DEST_TL_OP0 + op]);
 
   if (_patch->operator_scaling_config[op].scaling_mode !=
       FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING) {
@@ -253,5 +256,44 @@ unsigned FmVoice::_getModLevel(FmPatchOperatorScalingMode scaling_mode) {
     return 127 - _initial_velocity;
   default:
     return 127;
+  }
+}
+
+/** @returns mod source level from 0 to 255*/
+byte FmVoice::_getModSourceLevel(ModSource source) {
+  if (source >= MOD_SRC_CC1_MOD_WHEEL) {
+    return _synth_control_state->channels[channel]
+               .cc[source - MOD_SRC_CC1_MOD_WHEEL + 1] *
+           2;
+  }
+
+  switch (source) {
+  case MOD_SRC_VELOCITY:
+    return _initial_velocity * 2;
+  default:
+    return 0;
+  }
+}
+
+void FmVoice::_updateModMatrixAccumlators() {
+  for (byte destination_index = 0; destination_index < MOD_DESTINATION_COUNT;
+       destination_index++) {
+    _mod_matrix_accumlators[destination_index] = 0;
+  }
+
+  const ModMatrixEntry *current_entry;
+  for (byte mod_matrix_index = 0; mod_matrix_index < MOD_MATRIX_ENTRY_COUNT;
+       mod_matrix_index++) {
+    current_entry = &_patch->mod_matrix[mod_matrix_index];
+
+    if (current_entry->destination == MOD_DEST_NONE ||
+        current_entry->source == MOD_SRC_NONE || current_entry->amount == 0) {
+      continue;
+    }
+
+    _mod_matrix_accumlators[current_entry->destination] +=
+        ((signed)_getModSourceLevel(current_entry->source) -
+         2 * current_entry->center) *
+        current_entry->amount / 256;
   }
 }
