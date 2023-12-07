@@ -34,7 +34,7 @@ class PsgVoice : public Voice {
 public:
   PsgVoice();
   void setPatch(PsgPatch *patch, bool is_delay);
-  const PsgPatch *getPatch() { return _patch_state.getPatch(); }
+  const PsgPatch *getPatch();
   void noteOn(byte _channel, byte _pitch, byte velocity);
   void noteOff();
   void tick();

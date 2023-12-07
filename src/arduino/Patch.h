@@ -76,7 +76,6 @@ public:
   virtual void tick() = 0;
 
 protected:
-  bool _held;
 };
 
 // PSG
@@ -110,9 +109,8 @@ void applyPsgPreset(PsgPatch *target, const PsgPatch *preset);
 
 class PsgPatchState : public PatchState {
 public:
-  PsgPatchState();
+  PsgPatchState(){};
   void setPatch(const PsgPatch *patch, bool is_delay);
-  const PsgPatch *getPatch();
   void initialize();
   void noteOn(byte channel, byte pitch, byte velocity, bool retrigger);
   void noteOff();
@@ -124,7 +122,6 @@ public:
   LfoState pitch_lfo_state;
 
 private:
-  bool _patch_set;
   const PsgPatch *_patch;
 };
 
@@ -222,21 +219,18 @@ struct FmPatch {
 
 class FmPatchState : public PatchState {
 public:
-  FmPatchState();
+  FmPatchState(){};
   void initialize();
   void setPatch(const FmPatch *patch, bool is_delay);
-  const FmPatch *getPatch();
   void noteOn(byte channel, byte pitch, byte velocity, bool retrigger);
   void noteOff();
   void tick();
-  bool isActive();
 
   AdsrEnvelopeState pitch_envelope_state;
   LfoState pitch_lfo_state;
 
 private:
   const FmPatch *_patch;
-  bool _is_patch_set;
 };
 
 void applyFmPreset(FmPatch *target, const FmPatch *preset);

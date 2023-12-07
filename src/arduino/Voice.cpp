@@ -40,17 +40,18 @@ void PsgVoice::setPatch(PsgPatch *patch, bool is_delay) {
   _is_delay = is_delay;
 }
 
+const PsgPatch *PsgVoice::getPatch() { return _patch; }
+
 void PsgVoice::noteOn(byte _channel, byte _pitch, byte velocity) {
   pitch = _pitch;
   _initial_velocity = velocity;
   _previous_channel = channel;
   channel = _channel;
   triggered_at = millis();
-  _patch_state.noteOn(
-      _channel, _pitch, velocity,
-      !_held || _previous_channel != channel ||
-          _patch_state.getPatch()->polyphony_config.retrigger_mode !=
-              RETRIGGER_MODE_OFF);
+  _patch_state.noteOn(_channel, _pitch, velocity,
+                      !_held || _previous_channel != channel ||
+                          _patch->polyphony_config.retrigger_mode !=
+                              RETRIGGER_MODE_OFF);
   _on = true;
   _held = true;
 }
@@ -128,7 +129,7 @@ void FmVoice::setPatch(FmPatch *patch, bool is_delay) {
   }
   _is_delay = is_delay;
 }
-const FmPatch *FmVoice::getPatch() { return _patch_state.getPatch(); }
+const FmPatch *FmVoice::getPatch() { return _patch; }
 
 void FmVoice::noteOn(byte _channel, byte _pitch, byte velocity) {
   pitch = _pitch;
@@ -137,8 +138,7 @@ void FmVoice::noteOn(byte _channel, byte _pitch, byte velocity) {
   channel = _channel;
   triggered_at = millis();
   _trigger = !_held || _previous_channel != channel ||
-             _patch_state.getPatch()->polyphony_config.retrigger_mode !=
-                 RETRIGGER_MODE_OFF;
+             _patch->polyphony_config.retrigger_mode != RETRIGGER_MODE_OFF;
   _patch_state.noteOn(_channel, _pitch, velocity, _trigger);
   _on = true;
   _held = true;
