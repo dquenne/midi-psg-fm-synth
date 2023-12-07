@@ -67,17 +67,6 @@ struct PitchEnvelope {
   AdsrEnvelopeShape envelope_shape;
 };
 
-class PatchState {
-public:
-  virtual void initialize() = 0;
-  virtual void noteOn(byte channel, byte pitch, byte velocity,
-                      bool retrigger) = 0;
-  virtual void noteOff() = 0;
-  virtual void tick() = 0;
-
-protected:
-};
-
 // PSG
 
 struct PsgPatchVelocityConfig {
@@ -197,22 +186,6 @@ struct FmPatch {
   Lfo pitch_lfo;
   PatchDelayConfig delay_config;
   PatchPolyphonyConfig polyphony_config;
-};
-
-class FmPatchState : public PatchState {
-public:
-  FmPatchState(){};
-  void initialize();
-  void setPatch(const FmPatch *patch, bool is_delay);
-  void noteOn(byte channel, byte pitch, byte velocity, bool retrigger);
-  void noteOff();
-  void tick();
-
-  AdsrEnvelopeState pitch_envelope_state;
-  LfoState pitch_lfo_state;
-
-private:
-  const FmPatch *_patch;
 };
 
 void applyFmPreset(FmPatch *target, const FmPatch *preset);

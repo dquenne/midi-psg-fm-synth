@@ -3,6 +3,9 @@
 #include <Arduino.h>
 
 // Common voice parameters
+
+// TODO: extract to common utils file
+/** a - b, except never go lower than 0 (for unsigned values) */
 #define FLOOR_MINUS(a, b) (a < b ? 0 : a - b)
 
 VoiceStatus Voice::getStatus() {
@@ -144,17 +147,27 @@ FmVoice::FmVoice() {
   pitch = 0;
   _on = false;
   _held = false;
-  _patch_state.initialize();
+  initialize();
+}
+
+void FmVoice::initialize() {
+  _pitch_envelope_state.initialize();
+  _pitch_lfo_state.initialize();
 }
 
 void FmVoice::setPatch(FmPatch *patch, bool is_delay) {
   _patch = patch;
-  _patch_state.setPatch(patch, is_delay);
+  initialize();
+  _pitch_envelope_state.setEnvelopeShape(
+      &_patch->pitch_envelope.envelope_shape);
+  _pitch_lfo_state.setLfo(&_patch->pitch_lfo);
+
   for (unsigned op = 0; op < 4; op++) {
     operator_levels[op] = patch->core_parameters.operators[op].total_level;
   }
   _is_delay = is_delay;
 }
+
 const FmPatch *FmVoice::getPatch() { return _patch; }
 
 void FmVoice::noteOn(byte _channel, byte _pitch, byte velocity) {
@@ -165,13 +178,22 @@ void FmVoice::noteOn(byte _channel, byte _pitch, byte velocity) {
   triggered_at = millis();
   _trigger = !_held || _previous_channel != channel ||
              _patch->polyphony_config.retrigger_mode != RETRIGGER_MODE_OFF;
-  _patch_state.noteOn(_channel, _pitch, velocity, _trigger);
+
+  if (_trigger) {
+    _pitch_envelope_state.initialize();
+    _pitch_envelope_state.start();
+    _pitch_lfo_state.initialize();
+    _pitch_lfo_state.start();
+  }
+
   _on = true;
   _held = true;
 }
 
 void FmVoice::noteOff() {
-  _patch_state.noteOff();
+  _pitch_envelope_state.noteOff();
+  _pitch_lfo_state.noteOff();
+
   _held = false;
   _on = false; // no way to know if a voice that's not held is still decaying
 }
@@ -181,7 +203,9 @@ void FmVoice::setSynced() { _trigger = false; }
 bool FmVoice::getIsSynced() { return _trigger == false; }
 
 void FmVoice::tick() {
-  _patch_state.tick();
+  _pitch_envelope_state.tick();
+  _pitch_lfo_state.tick();
+
   pitch_cents = _getPitchCents();
   for (unsigned op = 0; op < 4; op++) {
     operator_levels[op] = _getOperatorLevel(op);
@@ -189,12 +213,11 @@ void FmVoice::tick() {
 }
 
 unsigned FmVoice::_getPitchCents() {
-  signed _pitch_cents = (100 * pitch) + _patch_state.pitch_lfo_state.getValue();
+  signed _pitch_cents = (100 * pitch) + _pitch_lfo_state.getValue();
 
   _pitch_cents = (signed)_pitch_cents +
                  _patch->pitch_envelope.scaling * 25 *
-                     (signed)_patch_state.pitch_envelope_state.getValue() /
-                     1024;
+                     (signed)_pitch_envelope_state.getValue() / 1024;
 
   return MAX(0, _pitch_cents);
 }

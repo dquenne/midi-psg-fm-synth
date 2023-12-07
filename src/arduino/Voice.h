@@ -60,6 +60,7 @@ protected:
 class FmVoice : public Voice {
 public:
   FmVoice();
+  void initialize();
   void setPatch(FmPatch *patch, bool is_delay);
   const FmPatch *getPatch();
 
@@ -77,8 +78,10 @@ private:
   unsigned _getModLevel(FmPatchOperatorScalingMode scaling_mode);
 
   const FmPatch *_patch;
-  FmPatchState _patch_state;
   bool _trigger;
+
+  AdsrEnvelopeState _pitch_envelope_state;
+  LfoState _pitch_lfo_state;
 };
 
 #endif
