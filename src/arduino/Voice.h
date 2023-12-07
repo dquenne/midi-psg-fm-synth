@@ -33,6 +33,7 @@ protected:
 class PsgVoice : public Voice {
 public:
   PsgVoice();
+  void initialize();
   void setPatch(PsgPatch *patch, bool is_delay);
   const PsgPatch *getPatch();
   void noteOn(byte _channel, byte _pitch, byte velocity);
@@ -48,7 +49,12 @@ protected:
   bool _isActive();
 
   const PsgPatch *_patch;
-  PsgPatchState _patch_state;
+
+  AdsrEnvelopeState _amplitude_envelope_state;
+  AdsrEnvelopeState _pitch_envelope_state;
+
+  LfoState _amplitude_lfo_state;
+  LfoState _pitch_lfo_state;
 };
 
 class FmVoice : public Voice {

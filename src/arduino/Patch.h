@@ -107,24 +107,6 @@ struct PsgPatch {
 
 void applyPsgPreset(PsgPatch *target, const PsgPatch *preset);
 
-class PsgPatchState : public PatchState {
-public:
-  PsgPatchState(){};
-  void setPatch(const PsgPatch *patch, bool is_delay);
-  void initialize();
-  void noteOn(byte channel, byte pitch, byte velocity, bool retrigger);
-  void noteOff();
-  void tick();
-  AdsrEnvelopeState amplitude_envelope_state;
-  AdsrEnvelopeState pitch_envelope_state;
-
-  LfoState amplitude_lfo_state;
-  LfoState pitch_lfo_state;
-
-private:
-  const PsgPatch *_patch;
-};
-
 // FM
 
 /** YM chips represent panning with a 2-bit number, where the least-significant

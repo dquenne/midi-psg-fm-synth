@@ -31,12 +31,24 @@ PsgVoice::PsgVoice() {
   channel = 0;
   _on = false;
   _held = false;
-  _patch_state.initialize();
+  initialize();
+}
+
+void PsgVoice::initialize() {
+  _amplitude_envelope_state.initialize();
+  _pitch_envelope_state.initialize();
+  _amplitude_lfo_state.initialize();
+  _pitch_lfo_state.initialize();
 }
 
 void PsgVoice::setPatch(PsgPatch *patch, bool is_delay) {
   _patch = patch;
-  _patch_state.setPatch(patch, is_delay);
+  initialize();
+  _amplitude_envelope_state.setEnvelopeShape(&_patch->amplitude_envelope);
+  _pitch_envelope_state.setEnvelopeShape(
+      &_patch->pitch_envelope.envelope_shape);
+  _amplitude_lfo_state.setLfo(&_patch->amplitude_lfo);
+  _pitch_lfo_state.setLfo(&_patch->pitch_lfo);
   _is_delay = is_delay;
 }
 
@@ -48,16 +60,28 @@ void PsgVoice::noteOn(byte _channel, byte _pitch, byte velocity) {
   _previous_channel = channel;
   channel = _channel;
   triggered_at = millis();
-  _patch_state.noteOn(_channel, _pitch, velocity,
-                      !_held || _previous_channel != channel ||
-                          _patch->polyphony_config.retrigger_mode !=
-                              RETRIGGER_MODE_OFF);
+
+  if (!_held || _previous_channel != channel ||
+      _patch->polyphony_config.retrigger_mode != RETRIGGER_MODE_OFF) {
+    _amplitude_envelope_state.initialize();
+    _pitch_envelope_state.initialize();
+    _amplitude_lfo_state.initialize();
+    _pitch_lfo_state.initialize();
+
+    _amplitude_envelope_state.start();
+    _pitch_envelope_state.start();
+    _amplitude_lfo_state.start();
+    _pitch_lfo_state.start();
+  }
   _on = true;
   _held = true;
 }
 
 void PsgVoice::noteOff() {
-  _patch_state.noteOff();
+  _amplitude_envelope_state.noteOff();
+  _pitch_envelope_state.noteOff();
+  _amplitude_lfo_state.noteOff();
+  _pitch_lfo_state.noteOff();
   _held = false;
 }
 
@@ -65,24 +89,27 @@ void PsgVoice::tick() {
   if (!_on) {
     return;
   }
-  _patch_state.tick();
+  if (_amplitude_envelope_state.getStatus() != done) {
+    _amplitude_envelope_state.tick();
+    _pitch_envelope_state.tick();
+    _amplitude_lfo_state.tick();
+    _pitch_lfo_state.tick();
+  }
   level = _getLevel();
   pitch_cents = _getPitchCents();
 
-  if (_patch_state.amplitude_envelope_state.getStatus() == done) {
+  if (_amplitude_envelope_state.getStatus() == done) {
     _on = false;
   }
 }
 
 unsigned PsgVoice::_getPitchCents() {
-  signed _pitch_cents = (pitch * 100) +
-                        _patch_state.pitch_lfo_state.getValue() +
-                        _patch->detune_cents;
+  signed _pitch_cents =
+      (pitch * 100) + _pitch_lfo_state.getValue() + _patch->detune_cents;
 
   _pitch_cents = (signed)_pitch_cents +
                  _patch->pitch_envelope.scaling * 25 *
-                     (signed)_patch_state.pitch_envelope_state.getValue() /
-                     1024;
+                     (signed)_pitch_envelope_state.getValue() / 1024;
 
   if (_is_delay) {
     return _pitch_cents + _patch->delay_config.detune_cents;
@@ -94,8 +121,7 @@ unsigned PsgVoice::_getLevel() {
   if (!_isActive()) {
     return 0;
   }
-  unsigned envelope_amplitude =
-      _patch_state.amplitude_envelope_state.getValue();
+  unsigned envelope_amplitude = _amplitude_envelope_state.getValue();
 
   unsigned scaled_level = envelope_amplitude / 32 *
                           (480 + VELOCITY_SCALING[_initial_velocity]) / 1024;
@@ -106,7 +132,7 @@ unsigned PsgVoice::_getLevel() {
   return MIN(scaled_level, 15);
 }
 bool PsgVoice::_isActive() {
-  return _patch_state.amplitude_envelope_state.getStatus() != done;
+  return _amplitude_envelope_state.getStatus() != done;
 }
 
 // FM
