@@ -94,6 +94,7 @@ static const FmPatch FM_PRESET_PATCH_0 = {
     {16, 30, triangle, 38},
     {true, 50, 6, 7},
     {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT},
+    {},
 };
 
 // bass from Desire (1994)
@@ -112,6 +113,7 @@ static const FmPatch FM_PRESET_PATCH_1 = {
     {0, 0, triangle, 0},
     {false},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},
+    {},
 };
 
 // burst sound from Desire (1994)
@@ -130,6 +132,7 @@ static const FmPatch FM_PRESET_PATCH_2 = {
     {0, 0, triangle, 0},
     {false},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+    {},
 };
 
 // celeste piano from Desire (1994)
@@ -150,6 +153,7 @@ static const FmPatch FM_PRESET_PATCH_3 = {
     {18, 54, triangle, 63},
     {true, 75, 0, 2},
     {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+    {},
 };
 
 // organ from Ys I - Feena (1987)
@@ -170,6 +174,7 @@ static const FmPatch FM_PRESET_PATCH_4 = {
     {0, 0, triangle, 0},
     {false},
     {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+    {},
 };
 
 // bass from Ys I - Feena (1987)
@@ -190,6 +195,7 @@ static const FmPatch FM_PRESET_PATCH_5 = {
     {0, 0, triangle, 0},
     {false},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},
+    {},
 };
 
 // piano from Ys I - Feena (1987)
@@ -210,6 +216,7 @@ static const FmPatch FM_PRESET_PATCH_6 = {
     {0, 0, triangle, 0},
     {false},
     {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+    {},
 };
 
 // violin from Ys I - Feena (1987)
@@ -230,6 +237,7 @@ static const FmPatch FM_PRESET_PATCH_7 = {
     {16, 30, triangle, 38},
     {true, 25, 16, 1},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},
+    {},
 };
 
 // fade-in bass from YU-NO (1996)
@@ -250,6 +258,7 @@ static const FmPatch FM_PRESET_PATCH_8 = {
     {0},
     {false},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+    {},
 };
 
 // celeste piano from Desire (1994)
@@ -270,6 +279,7 @@ static const FmPatch FM_PRESET_PATCH_9 = {
     {18, 54, triangle, 63},
     {false},
     {MAX_POLYPHONY_UNLIMITED, NOTE_PRIORITY_MODE_LOWEST, RETRIGGER_MODE_HARD},
+    {},
 };
 
 // from YU-NO (1996), "Elly"
@@ -290,6 +300,7 @@ static const FmPatch FM_PRESET_PATCH_10 = {
     {0, 0, triangle, 0},
     {false},
     {1, NOTE_PRIORITY_MODE_HIGHEST, RETRIGGER_MODE_HARD},
+    {},
 };
 
 // bass from YU-NO, girl in the lake (1996)
@@ -312,7 +323,8 @@ static const FmPatch FM_PRESET_PATCH_11 = {
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
     {
         {MOD_DEST_TL_OP0, MOD_SRC_CC1_MOD_WHEEL, 12, 64},
-    }};
+    },
+};
 
 // from YU-NO (1996), "Impatience"
 static const FmPatch FM_PRESET_PATCH_12 = {
@@ -332,6 +344,7 @@ static const FmPatch FM_PRESET_PATCH_12 = {
     {0, 0, triangle, 0},
     {false},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_OFF},
+    {},
 };
 
 // from YU-NO (1996), "Impatience"
@@ -355,7 +368,8 @@ static const FmPatch FM_PRESET_PATCH_13 = {
     {
         {MOD_DEST_TL_OP0, MOD_SRC_CC1_MOD_WHEEL, 12, 64},
         {MOD_DEST_TL_OP2, MOD_SRC_CC1_MOD_WHEEL, 12, 64},
-    }};
+    },
+};
 
 // from YU-NO (1996), "Quickening"
 static const FmPatch FM_PRESET_PATCH_14 = {
@@ -375,6 +389,7 @@ static const FmPatch FM_PRESET_PATCH_14 = {
     {0, 0, triangle, 0},
     {false},
     {1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_HARD},
+    {},
 };
 
 // piano from YU-NO (1996), "Arabesque"
@@ -398,7 +413,8 @@ static const FmPatch FM_PRESET_PATCH_15 = {
     {
         {MOD_DEST_TL_OP0, MOD_SRC_CC1_MOD_WHEEL, 12, 127},
         {MOD_DEST_TL_OP2, MOD_SRC_CC1_MOD_WHEEL, 12, 127},
-    }};
+    },
+};
 
 const FmPatch *FM_PRESETS[] = {
     &FM_PRESET_PATCH_0,  &FM_PRESET_PATCH_1,  &FM_PRESET_PATCH_2,
