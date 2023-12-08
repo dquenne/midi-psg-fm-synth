@@ -229,16 +229,9 @@ unsigned FmVoice::_getOperatorLevel(unsigned op) {
   unsigned scaled_level = FLOOR_MINUS(
       (signed)total_level, _mod_matrix_accumlators[MOD_DEST_TL_OP0 + op]);
 
-  if (_patch->operator_scaling_config[op].scaling_mode !=
-      FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING) {
-    unsigned scalar =
-        _getModLevel(_patch->operator_scaling_config[op].scaling_mode);
-    unsigned alternative_level =
-        _patch->operator_scaling_config[op].alternative_value;
-
-    scaled_level =
-        scaled_level + ((signed)alternative_level - (signed)scaled_level) *
-                           (signed)(scalar) / 127;
+  if (FM_CARRIERS_BY_ALGORITHM[_patch->core_parameters.algorithm][op]) {
+    scaled_level = FLOOR_MINUS((signed)scaled_level,
+                               _mod_matrix_accumlators[MOD_DEST_CARRIER_LEVEL]);
   }
 
   if (_is_delay &&
@@ -248,19 +241,20 @@ unsigned FmVoice::_getOperatorLevel(unsigned op) {
   return scaled_level;
 }
 
-unsigned FmVoice::_getModLevel(FmPatchOperatorScalingMode scaling_mode) {
-  switch (scaling_mode) {
-  case FM_PATCH_OPERATOR_SCALING_MODE_MOD_WHEEL:
-    return _synth_control_state->channels[channel].cc[1];
-  case FM_PATCH_OPERATOR_SCALING_MODE_VELOCITY:
-    return 127 - _initial_velocity;
-  default:
-    return 127;
-  }
+/**
+ * Right now this is just linear scaling with velocity, which doesn't sound
+ * super natural.
+ */
+signed FmVoice::_getCarrierVelocityScaling() {
+  return ((signed)_initial_velocity - 127) *
+         (signed)_patch->velocity_sensitivity / 128;
 }
 
 /** @returns mod source level from 0 to 255*/
 byte FmVoice::_getModSourceLevel(ModSource source) {
+  // for CC 1-127, they're sequential so this is a shorthand for writing them
+  // all out. Note that CC 0 is not available as a mod source because it is
+  // reserved for bank select.
   if (source >= MOD_SRC_CC1_MOD_WHEEL) {
     return _synth_control_state->channels[channel]
                .cc[source - MOD_SRC_CC1_MOD_WHEEL + 1] *
@@ -280,6 +274,9 @@ void FmVoice::_updateModMatrixAccumlators() {
        destination_index++) {
     _mod_matrix_accumlators[destination_index] = 0;
   }
+
+  _mod_matrix_accumlators[MOD_DEST_CARRIER_LEVEL] +=
+      _getCarrierVelocityScaling();
 
   const ModMatrixEntry *current_entry;
   for (byte mod_matrix_index = 0; mod_matrix_index < MOD_MATRIX_ENTRY_COUNT;

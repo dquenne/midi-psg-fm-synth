@@ -163,18 +163,6 @@ struct FmParameters {
   FmOperator operators[4];
 };
 
-enum FmPatchOperatorScalingMode {
-  FM_PATCH_OPERATOR_SCALING_MODE_NO_SCALING,
-  FM_PATCH_OPERATOR_SCALING_MODE_VELOCITY,
-  FM_PATCH_OPERATOR_SCALING_MODE_MOD_WHEEL,
-  FM_PATCH_OPERATOR_SCALING_MODE_EXPRESSION,
-};
-
-struct FmPatchOperatorScalingConfig {
-  FmPatchOperatorScalingMode scaling_mode;
-  byte alternative_value;
-};
-
 #define MOD_MATRIX_ENTRY_COUNT 8
 
 /** A superset of the parameters sent to YMxxxx chips, including software-driven
@@ -182,13 +170,20 @@ struct FmPatchOperatorScalingConfig {
  */
 struct FmPatch {
   FmParameters core_parameters;
-  FmPatchOperatorScalingConfig operator_scaling_config[4];
+
+  /** How much carrier operators' total level is affected by key velocity */
+  byte velocity_sensitivity;
+
   PitchEnvelope pitch_envelope;
+
   /** This LFO is distinct from some YM chips' built-in global LFO and
    * calculated at a per voice level. */
   Lfo pitch_lfo;
+
   PatchDelayConfig delay_config;
+
   PatchPolyphonyConfig polyphony_config;
+
   ModMatrixEntry mod_matrix[MOD_MATRIX_ENTRY_COUNT];
 };
 

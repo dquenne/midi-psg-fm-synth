@@ -76,7 +76,8 @@ public:
 private:
   unsigned _getPitchCents();
   unsigned _getOperatorLevel(unsigned op);
-  unsigned _getModLevel(FmPatchOperatorScalingMode scaling_mode);
+
+  signed _getCarrierVelocityScaling();
   byte _getModSourceLevel(ModSource source);
   void _updateModMatrixAccumlators();
 
