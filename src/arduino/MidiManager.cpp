@@ -144,76 +144,70 @@ void applyFmControlChange(FmPatch *patch, byte cc_number, byte data) {
   case 17:
   case 18:
   case 19:
-    patch->core_parameters.operators[cc_number - 16].total_level = 127 - data;
+    patch->operators[cc_number - 16].total_level = 127 - data;
     break;
   // mult
   case 20:
   case 21:
   case 22:
   case 23:
-    patch->core_parameters.operators[cc_number - 20].multiple = data >> 3;
+    patch->operators[cc_number - 20].multiple = data >> 3;
     break;
   // dt1
   case 24:
   case 25:
   case 26:
   case 27:
-    patch->core_parameters.operators[cc_number - 24].detune = data >> 4;
+    patch->operators[cc_number - 24].detune = data >> 4;
     break;
   // rs
   case 39:
   case 40:
   case 41:
   case 42:
-    patch->core_parameters.operators[cc_number - 39].key_scale = data >> 5;
+    patch->operators[cc_number - 39].key_scale = data >> 5;
     break;
   // ar
   case 43:
   case 44:
   case 45:
   case 46:
-    patch->core_parameters.operators[cc_number - 43].attack_rate =
-        (127 - data) >> 2;
+    patch->operators[cc_number - 43].attack_rate = (127 - data) >> 2;
     break;
   // d1r
   case 47:
   case 48:
   case 49:
   case 50:
-    patch->core_parameters.operators[cc_number - 47].decay_rate =
-        (127 - data) >> 2;
+    patch->operators[cc_number - 47].decay_rate = (127 - data) >> 2;
     break;
   // d2r
   case 51:
   case 52:
   case 53:
   case 54:
-    patch->core_parameters.operators[cc_number - 51].sustain_rate =
-        (127 - data) >> 2;
+    patch->operators[cc_number - 51].sustain_rate = (127 - data) >> 2;
     break;
   // dl
   case 55:
   case 56:
   case 57:
   case 58:
-    patch->core_parameters.operators[cc_number - 55].sustain_level =
-        (127 - data) >> 3;
+    patch->operators[cc_number - 55].sustain_level = (127 - data) >> 3;
     break;
   // rr
   case 59:
   case 60:
   case 61:
   case 62:
-    patch->core_parameters.operators[cc_number - 59].release_rate =
-        (127 - data) >> 3;
+    patch->operators[cc_number - 59].release_rate = (127 - data) >> 3;
     break;
   // am
   case 70:
   case 71:
   case 72:
   case 73:
-    patch->core_parameters.operators[cc_number - 70].lfo_amplitude_enable =
-        data >> 7;
+    patch->operators[cc_number - 70].lfo_amplitude_enable = data >> 7;
     break;
   // pitch envelope
   case 77:
@@ -236,7 +230,7 @@ void applyFmControlChange(FmPatch *patch, byte cc_number, byte data) {
   // case 91:
   // case 92:
   // case 93:
-  //   patch->core_parameters.operators[cc_number - 90].ssg_eg = data;
+  //   patch->operators[cc_number - 90].ssg_eg = data;
   //   break;
 
   // software pitch LFO

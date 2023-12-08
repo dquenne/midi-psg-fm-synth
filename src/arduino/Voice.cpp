@@ -163,7 +163,7 @@ void FmVoice::setPatch(FmPatch *patch, bool is_delay) {
   _pitch_lfo_state.setLfo(&_patch->pitch_lfo);
 
   for (unsigned op = 0; op < 4; op++) {
-    operator_levels[op] = patch->core_parameters.operators[op].total_level;
+    operator_levels[op] = patch->operators[op].total_level;
   }
   _is_delay = is_delay;
 }
@@ -225,7 +225,7 @@ unsigned FmVoice::_getPitchCents() {
 }
 
 unsigned FmVoice::_getOperatorLevel(unsigned op) {
-  unsigned total_level = _patch->core_parameters.operators[op].total_level;
+  unsigned total_level = _patch->operators[op].total_level;
   unsigned scaled_level = FLOOR_MINUS(
       (signed)total_level, _mod_matrix_accumlators[MOD_DEST_TL_OP0 + op]);
 

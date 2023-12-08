@@ -154,13 +154,12 @@ struct FmOperator {
 };
 
 /** These are parameters common to YMxxxx chips. */
-struct FmParameters {
+struct FmCoreParameters {
   FmPanningMode panning;
   byte feedback;
   byte algorithm;
   byte lfo_amplitude_sensitivity;
   byte lfo_frequency_sensitivity;
-  FmOperator operators[4];
 };
 
 #define MOD_MATRIX_ENTRY_COUNT 8
@@ -169,7 +168,8 @@ struct FmParameters {
  * parameters like velocity sensitivity and software LFOs.
  */
 struct FmPatch {
-  FmParameters core_parameters;
+  FmCoreParameters core_parameters;
+  FmOperator operators[4];
 
   /** How much carrier operators' total level is affected by key velocity */
   byte velocity_sensitivity;

@@ -253,7 +253,7 @@ void Ym2203FmChannel::writeStaticPatchParameters(const FmPatch *patch) {
   writeFeedbackAlgorithm(patch->core_parameters.feedback,
                          patch->core_parameters.algorithm);
   for (unsigned op = 0; op < 4; op++) {
-    _writeOperatorParameters(op, &patch->core_parameters.operators[op]);
+    _writeOperatorParameters(op, &patch->operators[op]);
   }
 }
 
