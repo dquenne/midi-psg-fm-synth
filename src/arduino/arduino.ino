@@ -144,7 +144,8 @@ void loop() {
   synth.tick();
   midi_delay.tick();
 
-  dotstar.setPixelColor(0, synth.getTotalPsgLevel(), synth.getTotalFmLevel(),
-                        synth.getTotalFmLevel());
+  dotstar.setPixelColor(
+      0, synth.getTotalPsgLevel(), synth.getTotalFmLevel() / 4,
+      synth.getTotalPsgLevel() / 2 + synth.getTotalFmLevel() / 2);
   dotstar.show();
 }
