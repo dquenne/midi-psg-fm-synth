@@ -365,3 +365,23 @@ void Synth::tick() {
   syncFmChannel(_chip->getFmChannel(1), _fm_voice_manager.getVoiceByIndex(1));
   syncFmChannel(_chip->getFmChannel(2), _fm_voice_manager.getVoiceByIndex(2));
 }
+
+/** Used for visualization */
+byte Synth::getTotalPsgLevel() {
+  return (_psg_voice_manager.getVoiceByIndex(0)->level +
+          _psg_voice_manager.getVoiceByIndex(1)->level +
+          _psg_voice_manager.getVoiceByIndex(2)->level) /
+         2;
+}
+
+/** Used for visualization */
+byte Synth::getTotalFmLevel() {
+  byte total = 0;
+  for (unsigned channel = 0; channel < 3; channel++) {
+    FmVoice *voice = _fm_voice_manager.getVoiceByIndex(channel);
+    if (voice->getStatus() == voice_held) {
+      total += voice->operator_levels[3] / 8;
+    }
+  }
+  return total;
+}

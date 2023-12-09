@@ -87,6 +87,9 @@ public:
   void loadMulti(Multi *multi);
   SynthChannel *getChannel(byte _channel);
 
+  byte getTotalPsgLevel();
+  byte getTotalFmLevel();
+
   // Patch and multi storage needs to be pretty fully re-thought, this is just a
   // stop-gap.
   void saveMulti() {}

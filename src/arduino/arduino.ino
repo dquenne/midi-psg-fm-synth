@@ -10,12 +10,16 @@
 #include "VoiceManager.h"
 #include "Ym2203.h"
 #include "sn76489.h"
+#include <Adafruit_DotStar.h>
 #include <Arduino.h>
 #include <MIDI.h>
+#include <SPI.h>
 #include <USB-MIDI.h>
 
 MIDI_CREATE_DEFAULT_INSTANCE();
 USBMIDI_CREATE_INSTANCE(0, MIDI_USB);
+
+Adafruit_DotStar dotstar(1, 41, 40, DOTSTAR_BGR);
 
 // Chip *sound_chip = new Sn76489Instance(2);
 Chip *sound_chip = new Ym2203Instance(2);
@@ -92,6 +96,9 @@ void initializeMainMulti() {
 }
 
 void setup() {
+  dotstar.begin();
+  dotstar.show();
+
   midi_delay.handleNoteOn = handleNoteOn;
   midi_delay.handleNoteOff = handleNoteOff;
 
@@ -136,4 +143,8 @@ void loop() {
 
   synth.tick();
   midi_delay.tick();
+
+  dotstar.setPixelColor(0, synth.getTotalPsgLevel(), synth.getTotalFmLevel(),
+                        synth.getTotalFmLevel());
+  dotstar.show();
 }

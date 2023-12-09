@@ -42,6 +42,7 @@ public:
   void tick();
 
   // state management
+  /** Level from 0 to 15 */
   byte level;
 
 protected:
@@ -71,6 +72,7 @@ public:
   bool getIsSynced();
   void tick();
 
+  /** Operator levels from 127 to 0 */
   byte operator_levels[4];
 
 private:
