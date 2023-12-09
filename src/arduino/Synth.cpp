@@ -380,8 +380,11 @@ byte Synth::getTotalFmLevel() {
   for (unsigned channel = 0; channel < 3; channel++) {
     FmVoice *voice = _fm_voice_manager.getVoiceByIndex(channel);
     if (voice->getStatus() == voice_held) {
-      total += voice->operator_levels[3] / 8;
+      total += 10;
+      if (voice->operator_levels[3] < 48) {
+        total += 47 - voice->operator_levels[3];
+      }
     }
   }
-  return total;
+  return total / 2;
 }
