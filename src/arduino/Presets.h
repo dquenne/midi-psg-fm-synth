@@ -1,3 +1,6 @@
+#ifndef Presets_h
+#define Presets_h
+
 #include "Patch.h"
 
 /*
@@ -366,3 +369,5 @@ const FmPatch *FM_PRESETS[] = {
     &FM_PRESET_PATCH_12, &FM_PRESET_PATCH_13, &FM_PRESET_PATCH_14,
     &FM_PRESET_PATCH_15,
 };
+
+#endif

@@ -293,11 +293,10 @@ void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
   SynthChannel *synth_channel = _synth->getChannel(channel);
   if (synth_channel->mode == MULTI_CHANNEL_MODE_PSG) {
     applyPsgControlChange(
-        _synth->getPsgPatchManager()->getPatch(synth_channel->patch_id),
-        cc_number, data);
+        _synth->getPsgPatchManager()->getChannelPatch(channel), cc_number,
+        data);
   } else if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
-    applyFmControlChange(
-        _synth->getFmPatchManager()->getPatch(synth_channel->patch_id),
-        cc_number, data);
+    applyFmControlChange(_synth->getFmPatchManager()->getChannelPatch(channel),
+                         cc_number, data);
   }
 }

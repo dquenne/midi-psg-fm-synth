@@ -133,8 +133,7 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
   }
 
   if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
-    FmPatch *active_patch =
-        _fm_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
+    FmPatch *active_patch = _fm_patch_manager.getChannelPatch(channel % 16);
 
     FmVoice *voice = nullptr;
     if (note_swap.old_note) {
@@ -171,8 +170,7 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
     if (NOTES_250KHZ[pitch] > 4095) {
       return;
     }
-    PsgPatch *active_patch =
-        _psg_patch_manager.getPatch(_synth_channels[channel % 16].patch_id);
+    PsgPatch *active_patch = _psg_patch_manager.getChannelPatch(channel % 16);
 
     PsgVoice *voice = nullptr;
 
@@ -257,11 +255,13 @@ void Synth::programChange(byte channel, byte program) {
 
   PatchPolyphonyConfig *polyphony_config;
   if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
+    _fm_patch_manager.loadPatch(&synth_channel->patch_id, channel);
     polyphony_config =
-        &_fm_patch_manager.getPatch(synth_channel->patch_id)->polyphony_config;
+        &_fm_patch_manager.getChannelPatch(channel)->polyphony_config;
   } else {
+    _psg_patch_manager.loadPatch(&synth_channel->patch_id, channel);
     polyphony_config =
-        &_psg_patch_manager.getPatch(synth_channel->patch_id)->polyphony_config;
+        &_psg_patch_manager.getChannelPatch(channel)->polyphony_config;
   }
 
   _note_managers[channel].setPolyphonyConfig(polyphony_config);
@@ -284,9 +284,9 @@ void Synth::controlChange(byte channel, byte cc_number, byte data) {
 PatchDelayConfig *Synth::getDelayConfig(unsigned channel) {
   SynthChannel *synth_channel = &_synth_channels[channel];
   if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
-    return &_fm_patch_manager.getPatch(synth_channel->patch_id)->delay_config;
+    return &_fm_patch_manager.getChannelPatch(channel)->delay_config;
   }
-  return &_psg_patch_manager.getPatch(synth_channel->patch_id)->delay_config;
+  return &_psg_patch_manager.getChannelPatch(channel)->delay_config;
 }
 
 PatchManager<PsgPatch> *Synth::getPsgPatchManager() {

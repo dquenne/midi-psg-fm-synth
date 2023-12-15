@@ -2,15 +2,19 @@
 #define Synth_h
 
 #include "Chip.h"
+#include "InternalStorage.h"
 #include "Multi.h"
 #include "PatchManager.h"
-#include "Storage.h"
 #include "SynthState.h"
 #include "VoiceManager.h"
 
 #define SYNTH_CHANNEL_COUNT 16
 
-enum NoteStatus { NOTE_STATUS_OFF, NOTE_STATUS_ON };
+// 2 most-significant bits of bank MSB define the synth mode
+enum BankMsbSynthMode : byte {
+  BANK_MSB_SYNTH_MODE_FM = 0b00,
+  BANK_MSB_SYNTH_MODE_PSG = 0b10,
+};
 
 struct NoteSwapNote {
   byte pitch;
@@ -68,7 +72,8 @@ class Synth {
 public:
   Synth(Chip *chip, Multi *active_multi)
       : _psg_voice_manager{3}, _fm_voice_manager{3}, _chip(chip),
-        _active_multi(active_multi) {}
+        _active_multi(active_multi), _psg_patch_manager{INTERNAL_STORAGE_PSG},
+        _fm_patch_manager{INTERNAL_STORAGE_FM} {}
   void initialize();
   void tick();
   void noteOn(byte _channel, byte _pitch, byte velocity);

@@ -64,7 +64,7 @@ struct Patch {
 };
 
 struct PitchEnvelope {
-  signed scaling;
+  int8_t scaling;
   AdsrEnvelopeShape envelope_shape;
 };
 

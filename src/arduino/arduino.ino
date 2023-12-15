@@ -1,11 +1,11 @@
 #include "Chip.h"
 #include "Delay.h"
+#include "InternalStorage.h"
 #include "IoUtils.h"
 #include "MidiManager.h"
 #include "Multi.h"
 #include "NoteMappings.h"
 #include "Presets.h"
-#include "Storage.h"
 #include "Synth.h"
 #include "VoiceManager.h"
 #include "Ym2203.h"
@@ -70,13 +70,22 @@ void handleProgramChange(byte channel, byte program_number) {
   midi_manager.handleProgramChange(zero_indexed_channel, program_number);
 }
 
+void handleSystemExclusive(byte *array, unsigned size) {
+  midi_manager.handleSysex(array, size);
+}
+
 void initializeMainMulti() {
-  for (byte program = 0; program < 16; program++) {
-    // need to re-implement reading from flash here
-    applyPsgPreset(synth.getPsgPatchManager()->getPatch({program, 0}),
-                   PSG_PRESETS[program]);
-    applyFmPreset(synth.getFmPatchManager()->getPatch({program, 0}),
-                  FM_PRESETS[program]);
+  digitalWrite(13, HIGH);
+  Serial.println("Initializing patch banks");
+  synth.getFmPatchManager()->initializePatchBanks(FM_PRESETS[0]);
+  synth.getPsgPatchManager()->initializePatchBanks(PSG_PRESETS[0]);
+  digitalWrite(13, LOW);
+
+  for (byte channel = 0; channel < 16; channel++) {
+    PatchId patch_id = {channel, 0};
+
+    synth.getPsgPatchManager()->loadPatch(&patch_id, channel);
+    synth.getFmPatchManager()->loadPatch(&patch_id, channel);
   }
 
   for (byte channel = 0; channel < 16; channel++) {
@@ -124,6 +133,8 @@ void setup() {
   MIDI_USB.begin(MIDI_CHANNEL_OMNI);
   MIDI_USB.setHandleControlChange(handleControlChange);
 
+  beginStorage();
+
   initializeMainMulti();
 
   synth.initialize();
@@ -139,6 +150,13 @@ void loop() {
   while (last_millis >= millis())
     ;
 
+  if (millis() - last_millis > 1) {
+    Serial.print("Lost frame(s): ");
+    Serial.println(millis() - last_millis, DEC);
+    digitalWrite(LED_PIN, HIGH);
+  } else {
+    digitalWrite(LED_PIN, LOW);
+  }
   last_millis = millis();
 
   synth.tick();
