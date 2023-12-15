@@ -1,5 +1,6 @@
 #include "MidiManager.h"
 #include "NoteMappings.h"
+#include "Sysex.h"
 #include <MIDI.h>
 #include <midi_Defs.h>
 
@@ -303,4 +304,80 @@ void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
     applyFmControlChange(_synth->getFmPatchManager()->getChannelPatch(channel),
                          cc_number, data);
   }
+}
+
+/**
+ * Common:
+ *  array[0]: F0
+ *  array[1]: Manufacturer ID
+ *  array[2]: Message type
+ *
+ * FM patch dump:
+ *  array[3]: program number
+ *  array[4]: bank (MSB)
+ *  array[5]: bank (LSB)
+ *  array[6]: update buffered patch?
+ *  array[7..n]: data
+ *  array[n+1]: F7
+ */
+void MidiManager::handleSysex(byte *array, unsigned size) {
+  Serial.println("Received Sysex message");
+  Serial.print(size, DEC);
+  Serial.println(" bytes");
+
+  byte manufacturer_id = array[1];
+  SysexMessageType message_type = (SysexMessageType)array[2];
+
+  if (manufacturer_id != MANUFACTURER_ID) {
+    Serial.println("incorrect manufacturer ID, aborting");
+    return;
+  }
+
+  FmPatch *patch;
+  PatchId target_patch_id;
+  bool should_update_buffered_patches;
+
+  switch (message_type) {
+  case SYSEX_MESSAGE_TYPE_FM_SINGLE_VOICE_DUMP:
+    target_patch_id.program_number = array[3];
+    target_patch_id.bank_number_msb = array[4];
+    target_patch_id.bank_number_lsb = array[5];
+    should_update_buffered_patches = array[6] > 0;
+
+    if (size - 8 != sizeof *patch) {
+      Serial.print("incorrect packet size. Got ");
+      Serial.print(size - 2);
+      Serial.print(", expected ");
+      Serial.print(sizeof *patch);
+      return;
+    }
+
+    patch = (FmPatch *)&array[7];
+
+    _synth->getFmPatchManager()->writePatch(&target_patch_id, patch);
+
+    if (should_update_buffered_patches) {
+
+      for (byte channel = 0; channel < 16; channel++) {
+        SynthChannel *synth_channel = _synth->getChannel(channel);
+        if (synth_channel->patch_id.bank_number_msb ==
+                target_patch_id.bank_number_msb &&
+            synth_channel->patch_id.bank_number_lsb ==
+                target_patch_id.bank_number_lsb &&
+            synth_channel->patch_id.program_number ==
+                target_patch_id.program_number) {
+          Serial.print("Updating synth channel ");
+          Serial.println(channel + 1, DEC);
+
+          _synth->getFmPatchManager()->loadPatch(&synth_channel->patch_id,
+                                                 channel);
+        }
+      }
+    }
+    return;
+  default:
+    break;
+  }
+  Serial.println("Done");
+  Serial.println();
 }

@@ -14,6 +14,7 @@ public:
   void handlePitchBend(byte channel, int bend);
   void handleControlChange(byte channel, byte cc_number, byte data);
   void handleProgramChange(byte channel, byte program);
+  void handleSysex(byte *array, unsigned size);
 
 private:
   Synth *_synth;

@@ -131,6 +131,7 @@ void setup() {
 
   MIDI_USB.turnThruOff();
   MIDI_USB.begin(MIDI_CHANNEL_OMNI);
+  MIDI_USB.setHandleSystemExclusive(handleSystemExclusive);
   MIDI_USB.setHandleControlChange(handleControlChange);
 
   beginStorage();
