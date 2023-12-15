@@ -39,9 +39,10 @@ String getFilename(PatchId *patch_id, InternalStorageBankType bank_type) {
 }
 
 template <typename PatchType>
-void PatchStorage<PatchType>::initializeBank(uint16_t bank_number,
+void PatchStorage<PatchType>::initializeBank(byte bank_number_msb,
+                                             byte bank_number_lsb,
                                              const PatchType *default_patch) {
-  PatchId patch_id = {0, bank_number};
+  PatchId patch_id = {0, bank_number_msb, bank_number_lsb};
 
   for (byte program_number = 0; program_number < 16; program_number++) {
     patch_id.program_number = program_number;

@@ -80,7 +80,8 @@ public:
   void noteOff(byte _channel, byte _pitch, byte velocity);
   void setPitchBend(byte _channel, int bend);
   void programChange(byte channel, byte program);
-  void bankChange(byte channel, byte bank);
+  void bankMsbChange(byte channel, byte bank);
+  void bankLsbChange(byte channel, byte bank);
   void controlChange(byte channel, byte cc_number, byte data);
 
   /* Would like to remove this. This is just to support querying MIDI delay

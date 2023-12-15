@@ -279,7 +279,11 @@ void MidiManager::handleProgramChange(byte channel, byte program) {
 void MidiManager::handleControlChange(byte channel, byte cc_number, byte data) {
   // bank select
   if (cc_number == 0) {
-    _synth->bankChange(channel, data);
+    _synth->bankMsbChange(channel, data);
+    return;
+  }
+  if (cc_number == 32) {
+    _synth->bankLsbChange(channel, data);
     return;
   }
 

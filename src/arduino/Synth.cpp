@@ -268,13 +268,37 @@ void Synth::programChange(byte channel, byte program) {
   _note_managers[channel + 16].setPolyphonyConfig(polyphony_config);
 }
 
-void Synth::bankChange(byte channel, byte bank_number) {
+void Synth::bankMsbChange(byte channel, byte bank_number_msb) {
   SynthChannel *synth_channel = &_synth_channels[channel];
 
-  synth_channel->mode =
-      (bank_number >> 6 == 0 ? MULTI_CHANNEL_MODE_FM : MULTI_CHANNEL_MODE_PSG);
+  byte previous_bank_msb = synth_channel->patch_id.bank_number_msb;
+  synth_channel->patch_id.bank_number_msb = bank_number_msb;
 
-  programChange(channel, synth_channel->patch_id.program_number);
+  BankMsbSynthMode channel_mode = (BankMsbSynthMode)(bank_number_msb >> 5);
+
+  switch (channel_mode) {
+  case BANK_MSB_SYNTH_MODE_FM:
+    synth_channel->mode = MULTI_CHANNEL_MODE_FM;
+    break;
+  case BANK_MSB_SYNTH_MODE_PSG:
+    synth_channel->mode = MULTI_CHANNEL_MODE_PSG;
+    break;
+  }
+
+  if (previous_bank_msb != bank_number_msb) {
+    programChange(channel, synth_channel->patch_id.program_number);
+  }
+}
+
+void Synth::bankLsbChange(byte channel, byte bank_number_lsb) {
+  SynthChannel *synth_channel = &_synth_channels[channel];
+
+  byte previous_bank_lsb = synth_channel->patch_id.bank_number_lsb;
+  synth_channel->patch_id.bank_number_lsb = bank_number_lsb;
+
+  if (previous_bank_lsb != bank_number_lsb) {
+    programChange(channel, synth_channel->patch_id.program_number);
+  }
 }
 
 void Synth::controlChange(byte channel, byte cc_number, byte data) {
@@ -300,8 +324,10 @@ void Synth::loadMulti(Multi *multi) {
        channel_index++) {
     _synth_channels[channel_index].mode = multi->channels[channel_index].mode;
 
-    bankChange(channel_index,
-               multi->channels[channel_index].patch_id.bank_number);
+    bankMsbChange(channel_index,
+                  multi->channels[channel_index].patch_id.bank_number_msb);
+    bankLsbChange(channel_index,
+                  multi->channels[channel_index].patch_id.bank_number_lsb);
     programChange(channel_index,
                   multi->channels[channel_index].patch_id.program_number);
   }

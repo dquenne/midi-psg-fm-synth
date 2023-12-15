@@ -18,7 +18,8 @@
 
 struct PatchId {
   byte program_number;  // 7-bit MIDI program number
-  uint16_t bank_number; // 14-bit MIDI bank number
+  byte bank_number_msb; // 7-bit MIDI bank number MSB
+  byte bank_number_lsb; // 7-bit MIDI bank number LSB
 };
 
 /** Convert delay time (0-127) to ticks (ms) */

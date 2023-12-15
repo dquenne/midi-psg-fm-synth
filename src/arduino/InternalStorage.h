@@ -37,7 +37,8 @@ template <typename PatchType> class PatchStorage {
 public:
   PatchStorage(InternalStorageBankType patch_type) : _patch_type(patch_type) {}
 
-  void initializeBank(uint16_t bank_number, const PatchType *default_patch);
+  void initializeBank(byte bank_number_msb, byte bank_number_lsb,
+                      const PatchType *default_patch);
   void writePatch(PatchId *patch_id, const PatchType *patch);
   void readPatch(PatchId *patch_id, PatchType *target_patch);
 
