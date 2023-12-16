@@ -335,28 +335,68 @@ void MidiManager::handleSysex(byte *array, unsigned size) {
     return;
   }
 
-  FmPatch *patch;
+  FmPatch *fm_patch;
+  PsgPatch *psg_patch;
   PatchId target_patch_id;
   bool should_update_buffered_patches;
 
   switch (message_type) {
-  case SYSEX_MESSAGE_TYPE_FM_SINGLE_VOICE_DUMP:
+  case SYSEX_MESSAGE_TYPE_PSG_SINGLE_VOICE_DUMP:
+    Serial.println("PSG voice dump");
     target_patch_id.program_number = array[3];
     target_patch_id.bank_number_msb = array[4];
     target_patch_id.bank_number_lsb = array[5];
     should_update_buffered_patches = array[6] > 0;
 
-    if (size - 8 != sizeof *patch) {
+    if (size - 8 != sizeof *psg_patch) {
       Serial.print("incorrect packet size. Got ");
-      Serial.print(size - 2);
+      Serial.print(size - 8);
       Serial.print(", expected ");
-      Serial.print(sizeof *patch);
+      Serial.print(sizeof *psg_patch);
       return;
     }
 
-    patch = (FmPatch *)&array[7];
+    psg_patch = (PsgPatch *)&array[7];
 
-    _synth->getFmPatchManager()->writePatch(&target_patch_id, patch);
+    _synth->getPsgPatchManager()->writePatch(&target_patch_id, psg_patch);
+
+    if (should_update_buffered_patches) {
+
+      for (byte channel = 0; channel < 16; channel++) {
+        SynthChannel *synth_channel = _synth->getChannel(channel);
+        if (synth_channel->patch_id.bank_number_msb ==
+                target_patch_id.bank_number_msb &&
+            synth_channel->patch_id.bank_number_lsb ==
+                target_patch_id.bank_number_lsb &&
+            synth_channel->patch_id.program_number ==
+                target_patch_id.program_number) {
+          Serial.print("Updating synth channel ");
+          Serial.println(channel + 1, DEC);
+
+          _synth->getPsgPatchManager()->loadPatch(&synth_channel->patch_id,
+                                                  channel);
+        }
+      }
+    }
+    break;
+  case SYSEX_MESSAGE_TYPE_FM_SINGLE_VOICE_DUMP:
+    Serial.println("FM voice dump");
+    target_patch_id.program_number = array[3];
+    target_patch_id.bank_number_msb = array[4];
+    target_patch_id.bank_number_lsb = array[5];
+    should_update_buffered_patches = array[6] > 0;
+
+    if (size - 8 != sizeof *fm_patch) {
+      Serial.print("incorrect packet size. Got ");
+      Serial.print(size - 8);
+      Serial.print(", expected ");
+      Serial.print(sizeof *fm_patch);
+      return;
+    }
+
+    fm_patch = (FmPatch *)&array[7];
+
+    _synth->getFmPatchManager()->writePatch(&target_patch_id, fm_patch);
 
     if (should_update_buffered_patches) {
 
@@ -376,7 +416,7 @@ void MidiManager::handleSysex(byte *array, unsigned size) {
         }
       }
     }
-    return;
+    break;
   default:
     break;
   }

@@ -73,7 +73,7 @@ struct PitchEnvelope {
 
 struct PsgPatchVelocityConfig {
   /** What velocity has no attenuation applied. This is typically 64 or 72. */
-  unsigned velocity_center;
+  byte velocity_center;
   /** At what velocity difference is the attenuation changed. A smaller number
    * means a smaller change in velocity will have a more dramatic effect.
    * e.g. if interval=16, then we have:
@@ -81,7 +81,7 @@ struct PsgPatchVelocityConfig {
    * so for every 16 lower than velocity_center, attenuation is increased by 1.
    * 0 = no scaling.
    */
-  signed interval;
+  int8_t interval;
 };
 
 struct PsgPatch {
@@ -93,7 +93,7 @@ struct PsgPatch {
   Lfo amplitude_lfo;
   Lfo pitch_lfo;
   PsgPatchVelocityConfig velocity_config;
-  signed detune_cents;
+  int8_t detune_cents;
 };
 
 void applyPsgPreset(PsgPatch *target, const PsgPatch *preset);
