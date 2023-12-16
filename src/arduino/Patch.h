@@ -200,6 +200,51 @@ struct FmPatchBank {
   FmPatch patches[16];
 };
 
+struct RhythmPatchNote {
+  PatchId patch_id;
+  byte pitch;
+};
+
+/** Notes 35-81 per GM spec */
+#define RHYTHM_PATCH_NOTE_COUNT 8
+
+enum RhythmPatchVoiceIndex {
+  RHYTHM_PATCH_VOICE_INDEX_KICK,
+  RHYTHM_PATCH_VOICE_INDEX_SIDE_STICK,
+  RHYTHM_PATCH_VOICE_INDEX_SNARE_1,
+  RHYTHM_PATCH_VOICE_INDEX_SNARE_2,
+  RHYTHM_PATCH_VOICE_INDEX_CLOSED_HAT,
+  RHYTHM_PATCH_VOICE_INDEX_OPEN_HAT,
+  RHYTHM_PATCH_VOICE_INDEX_TOM,
+  RHYTHM_PATCH_VOICE_INDEX_TAMBOURINE,
+};
+
+enum RhythmNoteVoice {
+  RHYTHM_NOTE_VOICE_ACOUSTIC_KICK = 35,
+  RHYTHM_NOTE_VOICE_ELECTRIC_KICK,
+  RHYTHM_NOTE_VOICE_SIDE_STICK,
+  RHYTHM_NOTE_VOICE_ACOUSTIC_SNARE,
+
+  RHYTHM_NOTE_VOICE_ELECTRIC_SNARE = 40,
+  RHYTHM_NOTE_VOICE_LOW_FLOOR_TOM,
+  RHYTHM_NOTE_VOICE_CLOSED_HAT,
+  RHYTHM_NOTE_VOICE_HIGH_FLOOR_TOM,
+  RHYTHM_NOTE_VOICE_PEDAL_HAT,
+  RHYTHM_NOTE_VOICE_LOW_TOM,
+  RHYTHM_NOTE_VOICE_OPEN_HAT,
+  RHYTHM_NOTE_VOICE_LOW_MID_TOM,
+  RHYTHM_NOTE_VOICE_HIGH_MID_TOM,
+
+  RHYTHM_NOTE_VOICE_HIGH_TOM = 50,
+
+  RHYTHM_NOTE_VOICE_TAMBOURINE = 54,
+};
+
+struct RhythmPatch {
+  PatchPolyphonyConfig polyphony_config;
+  RhythmPatchNote notes[RHYTHM_PATCH_NOTE_COUNT];
+};
+
 // A curve that seems to give natural / pleasing velocity amplitude scaling.
 // Subject to change, but generated from the formula:
 //   scaling = sqrt(velocity - 10) * 32 - 10

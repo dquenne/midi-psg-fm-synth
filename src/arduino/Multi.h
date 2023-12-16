@@ -4,7 +4,11 @@
 #include "Patch.h"
 #include "VoiceManager.h"
 
-enum MultiChannelMode { MULTI_CHANNEL_MODE_PSG, MULTI_CHANNEL_MODE_FM };
+enum MultiChannelMode {
+  MULTI_CHANNEL_MODE_FM,
+  MULTI_CHANNEL_MODE_PSG,
+  MULTI_CHANNEL_MODE_RHYTHM
+};
 
 struct MultiChannel {
   MultiChannelMode mode;

@@ -13,6 +13,7 @@
 // 2 most-significant bits of bank MSB define the synth mode
 enum BankMsbSynthMode : byte {
   BANK_MSB_SYNTH_MODE_FM = 0b00,
+  BANK_MSB_SYNTH_MODE_RHYTHM = 0b01,
   BANK_MSB_SYNTH_MODE_PSG = 0b10,
 };
 
@@ -101,6 +102,8 @@ public:
   void saveMulti() {}
 
 private:
+  void _fmNoteOn(byte channel, byte pitch, byte velocity, FmPatch *active_patch,
+                 NoteSwapNote *note_swap_old_note);
   void stealNote(byte channel, byte pitch);
   void syncPsgChannel(PsgChannel *channel, PsgVoice *voice);
   void syncFmChannel(FmChannel *channel, FmVoice *voice);
@@ -109,6 +112,7 @@ private:
   VoiceManager<FmVoice> _fm_voice_manager;
   PatchManager<PsgPatch> _psg_patch_manager;
   PatchManager<FmPatch> _fm_patch_manager;
+  RhythmPatchManager _rhythm_patch_manager;
   Chip *_chip;
   Multi *_active_multi;
   SynthControlState _control_state;

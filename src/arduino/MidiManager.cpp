@@ -20,10 +20,11 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
 
   _synth->noteOn(channel, pitch, velocity);
 
-  if (_delay && channel < 16 && _synth->getDelayConfig(channel)->enable) {
-    _delay->enqueue(
-        midi::MidiType::NoteOn, channel + 16, pitch, velocity,
-        getDelayTicks(_synth->getDelayConfig(channel % 16)->delay_time));
+  PatchDelayConfig *delay_config = _synth->getDelayConfig(channel % 16);
+  if (_delay && channel < 16 && delay_config != nullptr &&
+      delay_config->enable) {
+    _delay->enqueue(midi::MidiType::NoteOn, channel + 16, pitch, velocity,
+                    getDelayTicks(delay_config->delay_time));
   }
 }
 
@@ -35,10 +36,11 @@ void MidiManager::handleNoteOn(byte channel, byte pitch, byte velocity) {
 void MidiManager::handleNoteOff(byte channel, byte pitch, byte velocity) {
   _synth->noteOff(channel, pitch, velocity);
 
-  if (_delay && channel < 16 && _synth->getDelayConfig(channel % 16)->enable) {
-    _delay->enqueue(
-        midi::MidiType::NoteOff, channel + 16, pitch, velocity,
-        getDelayTicks(_synth->getDelayConfig(channel % 16)->delay_time));
+  PatchDelayConfig *delay_config = _synth->getDelayConfig(channel % 16);
+  if (_delay && channel < 16 && delay_config != nullptr &&
+      delay_config->enable) {
+    _delay->enqueue(midi::MidiType::NoteOff, channel + 16, pitch, velocity,
+                    getDelayTicks(delay_config->delay_time));
   }
 }
 

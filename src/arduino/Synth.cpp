@@ -114,9 +114,40 @@ void Synth::initialize() {
   _fm_voice_manager.getVoiceByIndex(0)->setSynthControlState(&_control_state);
   _fm_voice_manager.getVoiceByIndex(1)->setSynthControlState(&_control_state);
   _fm_voice_manager.getVoiceByIndex(2)->setSynthControlState(&_control_state);
+
+  _rhythm_patch_manager.loadPatch(nullptr);
 }
 
 void Synth::stealNote(byte channel, byte pitch) { noteOff(channel, pitch, 0); }
+
+void Synth::_fmNoteOn(byte channel, byte pitch, byte velocity,
+                      FmPatch *active_patch, NoteSwapNote *note_swap_old_note) {
+  FmVoice *voice = nullptr;
+  if (note_swap_old_note) {
+    voice = _fm_voice_manager.getExactVoice(channel, note_swap_old_note->pitch);
+  }
+  if (!voice) {
+    voice = _fm_voice_manager.getVoice(channel, pitch);
+  }
+  if (!voice) {
+    return;
+  }
+
+  // if voice was stolen from another channel, or this channel does not track
+  // maximum polyphony, force the stolen note off so that it is not
+  // retriggered when this note is released.
+  if ((voice->channel != channel ||
+       active_patch->polyphony_config.max_polyphony ==
+           MAX_POLYPHONY_UNLIMITED) &&
+      voice->getStatus() == voice_held && !voice->getIsDelay()) {
+    stealNote(voice->channel, voice->pitch);
+  }
+
+  if (voice->channel != channel || voice->getPatch() != active_patch) {
+    voice->setPatch(active_patch, channel >= 16);
+  }
+  voice->noteOn(channel, pitch, velocity);
+}
 
 void Synth::noteOn(byte channel, byte pitch, byte velocity) {
   if (channel < 16) {
@@ -131,36 +162,29 @@ void Synth::noteOn(byte channel, byte pitch, byte velocity) {
     // if the newly pressed note is too low a priority to be sounded, do nothing
     return;
   }
-
-  if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
-    FmPatch *active_patch = _fm_patch_manager.getChannelPatch(channel % 16);
-
-    FmVoice *voice = nullptr;
-    if (note_swap.old_note) {
-      voice =
-          _fm_voice_manager.getExactVoice(channel, note_swap.old_note->pitch);
-    }
-    if (!voice) {
-      voice = _fm_voice_manager.getVoice(channel, pitch);
-    }
-    if (!voice) {
+  if (synth_channel->mode == MULTI_CHANNEL_MODE_RHYTHM) {
+    if (pitch < 35) {
       return;
     }
+    FmPatch *active_patch = _rhythm_patch_manager.getNotePatch(pitch);
+    byte actual_pitch = _rhythm_patch_manager.getNotePitch(pitch);
 
-    // if voice was stolen from another channel, or this channel does not track
-    // maximum polyphony, force the stolen note off so that it is not
-    // retriggered when this note is released.
-    if ((voice->channel != channel ||
-         active_patch->polyphony_config.max_polyphony ==
-             MAX_POLYPHONY_UNLIMITED) &&
-        voice->getStatus() == voice_held && !voice->getIsDelay()) {
-      stealNote(voice->channel, voice->pitch);
+    if (active_patch == nullptr) {
+      return;
+    }
+    NoteSwapNote rhythm_choke_swap = {0, 0};
+    if (pitch == RHYTHM_NOTE_VOICE_CLOSED_HAT ||
+        pitch == RHYTHM_NOTE_VOICE_PEDAL_HAT) {
+      rhythm_choke_swap.pitch =
+          _rhythm_patch_manager.getNotePitch(RHYTHM_NOTE_VOICE_OPEN_HAT);
     }
 
-    if (voice->channel != channel || voice->getPatch() != active_patch) {
-      voice->setPatch(active_patch, channel >= 16);
-    }
-    voice->noteOn(channel, pitch, velocity);
+    _fmNoteOn(channel, actual_pitch, velocity, active_patch,
+              rhythm_choke_swap.pitch > 0 ? &rhythm_choke_swap : nullptr);
+  } else if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
+    FmPatch *active_patch = _fm_patch_manager.getChannelPatch(channel % 16);
+
+    _fmNoteOn(channel, pitch, velocity, active_patch, note_swap.old_note);
 
   } else {
     // FIXME: make this dependant on target chip.
@@ -214,10 +238,10 @@ void Synth::noteOff(byte channel, byte pitch, byte velocity) {
   SynthChannel *synth_channel = &_synth_channels[channel % 16];
 
   Voice *voice;
-  if (_synth_channels[channel % 16].mode == MULTI_CHANNEL_MODE_FM) {
-    voice = _fm_voice_manager.getExactVoice(channel, pitch);
-  } else {
+  if (_synth_channels[channel % 16].mode == MULTI_CHANNEL_MODE_PSG) {
     voice = _psg_voice_manager.getExactVoice(channel, pitch);
+  } else {
+    voice = _fm_voice_manager.getExactVoice(channel, pitch);
   }
 
   NoteSwap note_swap = _note_managers[channel].noteOff(pitch, velocity);
@@ -228,12 +252,12 @@ void Synth::noteOff(byte channel, byte pitch, byte velocity) {
   }
   if (note_swap.new_note) {
     Voice *new_note_existing_voice;
-    if (_synth_channels[channel % 16].mode == MULTI_CHANNEL_MODE_FM) {
-      new_note_existing_voice =
-          _fm_voice_manager.getExactVoice(channel, note_swap.new_note->pitch);
-    } else {
+    if (_synth_channels[channel % 16].mode == MULTI_CHANNEL_MODE_PSG) {
       new_note_existing_voice =
           _psg_voice_manager.getExactVoice(channel, note_swap.new_note->pitch);
+    } else {
+      new_note_existing_voice =
+          _fm_voice_manager.getExactVoice(channel, note_swap.new_note->pitch);
     }
     if (!new_note_existing_voice) {
       voice->noteOn(channel, note_swap.new_note->pitch,
@@ -283,6 +307,9 @@ void Synth::bankMsbChange(byte channel, byte bank_number_msb) {
   case BANK_MSB_SYNTH_MODE_PSG:
     synth_channel->mode = MULTI_CHANNEL_MODE_PSG;
     break;
+  case BANK_MSB_SYNTH_MODE_RHYTHM:
+    synth_channel->mode = MULTI_CHANNEL_MODE_RHYTHM;
+    break;
   }
 
   if (previous_bank_msb != bank_number_msb) {
@@ -307,6 +334,9 @@ void Synth::controlChange(byte channel, byte cc_number, byte data) {
 
 PatchDelayConfig *Synth::getDelayConfig(unsigned channel) {
   SynthChannel *synth_channel = &_synth_channels[channel];
+  if (synth_channel->mode == MULTI_CHANNEL_MODE_RHYTHM) {
+    return nullptr;
+  }
   if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
     return &_fm_patch_manager.getChannelPatch(channel)->delay_config;
   }
