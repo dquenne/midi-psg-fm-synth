@@ -277,8 +277,10 @@ void Synth::programChange(byte channel, byte program) {
   SynthChannel *synth_channel = &_synth_channels[channel];
   synth_channel->setProgram(program);
 
-  PatchPolyphonyConfig *polyphony_config;
-  if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
+  const PatchPolyphonyConfig *polyphony_config;
+  if (synth_channel->mode == MULTI_CHANNEL_MODE_RHYTHM) {
+    polyphony_config = &RHYTHM_POLYPHONY_CONFIG;
+  } else if (synth_channel->mode == MULTI_CHANNEL_MODE_FM) {
     _fm_patch_manager.loadPatch(&synth_channel->patch_id, channel);
     polyphony_config =
         &_fm_patch_manager.getChannelPatch(channel)->polyphony_config;

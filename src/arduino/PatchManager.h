@@ -50,6 +50,9 @@ const RhythmPatch RHYTHM_PRESET = {
     },
 };
 
+const PatchPolyphonyConfig RHYTHM_POLYPHONY_CONFIG = {
+    1, NOTE_PRIORITY_MODE_LATEST, RETRIGGER_MODE_SOFT};
+
 class RhythmPatchManager {
 public:
   RhythmPatchManager() : _fm_patch_storage{INTERNAL_STORAGE_FM} {}
